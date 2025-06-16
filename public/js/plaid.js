@@ -49,10 +49,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     token: data.link_token,
                     onSuccess: async (public_token, metadata) => {
                         console.log('--- PLAID ONSUCCESS ---');
-                        console.log('Plaid Link success:', public_token, metadata);
-
-                        console.log('Exchanging public token...');
-                        await fetch('/plaid/exchange_public_token', {
+                        const exchangeResponse = await fetch('/plaid/exchange_public_token', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
@@ -60,17 +57,26 @@ document.addEventListener('DOMContentLoaded', async function() {
                             },
                             body: JSON.stringify({ public_token, userId, institutionName: metadata.institution.name }),
                         });
+
+                        const exchangeData = await exchangeResponse.json();
                         console.log('Public token exchanged. Fetching balances...');
 
                         sessionStorage.removeItem('userBalances');
                         await fetchAndPopulateBalances();
+
+                        if (exchangeData.isFirstAccount) {
+                            const firstAccountModal = new bootstrap.Modal(document.getElementById('firstAccountModal'));
+                            firstAccountModal.show();
+                        }
                     },
                     onExit: (err, metadata) => {
                         console.log('--- PLAID ONEXIT ---');
-                        if (err) {
+                        if (err != null) {
                             console.error('Plaid Link exit error:', err, metadata);
                         } else {
-                            console.log('Plaid Link exited without error:', metadata);
+                            // User exited without an error, likely cancelled.
+                            const plaidCancelledModal = new bootstrap.Modal(document.getElementById('plaidCancelledModal'));
+                            plaidCancelledModal.show();
                         }
                     },
                     onEvent: (eventName, metadata) => {
@@ -136,6 +142,16 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     const mainContent = document.querySelector('.main-content');
+    const addManualFromCancelledBtn = document.getElementById('addManualAccountFromCancelledModal');
+    if (addManualFromCancelledBtn) {
+        addManualFromCancelledBtn.addEventListener('click', () => {
+            const cancelledModal = bootstrap.Modal.getInstance(document.getElementById('plaidCancelledModal'));
+            cancelledModal.hide();
+            const addManualModal = new bootstrap.Modal(document.getElementById('addManualAccountModal'));
+            addManualModal.show();
+        });
+    }
+
     if (mainContent) {
         mainContent.addEventListener('click', function(event) {
             const target = event.target.closest('button, a');

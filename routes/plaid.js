@@ -67,7 +67,15 @@ router.post('/exchange_public_token', protect, async (req, res) => {
             timestamp: new Date().toISOString()
         });
         
-        res.json({ message: "Public token exchanged successfully." });
+        const plaidItemsCount = plaidToken.items.length;
+        const manualAccountsCount = await NetWorth.countDocuments({ user: req.user._id, manual: true });
+        const isFirstAccount = plaidItemsCount === 1 && manualAccountsCount === 0;
+
+
+        res.json({ 
+            message: "Public token exchanged successfully.",
+            isFirstAccount: isFirstAccount 
+        });
     } catch (error) {
         console.error('Error exchanging public token:', error);
         res.status(500).json({ error: 'Something went wrong while exchanging public token.' });

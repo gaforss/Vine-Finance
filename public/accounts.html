@@ -384,6 +384,33 @@
         </div>
     </div>
 
+    <!-- First Account Linked Modal -->
+    <div class="modal fade" id="firstAccountModal" tabindex="-1" aria-labelledby="firstAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <h5 class="modal-title" id="firstAccountModalLabel">Alex, your dashboard is ready.</h5>
+                    <p>We’ve imported your first account. Let’s go!</p>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Let's go!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Plaid Cancellation Modal -->
+    <div class="modal fade" id="plaidCancelledModal" tabindex="-1" aria-labelledby="plaidCancelledModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <h5 class="modal-title" id="plaidCancelledModalLabel">Looks like we couldn’t find your bank.</h5>
+                    <p>You can still add your accounts manually—it only takes a minute.</p>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Maybe later</button>
+                    <button type="button" class="btn btn-primary" id="addManualAccountFromCancelledModal">Add manual account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="addManualAccountModal" tabindex="-1" aria-labelledby="addManualAccountModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">

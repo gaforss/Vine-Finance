@@ -49,6 +49,10 @@ document.addEventListener('DOMContentLoaded', async function() {
                     token: data.link_token,
                     onSuccess: async (public_token, metadata) => {
                         console.log('--- PLAID ONSUCCESS ---');
+                        trackEvent('Plaid Connection Success', { 
+                            institution_name: metadata.institution.name, 
+                            institution_id: metadata.institution.institution_id 
+                        });
                         const exchangeResponse = await fetch('/plaid/exchange_public_token', {
                             method: 'POST',
                             headers: {
@@ -71,6 +75,11 @@ document.addEventListener('DOMContentLoaded', async function() {
                     },
                     onExit: (err, metadata) => {
                         console.log('--- PLAID ONEXIT ---');
+                        trackEvent('Plaid Connection Exit', {
+                            exit_status: metadata.status,
+                            error_type: err ? err.error_type : null,
+                            error_message: err ? err.error_message : null
+                        });
                         if (err != null) {
                             console.error('Plaid Link exit error:', err, metadata);
                         } else {

@@ -9,9 +9,6 @@
     <link href="css/font-awesome.min.css" rel="stylesheet">
     <link href="css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
     <script src="https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js"></script>
-    <script type="text/javascript">
-        mixpanel.init("883554c993442ff0049a280607fd6324");
-    </script>
 </head>
 <body data-sidebar="dark" data-topbar="dark" data-bs-theme="dark">
     <div id="layout-wrapper">
@@ -39,8 +36,8 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
                             <h6 class="dropdown-header"><span id="userFirstName">User</span></h6>
-                            <a class="dropdown-item" href="/editProfile">Profile</a>
-                            <a class="dropdown-item" href="/logout">Logout</a>
+                            <a class="dropdown-item" href="/editProfile" data-track-click="Navigation" data-track-prop-destination="Profile" data-track-prop-location="Header">Profile</a>
+                            <a class="dropdown-item" href="/logout" data-track-click="Logout">Logout</a>
                         </div>
                     </div>
                 </div>
@@ -52,15 +49,40 @@
                 <div id="sidebar-menu">
                     <ul class="metismenu list-unstyled" id="side-menu">
                         <li class="menu-title" key="t-menu">Overview</li>
-                        <li><a href="/dashboard"><i class="fa fa-dashboard"></i><span key="t-dashboard">Dashboard</span></a></li>
-                        <li class="menu-title" key="t-menu">Financial Tools</li>
-                        <li><a href="/accounts"><i class="fa fa-bank"></i><span key="t-dashboard">My Accounts</span></a></li>
-                        <li><a href="/budgeting"><i class="fa fa-money"></i><span key="t-dashboard">Budget Management</span></a></li>
-                        <li><a href="/retirement"><i class="fa fa-flag"></i><span key="t-dashboard">Retirement Planning</span></a></li>
-                        <li><a href="/realestate"><i class="fa fa-home"></i><span key="t-dashboard">Real Estate Portfolio</span></a></li>
-                        <li><a href="/learning"><i class="fa fa-graduation-cap"></i><span key="t-dashboard">Learning Center</span></a></li>
+                        <li>
+                            <a href="/dashboard" data-track-click="Navigation" data-track-prop-destination="Dashboard" data-track-prop-location="Sidebar">
+                                <i class="fa fa-dashboard"></i><span key="t-dashboard">Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/accounts" data-track-click="Navigation" data-track-prop-destination="Accounts" data-track-prop-location="Sidebar">
+                                <i class="fa fa-university"></i><span key="t-dashboard">Accounts</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/budgeting" data-track-click="Navigation" data-track-prop-destination="Budgeting" data-track-prop-location="Sidebar">
+                                <i class="fa fa-money"></i><span key="t-dashboard">Budgeting Tool</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/retirement" data-track-click="Navigation" data-track-prop-destination="Retirement" data-track-prop-location="Sidebar">
+                                <i class="fa fa-umbrella"></i><span key="t-dashboard">Retirement Planner</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/realestate" data-track-click="Navigation" data-track-prop-destination="Real Estate" data-track-prop-location="Sidebar">
+                                <i class="fa fa-home"></i><span key="t-dashboard">Real Estate Portfolio</span></a>
+                        </li>
+                        <li>
+                            <a href="/learning" data-track-click="Navigation" data-track-prop-destination="Learning Center" data-track-prop-location="Sidebar">
+                                <i class="fa fa-graduation-cap"></i><span key="t-dashboard">Learning Center</span>
+                            </a>
+                        </li>
                         <li class="menu-title" key="t-menu">Profile</li>
-                        <li><a href="/editProfile"><i class="fa fa-user"></i><span key="t-dashboard">My Profile</span></a></li>
+                        <li>
+                            <a href="/editProfile" data-track-click="Navigation" data-track-prop-destination="My Profile" data-track-prop-location="Sidebar">
+                                <i class="fa fa-user"></i><span key="t-dashboard">My Profile</span></a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -95,7 +117,7 @@
                                                 <div class="card-body">
                                                     <h5 class="card-title">Net Worth</h5>
                                                     <p class="card-text fs-4" id="snapshot-net-worth">$0</p>
-                                                    <a href="/input.html" class="btn btn-primary">Update Manually</a>
+                                                    <a href="/input.html" class="btn btn-primary" data-track-click="Update Snapshot" data-track-prop-metric="Net Worth">Update Manually</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -104,7 +126,7 @@
                                                 <div class="card-body">
                                                     <h5 class="card-title">Total Assets</h5>
                                                     <p class="card-text fs-4" id="snapshot-assets">$0</p>
-                                                     <a href="/accounts.html" class="btn btn-success">Link Accounts</a>
+                                                     <a href="/accounts.html" class="btn btn-success" data-track-click="Update Snapshot" data-track-prop-metric="Total Assets">Link Accounts</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -113,7 +135,7 @@
                                                 <div class="card-body">
                                                     <h5 class="card-title">Total Liabilities</h5>
                                                     <p class="card-text fs-4" id="snapshot-liabilities">$0</p>
-                                                    <a href="/accounts.html" class="btn btn-danger">Review Debts</a>
+                                                    <a href="/accounts.html" class="btn btn-danger" data-track-click="Update Snapshot" data-track-prop-metric="Total Liabilities">Review Debts</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -200,7 +222,7 @@
                                                         <label>Current Liabilities: $<span id="sim-liabilities-val">0</span></label>
                                                         <input type="range" class="form-range" id="sim-liabilities" min="0" max="2000000" step="5000">
                                                     </div>
-                                                    <button class="btn btn-secondary btn-sm" id="load-my-data">Use My Financial Data</button>
+                                                    <button class="btn btn-secondary btn-sm" id="load-my-data" data-track-click="Load Financial Data" data-track-prop-module="Net Worth">Use My Financial Data</button>
                                                 </div>
                                                 <div class="col-md-6 text-center">
                                                     <h6>Simulated Net Worth</h6>
@@ -208,7 +230,7 @@
                                                     <div id="net-worth-benchmark-chart" class="mt-2"></div>
                                                     <p id="sim-networth-benchmark" class="fw-bold"></p>
                                                     <p id="sim-networth-insight" class="text-muted"></p>
-                                                    <a href="/input.html" class="btn btn-primary">Log Your Official Net Worth <i class="fa fa-arrow-right"></i></a>
+                                                    <a href="/input.html" class="btn btn-primary" data-track-click="Navigate from Learning" data-track-prop-destination="Log Net Worth" data-track-prop-module="Net Worth">Log Your Official Net Worth <i class="fa fa-arrow-right"></i></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -225,7 +247,7 @@
                                                 <div class="col-md-6">
                                                     <h6>Savings Simulator</h6>
                                                     <div class="input-group mb-3">
-                                                        <span class="input-group-text">If I save an extra</span>
+                                                        <span class="input-group-text">$</span>
                                                         <input type="number" id="savings-amount" class="form-control" value="50">
                                                         <span class="input-group-text">per week</span>
                                                     </div>
@@ -239,7 +261,7 @@
                                                     <h6>Potential Growth in 10 Years</h6>
                                                     <h3 class="display-5" id="savings-result">$0</h3>
                                                     <p id="savings-insight" class="text-muted"></p>
-                                                    <a href="/budgeting.html" class="btn btn-primary">Analyze Your Spending <i class="fa fa-arrow-right"></i></a>
+                                                    <a href="/budgeting.html" class="btn btn-primary" data-track-click="Navigate from Learning" data-track-prop-destination="Analyze Spending" data-track-prop-module="Cash Flow">Analyze Your Spending <i class="fa fa-arrow-right"></i></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -269,7 +291,7 @@
                                                     <div id="retirement-benchmark-chart" class="mt-2"></div>
                                                     <p id="ret-benchmark" class="fw-bold"></p>
                                                     <p id="ret-insight" class="text-muted"></p>
-                                                    <a href="/retirement.html" class="btn btn-primary">Set Your Retirement Goals <i class="fa fa-arrow-right"></i></a>
+                                                    <a href="/retirement.html" class="btn btn-primary" data-track-click="Navigate from Learning" data-track-prop-destination="Set Retirement Goals" data-track-prop-module="Investing">Set Your Retirement Goals <i class="fa fa-arrow-right"></i></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -296,7 +318,7 @@
                                                     <h6>Estimated Cash-on-Cash ROI</h6>
                                                     <h3 class="display-5" id="re-result">0%</h3>
                                                     <p id="re-insight" class="text-muted"></p>
-                                                    <a href="/realestate.html" class="btn btn-primary">Track Your Properties <i class="fa fa-arrow-right"></i></a>
+                                                    <a href="/realestate.html" class="btn btn-primary" data-track-click="Navigate from Learning" data-track-prop-destination="Track Properties" data-track-prop-module="Real Estate">Track Your Properties <i class="fa fa-arrow-right"></i></a>
                                                 </div>
                                             </div>
                                         </div>

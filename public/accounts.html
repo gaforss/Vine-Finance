@@ -54,8 +54,8 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
                             <h6 class="dropdown-header"><span id="userFirstName">User</span></h6>
-                            <a class="dropdown-item" href="/editProfile">Profile</a>
-                            <a class="dropdown-item" href="/logout">Logout</a>
+                            <a class="dropdown-item" href="/editProfile" data-track-click="Navigation" data-track-prop-destination="Profile" data-track-prop-location="Header">Profile</a>
+                            <a class="dropdown-item" href="/logout" data-track-click="Logout">Logout</a>
                         </div>
                     </div>
                 </div>
@@ -68,39 +68,37 @@
                     <ul class="metismenu list-unstyled" id="side-menu">
                         <li class="menu-title" key="t-menu">Overview</li>
                         <li>
-                            <a href="/dashboard">
+                            <a href="/dashboard" data-track-click="Navigation" data-track-prop-destination="Dashboard" data-track-prop-location="Sidebar">
                                 <i class="fa fa-dashboard"></i><span key="t-dashboard">Dashboard</span>
                             </a>
                         </li>
-                        <li class="menu-title" key="t-menu">Financial Tools</li>
                         <li>
-                            <a href="/accounts">
-                                <i class="fa fa-bank"></i><span key="t-dashboard">My Accounts</span>
+                            <a href="/accounts" data-track-click="Navigation" data-track-prop-destination="Accounts" data-track-prop-location="Sidebar">
+                                <i class="fa fa-university"></i><span key="t-dashboard">Accounts</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/budgeting">
-                                <i class="fa fa-money"></i><span key="t-dashboard">Budget Management</span>
+                            <a href="/budgeting" data-track-click="Navigation" data-track-prop-destination="Budgeting" data-track-prop-location="Sidebar">
+                                <i class="fa fa-money"></i><span key="t-dashboard">Budgeting Tool</span>
                             </a>
                         </li>
                         <li>
-                        <li>
-                            <a href="/retirement">
-                                <i class="fa fa-flag"></i><span key="t-dashboard">Retirement Planning</span>
+                            <a href="/retirement" data-track-click="Navigation" data-track-prop-destination="Retirement" data-track-prop-location="Sidebar">
+                                <i class="fa fa-umbrella"></i><span key="t-dashboard">Retirement Planner</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/realestate">
+                            <a href="/realestate" data-track-click="Navigation" data-track-prop-destination="Real Estate" data-track-prop-location="Sidebar">
                                 <i class="fa fa-home"></i><span key="t-dashboard">Real Estate Portfolio</span></a>
                         </li>
                         <li>
-                            <a href="/learning">
+                            <a href="/learning" data-track-click="Navigation" data-track-prop-destination="Learning Center" data-track-prop-location="Sidebar">
                                 <i class="fa fa-graduation-cap"></i><span key="t-dashboard">Learning Center</span>
                             </a>
                         </li>
                         <li class="menu-title" key="t-menu">Profile</li>
                         <li>
-                            <a href="/editProfile">
+                            <a href="/editProfile" data-track-click="Navigation" data-track-prop-destination="My Profile" data-track-prop-location="Sidebar">
                                 <i class="fa fa-user"></i><span key="t-dashboard">My Profile</span></a>
                         </li>
                     </ul>
@@ -124,7 +122,9 @@
                                             </div>
                                             <p class="font-size-18">Securely link you <b>Accounts</b> for Better Visibility</p>
                                             <div class="mt-4">
-                                                <a class="btn btn-success waves-effect waves-light" id="link-button">Link An Account <i class="fa fa-caret-right"></i> </a>
+                                                <button type="button" class="btn btn-success waves-effect waves-light" id="link-button" data-track-click="Link Account" data-track-prop-source="Accounts Page">
+                                                    <i class="fa fa-lock"></i> Securely Link An Account
+                                                </button>
                                             </div>
                                         </div>
                                         <div class="col-sm-4">
@@ -168,8 +168,7 @@
 
                                     <hr class="text-muted my-3">
 
-                                    <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addManualAccountModal">
-                                        <i class="fa fa-user-plus"></i> Add Manual Account
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addManualAccountModal" data-track-click="Open Modal" data-track-prop-modal-name="Add Manual Account">Add Manual Account
                                     </button>
                                 </div>
                             </div>
@@ -397,21 +396,34 @@
         </div>
     </div>
 
-    <!-- Plaid Cancellation Modal -->
-    <div class="modal fade" id="plaidCancelledModal" tabindex="-1" aria-labelledby="plaidCancelledModalLabel" aria-hidden="true">
+    <!-- Plaid Success Modal -->
+    <div class="modal fade" id="plaidSuccessModal" tabindex="-1" aria-labelledby="plaidSuccessModalLabel" aria-hidden="true" data-track-modal="Plaid Success">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-body text-center p-4">
-                    <h5 class="modal-title" id="plaidCancelledModalLabel">Looks like we couldn’t find your bank.</h5>
-                    <p>You can still add your accounts manually—it only takes a minute.</p>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Maybe later</button>
-                    <button type="button" class="btn btn-primary" id="addManualAccountFromCancelledModal">Add manual account</button>
+                    <h5 class="modal-title" id="plaidSuccessModalLabel">Congratulations!</h5>
+                    <p>We’ve imported your first account. Let’s go!</p>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" data-track-click="Modal Action" data-track-prop-modal-name="Plaid Success" data-track-prop-action="Confirm">Let's go!</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="addManualAccountModal" tabindex="-1" aria-labelledby="addManualAccountModalLabel" aria-hidden="true">
+    <!-- Plaid Cancellation Modal -->
+    <div class="modal fade" id="plaidCancelledModal" tabindex="-1" aria-labelledby="plaidCancelledModalLabel" aria-hidden="true" data-track-modal="Plaid Cancelled">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <h5 class="modal-title" id="plaidCancelledModalLabel">Looks like we couldn’t find your bank.</h5>
+                    <p>You can still add your accounts manually—it only takes a minute.</p>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-track-click="Modal Action" data-track-prop-modal-name="Plaid Cancelled" data-track-prop-action="Maybe Later">Maybe later</button>
+                    <button type="button" class="btn btn-primary" id="addManualAccountFromCancelledModal" data-track-click="Modal Action" data-track-prop-modal-name="Plaid Cancelled" data-track-prop-action="Add Manual Account">Add manual account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addManualAccountModal" tabindex="-1" aria-labelledby="addManualAccountModalLabel" aria-hidden="true" data-track-modal="Add Manual Account">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -419,7 +431,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="manual-account-form">
+                    <form id="manual-account-form" data-track-form="Add Manual Account">
                         <div class="mb-3">
                             <label for="accountName" class="form-label">Account Name</label>
                             <input type="text" class="form-control" id="accountName" required>
@@ -444,8 +456,8 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="addAccountButton">Add Account</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-track-click="Modal Action" data-track-prop-modal-name="Add Manual Account" data-track-prop-action="Close">Close</button>
+                    <button type="button" class="btn btn-primary" id="addAccountButton" data-track-click="Modal Action" data-track-prop-modal-name="Add Manual Account" data-track-prop-action="Add Account">Add Account</button>
                 </div>
             </div>
         </div>

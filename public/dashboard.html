@@ -67,8 +67,8 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
                             <h6 class="dropdown-header"><span id="userFirstName">User</span></h6>
-                            <a class="dropdown-item" href="/editProfile">Profile</a>
-                            <a class="dropdown-item" href="/logout" id="logout">Logout</a>
+                            <a class="dropdown-item" href="/editProfile" data-track-click="Navigation" data-track-prop-destination="Profile" data-track-prop-location="Header">Profile</a>
+                            <a class="dropdown-item" href="/logout" id="logout" data-track-click="Logout">Logout</a>
                         </div>
                     </div>
                 </div>
@@ -81,39 +81,37 @@
                     <ul class="metismenu list-unstyled" id="side-menu">
                         <li class="menu-title" key="t-menu">Overview</li>
                         <li>
-                            <a href="/dashboard">
+                            <a href="/dashboard" data-track-click="Navigation" data-track-prop-destination="Dashboard" data-track-prop-location="Sidebar">
                                 <i class="fa fa-dashboard"></i><span key="t-dashboard">Dashboard</span>
                             </a>
                         </li>
-                        <li class="menu-title" key="t-menu">Financial Tools</li>
                         <li>
-                            <a href="/accounts">
-                                <i class="fa fa-bank"></i><span key="t-dashboard">My Accounts</span>
+                            <a href="/accounts" data-track-click="Navigation" data-track-prop-destination="Accounts" data-track-prop-location="Sidebar">
+                                <i class="fa fa-university"></i><span key="t-dashboard">Accounts</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/budgeting">
-                                <i class="fa fa-money"></i><span key="t-dashboard">Budget Management</span>
+                            <a href="/budgeting" data-track-click="Navigation" data-track-prop-destination="Budgeting" data-track-prop-location="Sidebar">
+                                <i class="fa fa-money"></i><span key="t-dashboard">Budgeting Tool</span>
                             </a>
                         </li>
                         <li>
-                        <li>
-                            <a href="/retirement">
-                                <i class="fa fa-flag"></i><span key="t-dashboard">Retirement Planning</span>
+                            <a href="/retirement" data-track-click="Navigation" data-track-prop-destination="Retirement" data-track-prop-location="Sidebar">
+                                <i class="fa fa-umbrella"></i><span key="t-dashboard">Retirement Planner</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/realestate">
+                            <a href="/realestate" data-track-click="Navigation" data-track-prop-destination="Real Estate" data-track-prop-location="Sidebar">
                                 <i class="fa fa-home"></i><span key="t-dashboard">Real Estate Portfolio</span></a>
                         </li>
                         <li>
-                            <a href="/learning">
+                            <a href="/learning" data-track-click="Navigation" data-track-prop-destination="Learning Center" data-track-prop-location="Sidebar">
                                 <i class="fa fa-graduation-cap"></i><span key="t-dashboard">Learning Center</span>
                             </a>
                         </li>
                         <li class="menu-title" key="t-menu">Profile</li>
                         <li>
-                            <a href="/editProfile">
+                            <a href="/editProfile" data-track-click="Navigation" data-track-prop-destination="My Profile" data-track-prop-location="Sidebar">
                                 <i class="fa fa-user"></i><span key="t-dashboard">My Profile</span></a>
                         </li>
                     </ul>
@@ -269,39 +267,39 @@
             <img src="images/landing/logo.png" alt="Your Logo" class="tour-logo">
             <p>Welcome to Vine! Since this is your first time here, this is your Financial Snapshot, where you can see an overview of your financial data.</p>
             <p>1/5</p> <!-- Updated step number -->
-            <button class="btn tour-next-btn">Next</button>
+            <button class="btn tour-next-btn" data-track-click="Tour Interaction" data-track-prop-action="Next" data-track-prop-step="1">Next</button>
         </div>
         <div class="tour-step" id="tour-step-2" data-target="#addMonthlyEntry">
             <img src="images/landing/logo.png" alt="Your Logo" class="tour-logo">
             <p>You can add and adjust your net worth by logging monthly entries in the top right corner.</p>
             <p>2/5</p> <!-- Updated step number -->
-            <button class="btn back-btn tour-prev-btn">Back</button>
-            <button class="btn tour-next-btn">Next</button>
+            <button class="btn back-btn tour-prev-btn" data-track-click="Tour Interaction" data-track-prop-action="Back" data-track-prop-step="2">Back</button>
+            <button class="btn tour-next-btn" data-track-click="Tour Interaction" data-track-prop-action="Next" data-track-prop-step="2">Next</button>
         </div>
         <div class="tour-step" id="tour-step-3" data-target="#realEstateSection">
             <img src="images/landing/logo.png" alt="Your Logo" class="tour-logo">
             <p>This is the Real Estate tab where you can log your homes and even track monthly rent collected from your tenants.</p>
             <p>3/5</p> <!-- Updated step number -->
-            <button class="btn back-btn tour-prev-btn">Back</button>
-            <button class="btn tour-next-btn">Next</button>
+            <button class="btn back-btn tour-prev-btn" data-track-click="Tour Interaction" data-track-prop-action="Back" data-track-prop-step="3">Back</button>
+            <button class="btn tour-next-btn" data-track-click="Tour Interaction" data-track-prop-action="Next" data-track-prop-step="3">Next</button>
         </div>
         <div class="tour-step" id="tour-step-4">
             <img src="images/landing/logo.png" alt="Your Logo" class="tour-logo">
             <p>Do you have historical submissions that you'd like to import? Use this template to get started.</p>
-            <p><a href="files/template.xlsx" download="template.xlsx"><i class="fa fa-download"></i> Template</a></p>
+            <p><a href="files/template.xlsx" download="template.xlsx" data-track-click="Download" data-track-prop-file="template.xlsx"><i class="fa fa-download"></i> Template</a></p>
             <p>4/5</p> <!-- Updated step number -->
-            <button class="btn back-btn tour-prev-btn">Back</button>
-            <button class="btn tour-next-btn">Skip This Template</button>
+            <button class="btn back-btn tour-prev-btn" data-track-click="Tour Interaction" data-track-prop-action="Back" data-track-prop-step="4">Back</button>
+            <button class="btn tour-next-btn" data-track-click="Tour Interaction" data-track-prop-action="Skip Template" data-track-prop-step="4">Skip This Template</button>
         </div>
         <div class="tour-step" id="tour-step-complete">
             <img src="images/landing/logo.png" alt="Your Logo" class="tour-logo">
             <p>If you are ready to link your accounts, you can do so here.</p>
-            <p><a class="btn btn-success waves-effect waves-light btn-lg" id="link-button">Securely Link An Account <i class="fa fa-lock"></i></a></p>
+            <p><a class="btn btn-success waves-effect waves-light btn-lg" id="link-button" data-track-click="Link Account" data-track-prop-source="Tour">Securely Link An Account <i class="fa fa-lock"></i></a></p>
             <p>5/5</p> <!-- Updated step number -->
-            <button class="btn back-btn tour-prev-btn">Back</button>
-            <button class="btn finish-btn tour-complete-btn">Let's Go!</button>
+            <button class="btn back-btn tour-prev-btn" data-track-click="Tour Interaction" data-track-prop-action="Back" data-track-prop-step="5">Back</button>
+            <button class="btn finish-btn tour-complete-btn" data-track-click="Tour Interaction" data-track-prop-action="Complete" data-track-prop-step="5">Let's Go!</button>
             <hr class="text-muted my-3">
-            <p class="powered-by">Powered by <a href="https://plaid.com" target="_blank">Plaid</a></p>
+            <p class="powered-by">Powered by <a href="https://plaid.com" target="_blank" data-track-click="External Link" data-track-prop-destination="Plaid">Plaid</a></p>
         </div>
     </div>
 

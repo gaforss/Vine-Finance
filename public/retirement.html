@@ -51,8 +51,8 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
                             <h6 class="dropdown-header"><span id="userFirstName">User</span></h6>
-                            <a class="dropdown-item" href="/editProfile">Profile</a>
-                            <a class="dropdown-item" href="/logout">Logout</a>
+                            <a class="dropdown-item" href="/editProfile" data-track-click="Navigation" data-track-prop-destination="Profile" data-track-prop-location="Header">Profile</a>
+                            <a class="dropdown-item" href="/logout" data-track-click="Logout">Logout</a>
                         </div>
                     </div>
                 </div>
@@ -65,38 +65,37 @@
                     <ul class="metismenu list-unstyled" id="side-menu">
                         <li class="menu-title" key="t-menu">Overview</li>
                         <li>
-                            <a href="/dashboard">
+                            <a href="/dashboard" data-track-click="Navigation" data-track-prop-destination="Dashboard" data-track-prop-location="Sidebar">
                                 <i class="fa fa-dashboard"></i><span key="t-dashboard">Dashboard</span>
                             </a>
                         </li>
-                        <li class="menu-title" key="t-menu">Financial Tools</li>
                         <li>
-                            <a href="/accounts">
-                                <i class="fa fa-bank"></i><span key="t-dashboard">My Accounts</span>
+                            <a href="/accounts" data-track-click="Navigation" data-track-prop-destination="Accounts" data-track-prop-location="Sidebar">
+                                <i class="fa fa-university"></i><span key="t-dashboard">Accounts</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/budgeting">
-                                <i class="fa fa-money"></i><span key="t-dashboard">Budget Management</span>
+                            <a href="/budgeting" data-track-click="Navigation" data-track-prop-destination="Budgeting" data-track-prop-location="Sidebar">
+                                <i class="fa fa-money"></i><span key="t-dashboard">Budgeting Tool</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/retirement">
-                                <i class="fa fa-flag"></i><span key="t-dashboard">Retirement Planning</span>
+                            <a href="/retirement" data-track-click="Navigation" data-track-prop-destination="Retirement" data-track-prop-location="Sidebar">
+                                <i class="fa fa-umbrella"></i><span key="t-dashboard">Retirement Planner</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/realestate">
+                            <a href="/realestate" data-track-click="Navigation" data-track-prop-destination="Real Estate" data-track-prop-location="Sidebar">
                                 <i class="fa fa-home"></i><span key="t-dashboard">Real Estate Portfolio</span></a>
                         </li>
                         <li>
-                            <a href="/learning">
+                            <a href="/learning" data-track-click="Navigation" data-track-prop-destination="Learning Center" data-track-prop-location="Sidebar">
                                 <i class="fa fa-graduation-cap"></i><span key="t-dashboard">Learning Center</span>
                             </a>
                         </li>
                         <li class="menu-title" key="t-menu">Profile</li>
                         <li>
-                            <a href="/editProfile">
+                            <a href="/editProfile" data-track-click="Navigation" data-track-prop-destination="My Profile" data-track-prop-location="Sidebar">
                                 <i class="fa fa-user"></i><span key="t-dashboard">My Profile</span></a>
                         </li>
                     </ul>
@@ -203,7 +202,7 @@
                                                 <input type="number" id="whatIfMonthlySpend" class="form-control" min="1000" step="any">
                                                 <small class="text-muted">See how different spending levels affect your retirement date</small>
                                             </div>
-                                            <button id="whatIfCalculate" class="btn btn-primary">Calculate Scenario</button>
+                                            <button id="whatIfCalculate" class="btn btn-primary" data-track-click="What-If Calculator">Calculate Scenario</button>
                                             <button id="whatIfReset" class="btn btn-secondary ms-2">Reset to Current Goals</button>
                                         </div>
                                         <div class="col-md-6">
@@ -265,7 +264,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <button class="btn btn-outline-primary apply-template w-100" data-template="conservative">
+                                                    <button class="btn btn-outline-primary apply-template w-100" data-template="conservative" data-track-click="Apply Conservative Template">
                                                         <i class="fa fa-shield me-2"></i>Apply Conservative Template
                                                     </button>
                                                 </div>
@@ -291,7 +290,7 @@
                                                         <h6 class="mb-2">Current Settings</h6>
                                                         <div class="small text-muted">This is your current balanced allocation</div>
                                                     </div>
-                                                    <button class="btn btn-outline-primary apply-template w-100" data-template="moderate">
+                                                    <button class="btn btn-outline-primary apply-template w-100" data-template="moderate" data-track-click="Apply Moderate Template">
                                                         <i class="fa fa-balance-scale me-2"></i>Apply Moderate Template
                                                     </button>
                                                 </div>
@@ -330,7 +329,7 @@
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <button class="btn btn-outline-primary apply-template w-100" data-template="aggressive">
+                                                    <button class="btn btn-outline-primary apply-template w-100" data-template="aggressive" data-track-click="Apply Aggressive Template">
                                                         <i class="fa fa-rocket me-2"></i>Apply Aggressive Template
                                                     </button>
                                                 </div>
@@ -356,10 +355,10 @@
                                         <i class="fa fa-download" data-bs-toggle="tooltip" data-bs-placement="top" title="Export your retirement plan for future reference"></i> Export Your Plan</h4>
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <button id="exportPDF" class="btn btn-primary">
-                                                <i class="fa fa-file-pdf-o"></i> Save as PDF
-                                            </button>
-                                            <button id="exportCSV" class="btn btn-secondary ms-2">
+                                            <button class="btn btn-primary" id="downloadPdfButton" data-track-click="Download PDF" data-track-prop-document-name="Retirement Plan">
+                                            <i class="fa fa-download"></i> Download as PDF
+                                        </button>
+                                            <button id="exportCSV" class="btn btn-secondary ms-2" data-track-click="Export CSV">
                                                 <i class="fa fa-file-excel-o"></i> Export Data
                                             </button>
                                         </div>
@@ -372,7 +371,7 @@
                     <!-- Button to trigger modal -->
                     <div class="row mt-4">
                         <div class="col-md-12 text-center">
-                            <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#retirementGoalsModal">
+                            <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#retirementGoalsModal" data-track-click="Review & Update Retirement Goals">
                                 <i class="fa fa-edit"></i> Review & Update Retirement Goals
                             </button>
                         </div>
@@ -391,7 +390,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form id="retirementForm">
+            <form id="retirementGoalsForm" data-track-form="Retirement Goals">
               <div class="row mb-3">
                 <div class="col-md-6">
                   <label for="currentAge" class="form-label">Current Age</label>
@@ -475,7 +474,7 @@
               </div>
               <div class="d-grid gap-2 mt-4">
                 <button type="submit" class="btn btn-primary btn-lg" id="saveGoalsButton" disabled>Save Goals</button>
-                <button type="button" class="btn btn-secondary" id="resetToDefaults">Reset to Defaults</button>
+                <button type="button" class="btn btn-secondary" id="resetToDefaults" data-track-click="Button Click" data-track-prop-button-name="Reset Retirement Goals">Reset to Defaults</button>
               </div>
             </form>
           </div>

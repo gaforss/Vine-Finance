@@ -59,8 +59,8 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
                             <h6 class="dropdown-header"><span id="userFirstName">User</span></h6>
-                            <a class="dropdown-item" href="/editProfile">Profile</a>
-                            <a class="dropdown-item" href="/logout">Logout</a>
+                            <a class="dropdown-item" href="/editProfile" data-track-click="Navigation" data-track-prop-destination="Profile" data-track-prop-location="Header">Profile</a>
+                            <a class="dropdown-item" href="/logout" data-track-click="Logout">Logout</a>
                         </div>
                     </div>
                 </div>
@@ -73,39 +73,37 @@
                     <ul class="metismenu list-unstyled" id="side-menu">
                         <li class="menu-title" key="t-menu">Overview</li>
                         <li>
-                            <a href="/dashboard">
+                            <a href="/dashboard" data-track-click="Navigation" data-track-prop-destination="Dashboard" data-track-prop-location="Sidebar">
                                 <i class="fa fa-dashboard"></i><span key="t-dashboard">Dashboard</span>
                             </a>
                         </li>
-                        <li class="menu-title" key="t-menu">Financial Tools</li>
                         <li>
-                            <a href="/accounts">
-                                <i class="fa fa-bank"></i><span key="t-dashboard">My Accounts</span>
+                            <a href="/accounts" data-track-click="Navigation" data-track-prop-destination="Accounts" data-track-prop-location="Sidebar">
+                                <i class="fa fa-university"></i><span key="t-dashboard">Accounts</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/budgeting">
-                                <i class="fa fa-money"></i><span key="t-dashboard">Budget Management</span>
+                            <a href="/budgeting" data-track-click="Navigation" data-track-prop-destination="Budgeting" data-track-prop-location="Sidebar">
+                                <i class="fa fa-money"></i><span key="t-dashboard">Budgeting Tool</span>
                             </a>
                         </li>
                         <li>
-                        <li>
-                            <a href="/retirement">
-                                <i class="fa fa-flag"></i><span key="t-dashboard">Retirement Planning</span>
+                            <a href="/retirement" data-track-click="Navigation" data-track-prop-destination="Retirement" data-track-prop-location="Sidebar">
+                                <i class="fa fa-umbrella"></i><span key="t-dashboard">Retirement Planner</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/realestate">
+                            <a href="/realestate" data-track-click="Navigation" data-track-prop-destination="Real Estate" data-track-prop-location="Sidebar">
                                 <i class="fa fa-home"></i><span key="t-dashboard">Real Estate Portfolio</span></a>
                         </li>
                         <li>
-                            <a href="/learning">
+                            <a href="/learning" data-track-click="Navigation" data-track-prop-destination="Learning Center" data-track-prop-location="Sidebar">
                                 <i class="fa fa-graduation-cap"></i><span key="t-dashboard">Learning Center</span>
                             </a>
                         </li>
                         <li class="menu-title" key="t-menu">Profile</li>
                         <li>
-                            <a href="/editProfile">
+                            <a href="/editProfile" data-track-click="Navigation" data-track-prop-destination="My Profile" data-track-prop-location="Sidebar">
                                 <i class="fa fa-user"></i><span key="t-dashboard">My Profile</span></a>
                         </li>
                     </ul>
@@ -171,7 +169,7 @@
                                                                         <input type="date" id="endDate" name="endDate" class="form-control" required>
                                                                     </div>
                                                                 </div>
-                                                                <button type="submit" class="btn btn-primary">Add Goal</button>
+                                                                <button type="submit" class="btn btn-primary" data-track-click="Add Goal">Add Goal</button>
                                                             </form>
                                                         </div>
                                                     </div>
@@ -208,9 +206,9 @@
                                                     <span class="fw-semibold">Sort By:</span> <span class="text-muted" id="dropdownMenuButton1Text"><i class="fa fa-caret-down ms-1"></i></span>
                                                 </a>
                                                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton1">
-                                                    <a class="dropdown-item" href="#" data-period="yearly">This Year</a>
-                                                    <a class="dropdown-item" href="#" data-period="monthly">This Month</a>
-                                                    <a class="dropdown-item" href="#" data-period="weekly">This Week</a>
+                                                    <a class="dropdown-item" href="#" data-period="yearly" data-track-click="Filter Chart" data-track-prop-chart-name="Spending Habits" data-track-prop-filter="This Year">This Year</a>
+                                                    <a class="dropdown-item" href="#" data-period="monthly" data-track-click="Filter Chart" data-track-prop-chart-name="Spending Habits" data-track-prop-filter="This Month">This Month</a>
+                                                    <a class="dropdown-item" href="#" data-period="weekly" data-track-click="Filter Chart" data-track-prop-chart-name="Spending Habits" data-track-prop-filter="This Week">This Week</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -226,7 +224,7 @@
             </div>
         </div>
 
-        <div class="modal fade" id="editGoalModal" tabindex="-1" aria-labelledby="editGoalModalLabel" aria-hidden="true">
+        <div class="modal fade" id="editGoalModal" tabindex="-1" aria-labelledby="editGoalModalLabel" aria-hidden="true" data-track-modal="Edit Goal">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -234,7 +232,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="edit-goal-form">
+                        <form id="edit-goal-form" data-track-form="Edit Goal">
                             <input type="hidden" id="edit-goal-id">
                             <div class="mb-3">
                                 <label for="edit-name" class="form-label">Goal Name</label>

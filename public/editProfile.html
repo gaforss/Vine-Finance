@@ -81,8 +81,8 @@
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
                             <h6 class="dropdown-header"><span id="userFirstName">User</span></h6>
-                            <a class="dropdown-item" href="/editProfile">Profile</a>
-                            <a class="dropdown-item" href="/logout">Logout</a>
+                            <a class="dropdown-item" href="/editProfile" data-track-click="Navigation" data-track-prop-destination="Profile" data-track-prop-location="Header">Profile</a>
+                            <a class="dropdown-item" href="/logout" data-track-click="Logout">Logout</a>
                         </div>
                     </div>
                 </div>
@@ -95,39 +95,37 @@
                     <ul class="metismenu list-unstyled" id="side-menu">
                         <li class="menu-title" key="t-menu">Overview</li>
                         <li>
-                            <a href="/dashboard">
+                            <a href="/dashboard" data-track-click="Navigation" data-track-prop-destination="Dashboard" data-track-prop-location="Sidebar">
                                 <i class="fa fa-dashboard"></i><span key="t-dashboard">Dashboard</span>
                             </a>
                         </li>
-                        <li class="menu-title" key="t-menu">Financial Tools</li>
                         <li>
-                            <a href="/accounts">
-                                <i class="fa fa-bank"></i><span key="t-dashboard">My Accounts</span>
+                            <a href="/accounts" data-track-click="Navigation" data-track-prop-destination="Accounts" data-track-prop-location="Sidebar">
+                                <i class="fa fa-university"></i><span key="t-dashboard">Accounts</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/budgeting">
-                                <i class="fa fa-money"></i><span key="t-dashboard">Budget Management</span>
+                            <a href="/budgeting" data-track-click="Navigation" data-track-prop-destination="Budgeting" data-track-prop-location="Sidebar">
+                                <i class="fa fa-money"></i><span key="t-dashboard">Budgeting Tool</span>
                             </a>
                         </li>
                         <li>
-                        <li>
-                            <a href="/retirement">
-                                <i class="fa fa-flag"></i><span key="t-dashboard">Retirement Planning</span>
+                            <a href="/retirement" data-track-click="Navigation" data-track-prop-destination="Retirement" data-track-prop-location="Sidebar">
+                                <i class="fa fa-umbrella"></i><span key="t-dashboard">Retirement Planner</span>
                             </a>
                         </li>
                         <li>
-                            <a href="/realestate">
+                            <a href="/realestate" data-track-click="Navigation" data-track-prop-destination="Real Estate" data-track-prop-location="Sidebar">
                                 <i class="fa fa-home"></i><span key="t-dashboard">Real Estate Portfolio</span></a>
                         </li>
                         <li>
-                            <a href="/learning">
+                            <a href="/learning" data-track-click="Navigation" data-track-prop-destination="Learning Center" data-track-prop-location="Sidebar">
                                 <i class="fa fa-graduation-cap"></i><span key="t-dashboard">Learning Center</span>
                             </a>
                         </li>
                         <li class="menu-title" key="t-menu">Profile</li>
                         <li>
-                            <a href="/editProfile">
+                            <a href="/editProfile" data-track-click="Navigation" data-track-prop-destination="My Profile" data-track-prop-location="Sidebar">
                                 <i class="fa fa-user"></i><span key="t-dashboard">My Profile</span></a>
                         </li>
                     </ul>
@@ -145,27 +143,29 @@
                                 <div class="card-body">
                                     <h4 class="card-title">Profile Details</h4>
                                     <p class="card-title-desc">Update your profile information below.</p>
-                                    <form id="profileForm" method="POST" enctype="multipart/form-data">
+                                    <form id="editProfileForm" data-track-form="Edit Profile">
                                         <div class="row">
-                                            <div class="col-12">
+                                            <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label for="username" class="form-label">Username</label>
-                                                    <input class="form-control" type="text" id="username" name="username" placeholder="Username" disabled>
+                                                    <input class="form-control" type="text" id="username" name="username" placeholder="Username">
                                                 </div>
                                             </div>
-                                            <div class="col-12">
+                                            <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label for="email" class="form-label">Email</label>
-                                                    <input class="form-control" type="text" id="email" placeholder="Email" disabled>
+                                                    <input class="form-control" type="email" id="email" name="email" placeholder="Email">
                                                 </div>
                                             </div>
-                                            <div class="col-12">
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label for="firstName" class="form-label">First Name</label>
                                                     <input class="form-control" type="text" id="firstName" name="firstName" placeholder="First Name">
                                                 </div>
                                             </div>
-                                            <div class="col-12">
+                                            <div class="col-md-6">
                                                 <div class="mb-3">
                                                     <label for="lastName" class="form-label">Last Name</label>
                                                     <input class="form-control" type="text" id="lastName" name="lastName" placeholder="Last Name">
@@ -173,7 +173,7 @@
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-end">
-                                            <button class="btn btn-secondary me-2" type="button" onclick="window.location='/dashboard'">Cancel</button>
+                                            <button class="btn btn-secondary me-2" type="button" onclick="window.location='/dashboard'" data-track-click="Button Click" data-track-prop-button-name="Cancel Edit Profile">Cancel</button>
                                             <button class="btn btn-primary" type="submit">Save changes</button>
                                         </div>
                                     </form>
@@ -197,7 +197,7 @@
                             <div class="card mt-4">
                                 <div class="card-body">
                                     <h4 class="card-title">Delete Your Profile</h4>
-                                    <form id="deleteProfileForm">
+                                    <form id="deleteProfileForm" data-track-form="Delete Profile">
                                         <button class="btn btn-danger w-100" type="submit">Delete Profile</button>
                                     </form>
                                 </div>

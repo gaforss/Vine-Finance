@@ -107,7 +107,7 @@ router.get('/projections', async (req, res) => {
             };
         }
 
-        const { currentAge, retirementAge, monthlySpend } = goals;
+        const { currentAge, retirementAge, monthlySpend, annualSavings } = goals;
 
         // Ensure correct retrieval of currentNetWorth
         let currentNetWorth = goals.currentNetWorth;
@@ -143,7 +143,7 @@ router.get('/projections', async (req, res) => {
             let futureValue = currentNetWorth;
             const projectionData = [];
             for (let i = 0; i < projectionYears; i++) {
-                futureValue = (futureValue * (1 + rate)) + (monthlySpend * 12);
+                futureValue = (futureValue * (1 + rate)) + (annualSavings || 0);
                 projectionData.push({
                     year: currentAge + i + 1,
                     value: futureValue
@@ -166,12 +166,23 @@ router.get('/projections', async (req, res) => {
         });
 
         const fivePercentProjection = projections.find(projection => projection.rate === 5);
-        const totalAtRetirement = fivePercentProjection.data[fivePercentProjection.data.length - 1].value;
+        const totalAtRetirement = fivePercentProjection.data.length > 0 ? fivePercentProjection.data[fivePercentProjection.data.length - 1].value : currentNetWorth;
 
         const requiredSavings = monthlySpend * 12 * Math.max(30, 85 - retirementAge);
-        const intersectionAge = fivePercentProjection.data.find(d => d.value >= requiredSavings)?.year || 'N/A';
+        const intersectionData = fivePercentProjection.data.find(d => d.value >= requiredSavings);
+        const intersectionAge = intersectionData ? intersectionData.year : 'N/A';
+        const goalMet = !!intersectionData;
+        const shortfall = goalMet ? 0 : requiredSavings - totalAtRetirement;
 
-        res.json({ projections, currentNetWorth, totalAtRetirement, intersectionAge });
+        res.json({
+            projections,
+            currentNetWorth,
+            totalAtRetirement,
+            intersectionAge,
+            goalMet,
+            shortfall,
+            requiredSavings
+        });
     } catch (error) {
         res.status(500).json({ message: 'Server error', error: error.message });
     }

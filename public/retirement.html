@@ -124,58 +124,88 @@
                                         <i class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="This chart shows how you are tracking against the top 10% of your peers in your same age bracket."></i> How Do I Compare?</h4>
                                     <div id="netWorthComparisonChart" class="apex-charts"></div>
                                 </div>
-                                <hr>
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col-sm-8">
-                                            <p class="font-size-16 text">Given your age and goals, you can retire by <b><span id="intersectionAge" class="text-success font-size-22">N/A</span></b>!</p>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <div class="mt-4 mt-sm-0">
-                                                <img src="images/retirement.png" class="img-fluid d-block mx-auto" alt="widget-img" style="max-height: 150px; max-width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h4 class="card-title mb-4">
+                                                <i class="fa fa-calculator" data-bs-toggle="tooltip" data-bs-placement="top" title="Try different scenarios to see how they affect your retirement date"></i> What-If Calculator</h4>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="mb-3">
+                                                        <label for="whatIfRetirementAge" class="form-label">Try Different Retirement Age</label>
+                                                        <input type="number" id="whatIfRetirementAge" class="form-control" min="40" max="85">
+                                                        <small class="text-muted">See how retiring earlier or later affects your required savings</small>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="whatIfMonthlySpend" class="form-label">Try Different Monthly Spend</label>
+                                                        <input type="number" id="whatIfMonthlySpend" class="form-control" min="1000" step="any">
+                                                        <small class="text-muted">See how different spending levels affect your retirement date</small>
+                                                    </div>
+                                                    <button id="whatIfCalculate" class="btn btn-primary" data-track-click="What-If Calculator">Calculate Scenario</button>
+                                                    <button id="whatIfReset" class="btn btn-secondary ms-2">Reset to Current Goals</button>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div id="whatIfResults" class="p-3 bg-light rounded">
+                                                        <h5>Scenario Results</h5>
+                                                        <div id="whatIfNewRetirementDate" class="mb-2"></div>
+                                                        <div id="whatIfRequiredSavings" class="mb-2"></div>
+                                                        <div id="whatIfDifference" class="mb-2"></div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title mb-4">
-                                        <i class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="This chart shows your projected monthly retirement budget by category based on your entered retirement goals."></i> Your Projected Monthly Budget Based On Retirement Goal</h4>
-                                    <div class="row">
-                                        <div class="col-md-2 text-center p-4">
-                                            <i class="fa fa-home text-primary custom-icon" style="font-size: 2em;"></i>
-                                            <h4 class="mt-3" id="mortgageValue">$0</h4>
-                                            <p class="mb-0">Mortgages</p>
-                                        </div>
-                                        <div class="col-md-2 text-center p-4">
-                                            <i class="fa fa-car text-primary custom-icon" style="font-size: 2em;"></i>
-                                            <h4 class="mt-3" id="carsValue">$0</h4>
-                                            <p class="mb-0">Cars</p>
-                                        </div>
-                                        <div class="col-md-2 text-center p-4">
-                                            <i class="fa fa-heartbeat text-primary custom-icon" style="font-size: 2em;"></i>
-                                            <h4 class="mt-3" id="healthCareValue">$0</h4>
-                                            <p class="mb-0">Health Care</p>
-                                        </div>
-                                        <div class="col-md-2 text-center p-4">
-                                            <i class="fa fa-cutlery text-primary custom-icon" style="font-size: 2em;"></i>
-                                            <h4 class="mt-3" id="foodAndDrinksValue">$0</h4>
-                                            <p class="mb-0">Food & Drinks</p>
-                                        </div>
-                                        <div class="col-md-2 text-center p-4">
-                                            <i class="fa fa-plane text-primary custom-icon" style="font-size: 2em;"></i>
-                                            <h4 class="mt-3" id="travelAndEntertainmentValue">$0</h4>
-                                            <p class="mb-0">Entertainment</p>
-                                        </div>
-                                        <div class="col-md-2 text-center p-4">
-                                            <i class="fa fa-line-chart text-primary custom-icon" style="font-size: 2em;"></i>
-                                            <h4 class="mt-3" id="reinvestedFundsValue">$0</h4>
-                                            <p class="mb-0">Reinvested Funds</p>
+                        <div class="col-md-9">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <div id="retirement-outcome" class="mt-4"></div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h4 class="card-title mb-4">
+                                                <i class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="This chart shows your projected monthly retirement budget by category based on your entered retirement goals."></i> Your Projected Monthly Budget Based On Retirement Goal</h4>
+                                            <div class="row">
+                                                <div class="col-md-2 text-center p-4">
+                                                    <i class="fa fa-home text-primary custom-icon" style="font-size: 2em;"></i>
+                                                    <h4 class="mt-3" id="mortgageValue">$0</h4>
+                                                    <p class="mb-0">Mortgages</p>
+                                                </div>
+                                                <div class="col-md-2 text-center p-4">
+                                                    <i class="fa fa-car text-primary custom-icon" style="font-size: 2em;"></i>
+                                                    <h4 class="mt-3" id="carsValue">$0</h4>
+                                                    <p class="mb-0">Cars</p>
+                                                </div>
+                                                <div class="col-md-2 text-center p-4">
+                                                    <i class="fa fa-heartbeat text-primary custom-icon" style="font-size: 2em;"></i>
+                                                    <h4 class="mt-3" id="healthCareValue">$0</h4>
+                                                    <p class="mb-0">Health Care</p>
+                                                </div>
+                                                <div class="col-md-2 text-center p-4">
+                                                    <i class="fa fa-cutlery text-primary custom-icon" style="font-size: 2em;"></i>
+                                                    <h4 class="mt-3" id="foodAndDrinksValue">$0</h4>
+                                                    <p class="mb-0">Food & Drinks</p>
+                                                </div>
+                                                <div class="col-md-2 text-center p-4">
+                                                    <i class="fa fa-plane text-primary custom-icon" style="font-size: 2em;"></i>
+                                                    <h4 class="mt-3" id="travelAndEntertainmentValue">$0</h4>
+                                                    <p class="mb-0">Entertainment</p>
+                                                </div>
+                                                <div class="col-md-2 text-center p-4">
+                                                    <i class="fa fa-line-chart text-primary custom-icon" style="font-size: 2em;"></i>
+                                                    <h4 class="mt-3" id="reinvestedFundsValue">$0</h4>
+                                                    <p class="mb-0">Reinvested Funds</p>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -183,41 +213,6 @@
                         </div>
                     </div>
 
-                    <!-- What-If Calculator Section -->
-                    <div class="row mt-4">
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title mb-4">
-                                        <i class="fa fa-calculator" data-bs-toggle="tooltip" data-bs-placement="top" title="Try different scenarios to see how they affect your retirement date"></i> What-If Calculator</h4>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="whatIfRetirementAge" class="form-label">Try Different Retirement Age</label>
-                                                <input type="number" id="whatIfRetirementAge" class="form-control" min="40" max="85">
-                                                <small class="text-muted">See how retiring earlier or later affects your required savings</small>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label for="whatIfMonthlySpend" class="form-label">Try Different Monthly Spend</label>
-                                                <input type="number" id="whatIfMonthlySpend" class="form-control" min="1000" step="any">
-                                                <small class="text-muted">See how different spending levels affect your retirement date</small>
-                                            </div>
-                                            <button id="whatIfCalculate" class="btn btn-primary" data-track-click="What-If Calculator">Calculate Scenario</button>
-                                            <button id="whatIfReset" class="btn btn-secondary ms-2">Reset to Current Goals</button>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div id="whatIfResults" class="p-3 bg-light rounded">
-                                                <h5>Scenario Results</h5>
-                                                <div id="whatIfNewRetirementDate" class="mb-2"></div>
-                                                <div id="whatIfRequiredSavings" class="mb-2"></div>
-                                                <div id="whatIfDifference" class="mb-2"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
                     <!-- Retirement Lifestyle Templates -->
                     <div class="row mt-4">
@@ -396,6 +391,11 @@
                   <label for="currentAge" class="form-label">Current Age</label>
                   <input type="number" id="currentAge" name="currentAge" class="form-control" required min="18" max="85">
                   <small class="text-muted">Must be between 18 and 85 years old</small>
+                </div>
+                <div class="col-md-6">
+                  <label for="annualSavings" class="form-label">Annual Savings Contribution</label>
+                  <input type="number" id="annualSavings" name="annualSavings" class="form-control" placeholder="e.g., 20000" required>
+                  <small class="text-muted">Your yearly contribution to savings</small>
                 </div>
                 <div class="col-md-6">
                   <label for="retirementAge" class="form-label">Planned Retirement Age</label>

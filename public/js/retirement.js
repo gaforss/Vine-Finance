@@ -389,8 +389,24 @@ async function fetchRetirementProjections() {
         const data = await response.json();
         console.log('Fetched Projections:', data);
 
-        // Update the DOM with intersection age
-        document.getElementById('intersectionAge').textContent = data.intersectionAge.toLocaleString('en-US');
+        // Update the DOM with intersection age or shortfall message
+        const outcomeElement = document.getElementById('retirement-outcome');
+        if (data.goalMet) {
+            outcomeElement.innerHTML = `<p class="font-size-16 text">Given your age and goals, you can retire by <b><span id="intersectionAge" class="text-success font-size-22">${data.intersectionAge}</span></b>!</p>`;
+        } else {
+            outcomeElement.innerHTML = `
+                <div class="alert alert-warning">
+                    <h5 class="alert-heading">You're Not Quite on Track</h5>
+                    <p>Based on your current plan, you're projected to have a shortfall of <strong class="text-danger">$${Math.round(data.shortfall).toLocaleString()}</strong> by your target retirement age.</p>
+                    <hr>
+                    <p class="mb-0">Here are some ways you can close the gap:</p>
+                    <ul>
+                        <li><strong>Increase your annual savings:</strong> Even small increases can make a big difference over time.</li>
+                        <li><strong>Adjust your retirement spending:</strong> Re-evaluating your budget can lower your required savings.</li>
+                        <li><strong>Consider a later retirement date:</strong> A few more years of growth and savings can have a major impact.</li>
+                    </ul>
+                </div>`;
+        }
 
         return data;
     } catch (error) {
@@ -401,7 +417,7 @@ async function fetchRetirementProjections() {
 
 async function renderRetirementChart() {
     try {
-        const { projections, currentNetWorth, intersectionAge } = await fetchRetirementProjections();
+        const { projections, currentNetWorth, intersectionAge, goalMet, shortfall, requiredSavings: apiRequiredSavings } = await fetchRetirementProjections();
         if (projections.length === 0) {
             return;
         }
@@ -421,7 +437,7 @@ async function renderRetirementChart() {
         const yearsUntilRetirement = retirementAge - currentAge;
         const retirementDuration = Math.max(30, 85 - retirementAge);
         const annualSpend = monthlySpend * 12;
-        const requiredSavings = annualSpend * retirementDuration;
+        const requiredSavings = apiRequiredSavings || (annualSpend * retirementDuration);
 
         console.log(`Rendering chart with the following data:`);
         console.log(`Current Age: ${currentAge}`);
@@ -1211,21 +1227,22 @@ async function exportToCSV() {
         const userId = await getUserId();
         const goals = await fetch(`/retirement/goals?userId=${userId}`).then(r => r.json());
         const { projections } = await fetchRetirementProjections();
-        
+
         // Create CSV content
-        const headers = ['Category', 'Percentage', 'Monthly Amount'];
+        const headers = ['Category', 'Value', 'Details'];
         const rows = [
             ['Current Age', goals.currentAge, ''],
             ['Retirement Age', goals.retirementAge, ''],
-            ['Monthly Spend', '100%', goals.monthlySpend],
-            ['Mortgages', `${goals.mortgage}%`, goals.monthlySpend * goals.mortgage / 100],
-            ['Cars', `${goals.cars}%`, goals.monthlySpend * goals.cars / 100],
-            ['Health Care', `${goals.healthCare}%`, goals.monthlySpend * goals.healthCare / 100],
-            ['Food & Drinks', `${goals.foodAndDrinks}%`, goals.monthlySpend * goals.foodAndDrinks / 100],
-            ['Travel & Entertainment', `${goals.travelAndEntertainment}%`, goals.monthlySpend * goals.travelAndEntertainment / 100],
-            ['Reinvested Funds', `${goals.reinvestedFunds}%`, goals.monthlySpend * goals.reinvestedFunds / 100]
+            ['Annual Savings', `$${(goals.annualSavings || 0).toLocaleString()}`, ''],
+            ['Monthly Spend', `$${goals.monthlySpend.toLocaleString()}`, '100%'],
+            ['Mortgages', `$${(goals.monthlySpend * goals.mortgage / 100).toLocaleString()}`, `${goals.mortgage}%`],
+            ['Cars', `$${(goals.monthlySpend * goals.cars / 100).toLocaleString()}`, `${goals.cars}%`],
+            ['Health Care', `$${(goals.monthlySpend * goals.healthCare / 100).toLocaleString()}`, `${goals.healthCare}%`],
+            ['Food & Drinks', `$${(goals.monthlySpend * goals.foodAndDrinks / 100).toLocaleString()}`, `${goals.foodAndDrinks}%`],
+            ['Travel & Entertainment', `$${(goals.monthlySpend * goals.travelAndEntertainment / 100).toLocaleString()}`, `${goals.travelAndEntertainment}%`],
+            ['Reinvested Funds', `$${(goals.monthlySpend * goals.reinvestedFunds / 100).toLocaleString()}`, `${goals.reinvestedFunds}%`]
         ];
-        
+
         // Add projections
         rows.push(['', '', '']);
         rows.push(['Projections', '', '']);

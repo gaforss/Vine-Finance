@@ -12,6 +12,7 @@ const retirementGoalsSchema = new mongoose.Schema({
   foodAndDrinks: { type: Number, required: true },
   travelAndEntertainment: { type: Number, required: true },
   reinvestedFunds: { type: Number, required: true },
+  annualSavings: { type: Number, required: false, default: 0 },
   isDraft: { type: Boolean, default: false },
   lastUpdated: { type: Date, default: Date.now }
 });

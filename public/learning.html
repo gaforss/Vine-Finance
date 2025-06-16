@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Learning Center</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link href="css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js"></script>
+    <script type="text/javascript">
+        mixpanel.init("883554c993442ff0049a280607fd6324");
+    </script>
+</head>
+<body data-sidebar="dark" data-topbar="dark" data-bs-theme="dark">
+    <div id="layout-wrapper">
+        <header id="page-topbar">
+            <div class="navbar-header d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="navbar-brand-box">
+                        <a href="/dashboard" class="logo logo-dark">
+                            <span class="logo-sm"><img src="/images/landing/logo-small.png" alt="logo-sm" height="40"></span>
+                            <span class="logo-lg"><img src="/images/landing/logo.png" alt="logo-dark" height="40"></span>
+                        </a>
+                        <a href="/dashboard" class="logo logo-light">
+                            <span class="logo-sm"><img src="/images/landing/logo-small.png" alt="logo-sm-light" height="40"></span>
+                            <span class="logo-lg"><img src="/images/landing/logo.png" alt="logo-light" height="40"></span>
+                        </a>
+                    </div>
+                    <button type="button" class="btn btn-sm px-3 font-size-16 vertinav-toggle header-item waves-effect" id="vertical-menu-btn"><i class="fa fa-fw fa-bars"></i></button>
+                    <button type="button" class="btn btn-sm px-3 font-size-16 horinav-toggle header-item waves-effect waves-light" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content"><i class="fa fa-fw fa-bars"></i></button>
+                </div>
+                <div class="d-flex">
+                    <div class="dropdown d-inline-block">
+                        <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span id="firstnamePlaceholder" class="d-none d-xl-inline-block ms-1">Hello, User</span>
+                            <i class="fa fa-caret-down"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header"><span id="userFirstName">User</span></h6>
+                            <a class="dropdown-item" href="/editProfile">Profile</a>
+                            <a class="dropdown-item" href="/logout">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="vertical-menu">
+            <div data-simplebar class="h-100">
+                <div id="sidebar-menu">
+                    <ul class="metismenu list-unstyled" id="side-menu">
+                        <li class="menu-title" key="t-menu">Overview</li>
+                        <li><a href="/dashboard"><i class="fa fa-dashboard"></i><span key="t-dashboard">Dashboard</span></a></li>
+                        <li class="menu-title" key="t-menu">Financial Tools</li>
+                        <li><a href="/accounts"><i class="fa fa-bank"></i><span key="t-dashboard">My Accounts</span></a></li>
+                        <li><a href="/budgeting"><i class="fa fa-money"></i><span key="t-dashboard">Budget Management</span></a></li>
+                        <li><a href="/retirement"><i class="fa fa-flag"></i><span key="t-dashboard">Retirement Planning</span></a></li>
+                        <li><a href="/realestate"><i class="fa fa-home"></i><span key="t-dashboard">Real Estate Portfolio</span></a></li>
+                        <li><a href="/learning"><i class="fa fa-graduation-cap"></i><span key="t-dashboard">Learning Center</span></a></li>
+                        <li class="menu-title" key="t-menu">Profile</li>
+                        <li><a href="/editProfile"><i class="fa fa-user"></i><span key="t-dashboard">My Profile</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="page-content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0 font-size-18">Financial Health Learning Center</h4>
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                                        <li class="breadcrumb-item active">Learning Center</li>
+                                    </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Your Financial Health Snapshot</h4>
+                                    <p class="card-title-desc">A real-time look at your key financial metrics. The first step to improving your finances is knowing where you stand.</p>
+                                    <div class="row text-center">
+                                        <div class="col-md-4">
+                                            <div class="card bg-soft-primary">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">Net Worth</h5>
+                                                    <p class="card-text fs-4" id="snapshot-net-worth">$0</p>
+                                                    <a href="/input.html" class="btn btn-primary">Update Manually</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card bg-soft-success">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">Total Assets</h5>
+                                                    <p class="card-text fs-4" id="snapshot-assets">$0</p>
+                                                     <a href="/accounts.html" class="btn btn-success">Link Accounts</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card bg-soft-danger">
+                                                <div class="card-body">
+                                                    <h5 class="card-title">Total Liabilities</h5>
+                                                    <p class="card-text fs-4" id="snapshot-liabilities">$0</p>
+                                                    <a href="/accounts.html" class="btn btn-danger">Review Debts</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-4">Interactive Learning Curriculum</h4>
+                                    <p class="card-title-desc">A hands-on approach to financial mastery. Use these tools to simulate financial scenarios and get actionable insights tailored to your journey.</p>
+
+                                    <!-- General Inputs -->
+                                    <div class="row mb-4">
+                                        <div class="col-lg-6">
+                                            <div class="input-group">
+                                                <span class="input-group-text">$</span>
+                                                <input type="text" id="annual-income" class="form-control" placeholder="Annual Pre-Tax Income (e.g., 75,000)">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <div class="input-group">
+                                                 <span class="input-group-text">Optional: $</span>
+                                                <input type="text" id="monthly-housing-cost" class="form-control" placeholder="Monthly Housing Cost (e.g., 1,800)">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Income Analysis Section -->
+                                    <div id="income-analysis-section" class="row mb-4" style="display: none;">
+                                        <div class="col-lg-12">
+                                            <div class="card bg-soft-info">
+                                                <div class="card-body">
+                                                    <h5 class="card-title text-info"><i class="fa fa-lightbulb-o"></i> Your Financial Vitals</h5>
+                                                    <div class="row mt-3 gy-4">
+                                                        
+                                                        <!-- Emergency Fund Insight -->
+                                                        <div class="col-md-6 col-lg-6">
+                                                            <h6><i class="fa fa-shield text-primary"></i> Emergency Fund</h6>
+                                                            <p class="mb-2">Your cash reserves for unexpected events.</p>
+                                                            <div class="d-flex justify-content-between">
+                                                                <span>Actual: <span id="insight-emergency-fund-actual">$0</span></span>
+                                                                <span>Goal: <span id="insight-emergency-fund-goal">$0</span></span>
+                                                            </div>
+                                                            <div class="progress mt-1" style="height: 10px;">
+                                                                <div id="insight-emergency-fund-progress" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                                            </div>
+                                                            <div id="insight-emergency-fund-status" class="mt-2"></div>
+                                                        </div>
+
+                                                        <!-- Housing Guideline Insight -->
+                                                        <div class="col-md-6 col-lg-6">
+                                                            <h6><i class="fa fa-home text-success"></i> Housing Affordability</h6>
+                                                            <p class="mb-2">Your housing cost vs. the 28% guideline.</p>
+                                                            <p class="mb-1"><strong>Guideline:</strong> <span id="insight-housing-guideline">$0/mo</span></p>
+                                                            <p class="mb-1"><strong>Actual:</strong> <span id="insight-housing-actual" class="text-muted">(Enter cost above)</span></p>
+                                                            <div id="insight-housing-status" class="mt-2"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Module 1: Foundations of Net Worth -->
+                                    <div class="card border">
+                                        <div class="card-header bg-transparent border-bottom">
+                                            <h5 class="card-title mb-0">Module 1: Foundations of Your Net Worth</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <p>Your net worth is the cornerstone of your financial health. Use this simulator to understand how different components impact your overall value.</p>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h6>Net Worth Simulator</h6>
+                                                    <div class="mb-2">
+                                                        <label>Current Assets: $<span id="sim-assets-val">0</span></label>
+                                                        <input type="range" class="form-range" id="sim-assets" min="0" max="5000000" step="10000">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label>Current Liabilities: $<span id="sim-liabilities-val">0</span></label>
+                                                        <input type="range" class="form-range" id="sim-liabilities" min="0" max="2000000" step="5000">
+                                                    </div>
+                                                    <button class="btn btn-secondary btn-sm" id="load-my-data">Use My Financial Data</button>
+                                                </div>
+                                                <div class="col-md-6 text-center">
+                                                    <h6>Simulated Net Worth</h6>
+                                                    <h3 class="display-5" id="sim-networth-result">$0</h3>
+                                                    <div id="net-worth-benchmark-chart" class="mt-2"></div>
+                                                    <p id="sim-networth-benchmark" class="fw-bold"></p>
+                                                    <p id="sim-networth-insight" class="text-muted"></p>
+                                                    <a href="/input.html" class="btn btn-primary">Log Your Official Net Worth <i class="fa fa-arrow-right"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Module 2: Mastering Your Cash Flow -->
+                                    <div class="card border mt-4">
+                                        <div class="card-header bg-transparent border-bottom">
+                                            <h5 class="card-title mb-0">Module 2: Mastering Your Cash Flow</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <p>Small changes in your daily spending can have a massive impact on your long-term wealth. See for yourself.</p>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h6>Savings Simulator</h6>
+                                                    <div class="input-group mb-3">
+                                                        <span class="input-group-text">If I save an extra</span>
+                                                        <input type="number" id="savings-amount" class="form-control" value="50">
+                                                        <span class="input-group-text">per week</span>
+                                                    </div>
+                                                    <div class="input-group mb-3">
+                                                        <span class="input-group-text">and invest it at</span>
+                                                        <input type="number" id="savings-rate" class="form-control" value="7">
+                                                        <span class="input-group-text">% annually...</span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 text-center">
+                                                    <h6>Potential Growth in 10 Years</h6>
+                                                    <h3 class="display-5" id="savings-result">$0</h3>
+                                                    <p id="savings-insight" class="text-muted"></p>
+                                                    <a href="/budgeting.html" class="btn btn-primary">Analyze Your Spending <i class="fa fa-arrow-right"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Module 3: Investing for the Future -->
+                                    <div class="card border mt-4">
+                                        <div class="card-header bg-transparent border-bottom">
+                                            <h5 class="card-title mb-0">Module 3: Investing for the Future</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <p>Are you on track to meet your retirement goals? This calculator can help you find out.</p>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h6>Retirement Goal Calculator</h6>
+                                                    <div class="row">
+                                                        <div class="col-6 mb-2"><input type="number" id="ret-current-age" class="form-control" placeholder="Current Age"></div>
+                                                        <div class="col-6 mb-2"><input type="number" id="ret-retire-age" class="form-control" placeholder="Retirement Age"></div>
+                                                        <div class="col-6 mb-2"><input type="number" id="ret-current-savings" class="form-control" placeholder="Current Savings ($)"></div>
+                                                        <div class="col-6 mb-2"><input type="number" id="ret-annual-contrib" class="form-control" placeholder="Annual Contribution ($)"></div>
+                                                        <div class="col-12 mb-2"><input type="number" id="ret-growth-rate" class="form-control" placeholder="Annual Growth Rate (%)"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 text-center">
+                                                    <h6>Projected Retirement Savings</h6>
+                                                    <h3 class="display-5" id="ret-result">$0</h3>
+                                                    <div id="retirement-benchmark-chart" class="mt-2"></div>
+                                                    <p id="ret-benchmark" class="fw-bold"></p>
+                                                    <p id="ret-insight" class="text-muted"></p>
+                                                    <a href="/retirement.html" class="btn btn-primary">Set Your Retirement Goals <i class="fa fa-arrow-right"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                     <!-- Module 4: Advanced Strategies -->
+                                    <div class="card border mt-4">
+                                        <div class="card-header bg-transparent border-bottom">
+                                            <h5 class="card-title mb-0">Module 4: Advanced Strategies - Real Estate</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <p>Calculate the potential return on a rental property investment.</p>
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <h6>Simple ROI Calculator</h6>
+                                                    <div class="row">
+                                                         <div class="col-6 mb-2"><input type="number" id="re-purchase-price" class="form-control" placeholder="Purchase Price ($)"></div>
+                                                         <div class="col-6 mb-2"><input type="number" id="re-down-payment" class="form-control" placeholder="Down Payment ($)"></div>
+                                                         <div class="col-6 mb-2"><input type="number" id="re-monthly-rent" class="form-control" placeholder="Monthly Rent ($)"></div>
+                                                         <div class="col-6 mb-2"><input type="number" id="re-monthly-expenses" class="form-control" placeholder="Monthly Expenses ($)"></div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 text-center">
+                                                    <h6>Estimated Cash-on-Cash ROI</h6>
+                                                    <h3 class="display-5" id="re-result">0%</h3>
+                                                    <p id="re-insight" class="text-muted"></p>
+                                                    <a href="/realestate.html" class="btn btn-primary">Track Your Properties <i class="fa fa-arrow-right"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Module 5: Advanced Tax Strategies -->
+                                    <div class="card border mt-4">
+                                        <div class="card-header bg-transparent border-bottom">
+                                            <h5 class="card-title mb-0">Module 5: Interactive Tax Planning</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="card-title-desc">Optimize your tax strategy to keep more of your hard-earned money. Fill out your profile below to get personalized insights and see your potential savings.</p>
+
+                                            <!-- Tax Profile Inputs -->
+                                            <div class="row bg-light p-3 rounded mb-4 gy-3">
+                                                <h6 class="mb-0">Your Tax Profile</h6>
+                                                <div class="col-md-6 col-lg-3">
+                                                    <label for="tax-filing-status" class="form-label">Filing Status</label>
+                                                    <select id="tax-filing-status" class="form-select">
+                                                        <option value="single" selected>Single</option>
+                                                        <option value="mfj">Married Filing Jointly</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6 col-lg-3">
+                                                    <label for="tax-401k-contrib" class="form-label">Annual 401(k)/403(b) Contribution</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="text" id="tax-401k-contrib" class="form-control" placeholder="e.g., 5,000">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 col-lg-3">
+                                                    <label for="tax-hsa-eligible" class="form-label">HSA Eligible?</label>
+                                                    <select id="tax-hsa-eligible" class="form-select">
+                                                        <option value="no" selected>No</option>
+                                                        <option value="yes">Yes</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6 col-lg-3">
+                                                    <label for="tax-ira-contrib" class="form-label">Annual IRA/Roth Contribution</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="text" id="tax-ira-contrib" class="form-control" placeholder="e.g., 7,000">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 col-lg-3">
+                                                    <label for="tax-capital-gains" class="form-label">Capital Gains/Losses?</label>
+                                                    <select id="tax-capital-gains" class="form-select">
+                                                        <option value="none" selected>None</option>
+                                                        <option value="gain">Net Gain</option>
+                                                        <option value="loss">Net Loss</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-6 col-lg-3">
+                                                    <label for="tax-charitable-donations" class="form-label">Annual Charitable Donations</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="text" id="tax-charitable-donations" class="form-control" placeholder="e.g., 1,000">
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Tax Score & Recommendations -->
+                                            <div class="row">
+                                                <div class="col-lg-4 text-center border-end">
+                                                    <h6>Tax Efficiency Score</h6>
+                                                    <div id="tax-score-chart"></div>
+                                                    <p id="tax-score-text" class="fw-bold fs-5"></p>
+                                                </div>
+                                                <div class="col-lg-8">
+                                                    <h6>Personalized Recommendations</h6>
+                                                    <div id="tax-recommendations-list">
+                                                        <p class="text-muted">Fill out your profile to see your top strategies.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/custom.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/metisMenu.min.js"></script>
+    <script src="js/simplebar.min.js"></script>
+    <script src="js/waves.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/apexcharts.min.js"></script>
+    <script src="js/learning.js"></script>
+    <script src="js/mixpanel-tracking.js"></script>
+</body>
+</html> 

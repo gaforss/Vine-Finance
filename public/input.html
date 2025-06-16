@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Net Worth - Input Information</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="" name="description" />
+    <meta content="" name="author" />
+
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link href="css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/font-awesome.css" rel="stylesheet">
+    <link href="css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Mixpanel Library -->
+    <script src="https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js"></script>
+    <script type="text/javascript">
+        mixpanel.init("883554c993442ff0049a280607fd6324");
+    </script>
+</head>
+<body data-sidebar="dark" data-topbar="dark" data-bs-theme="dark">
+    <div id="layout-wrapper">
+        <header id="page-topbar">
+            <div class="navbar-header">
+                <div class="d-flex">
+                    <div class="navbar-brand-box">
+                        <a href="/dashboard" class="logo logo-dark">
+                            <span class="logo-sm">
+                                <img src="/images/landing/logo-small.png" alt="logo-sm" height="40">
+                            </span>
+                            <span class="logo-lg">
+                                <img src="/images/landing/logo.png" alt="logo-dark" height="40">
+                            </span>
+                        </a>
+
+                        <a href="/dashboard" class="logo logo-light">
+                            <span class="logo-sm">
+                                <img src="/images/landing/logo-small.png" alt="logo-sm-light" height="40">
+                            </span>
+                            <span class="logo-lg">
+                                <img src="/images/landing/logo.png" alt="logo-light" height="40">
+                            </span>
+                        </a>
+                    </div>
+                    <button type="button" class="btn btn-sm px-3 font-size-16 vertinav-toggle header-item waves-effect" id="vertical-menu-btn">
+                        <i class="fa fa-fw fa-bars"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm px-3 font-size-16 horinav-toggle header-item waves-effect waves-light" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
+                        <i class="fa fa-fw fa-bars"></i>
+                    </button>
+                </div>
+                <div class="d-flex">
+                    <div class="dropdown d-inline-block">
+                        <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span id="firstnamePlaceholder" class="d-none d-xl-inline-block ms-1">Hello, User</span>
+                            <i class="fa fa-caret-down"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header"><span id="userFirstName">User</span></h6>
+                            <a class="dropdown-item" href="/editProfile">Profile</a>
+                            <a class="dropdown-item" href="/logout">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="vertical-menu">
+            <div data-simplebar class="h-100">
+                <div id="sidebar-menu">
+                    <ul class="metismenu list-unstyled" id="side-menu">
+                        <li class="menu-title" key="t-menu">Overview</li>
+                        <li>
+                            <a href="/dashboard">
+                                <i class="fa fa-dashboard"></i><span key="t-dashboard">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="menu-title" key="t-menu">Financial Tools</li>
+                        <li>
+                            <a href="/accounts">
+                                <i class="fa fa-bank"></i><span key="t-dashboard">My Accounts</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/budgeting">
+                                <i class="fa fa-money"></i><span key="t-dashboard">Budget Management</span>
+                            </a>
+                        </li>
+                        <li>
+                        <li>
+                            <a href="/retirement">
+                                <i class="fa fa-flag"></i><span key="t-dashboard">Retirement Planning</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/realestate">
+                                <i class="fa fa-home"></i><span key="t-dashboard">Real Estate</span></a>
+                        </li>
+                        <li>
+                            <a href="/learning">
+                                <i class="fa fa-graduation-cap"></i><span key="t-dashboard">Learning Center</span>
+                            </a>
+                        </li>
+                        <li class="menu-title" key="t-menu">Profile</li>
+                        <li>
+                            <a href="/editProfile">
+                                <i class="fa fa-user"></i><span key="t-dashboard">My Profile</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="page-content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <!-- First Accordion -->
+                                    <div class="accordion" id="accordionOne">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="headingOne-1">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne-1" aria-expanded="false" aria-controls="collapseOne-1">
+                                                    <i class="fa fa-calendar"></i> | Complete Monthly Entry
+                                                </button>
+                                            </h2>
+                                            <div id="collapseOne-1" class="accordion-collapse collapse" aria-labelledby="headingOne-1" data-bs-parent="#accordionOne">
+                                                <div class="accordion-body">
+                                                    <button type="button" id="fillFromLastBtn" class="btn btn-info btn-sm mb-3">Fill from Last Month's Entry</button>
+                                                    <form id="entryForm">
+                                                        <input type="hidden" id="entryId" value="">
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3">
+                                                                    <label for="date" class="form-label">
+                                                                        <i class="fa fa-calendar"></i> Date
+                                                                    </label>
+                                                                    <input type="month" id="date" name="date" class="form-control" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="cash" class="form-label">
+                                                                        <i class="fa fa-money"></i> Cash
+                                                                    </label>
+                                                                    <input type="text" id="cash" name="cash" step="0.01" class="form-control" required value="0">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="investments" class="form-label">
+                                                                        <i class="fa fa-calendar"></i> Brokerage Accounts
+                                                                    </label>
+                                                                    <input type="text" id="investments" name="investments" step="0.01" class="form-control" required value="0">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="realEstate" class="form-label">
+                                                                        <i class="fa fa-home"></i> Real Estate
+                                                                    </label>
+                                                                    <input type="text" id="realEstate" name="realEstate" step="0.01" class="form-control" required value="0">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="retirementAccounts" class="form-label">
+                                                                        <i class="fa fa-line-chart"></i> Retirement Accounts
+                                                                    </label>
+                                                                    <input type="text" id="retirementAccounts" name="retirementAccounts" step="0.01" class="form-control" required value="0">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3">
+                                                                    <label for="vehicles" class="form-label">
+                                                                        <i class="fa fa-car"></i> Vehicles
+                                                                    </label>
+                                                                    <input type="text" id="vehicles" name="vehicles" step="0.01" class="form-control" required value="0">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="personalProperty" class="form-label">
+                                                                        <i class="fa fa-user"></i> Personal Property
+                                                                    </label>
+                                                                    <input type="text" id="personalProperty" name="personalProperty" step="0.01" class="form-control" required value="0">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="otherAssets" class="form-label">
+                                                                        <i class="fa fa-calendar"></i> Other
+                                                                    </label>
+                                                                    <input type="text" id="otherAssets" name="otherAssets" step="0.01" class="form-control" required value="0">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="liabilities" class="form-label">
+                                                                        <i class="fa fa-exclamation"></i> Liabilities
+                                                                    </label>
+                                                                    <input type="text" id="liabilities" name="liabilities" step="0.01" class="form-control" required value="0">
+                                                                </div>
+                                                                <div id="customFieldsContainer"></div>
+                                                                <button type="submit" class="btn btn-primary">Save Entry</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr>
+
+                                    <!-- Second Accordion -->
+                                    <div class="accordion" id="accordionTwo">
+                                        <div class="accordion-item">
+                                            <h2 class="accordion-header" id="headingOne-2">
+                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne-2" aria-expanded="false" aria-controls="collapseOne-2">
+                                                    <i class="fa fa-upload"></i> | Import Data File
+                                                </button>
+                                            </h2>
+                                            <div id="collapseOne-2" class="accordion-collapse collapse" aria-labelledby="headingOne-2" data-bs-parent="#accordionTwo">
+                                                <div class="accordion-body">
+                                                    <form id="uploadForm" enctype="multipart/form-data">
+                                                        <div class="mb-3">
+                                                            <label for="fileInput" class="form-label">Select Excel File:</label>
+                                                            <input type="file" id="fileInput" name="file" class="form-control" accept=".xlsx, .xls" required>
+                                                        </div>
+                                                        <button type="submit" class="btn btn-success">Upload</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <button type="submit" id="deleteDummyDataBtn" class="btn btn-danger btn-sm float-end"><i class="fa fa-exclamation-triangle"></i> Delete Demo Data</button>
+                                    <h4 class="card-title mb-4">Latest Transactions 
+                                        <button type="button" onclick="exportTableData()" class="btn btn-primary btn-sm float-end">
+                                            <i class="fa fa-download me-1"></i>Export All Data
+                                        </button>
+                                    </h4>
+                                    <table id="transactionsTable" class="table table-striped table-bordered display nowrap" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Timestamp</th>
+                                                <th>Date</th>
+                                                <th>Cash</th>
+                                                <th>Investments</th>
+                                                <th>Real Estate</th>
+                                                <th>Retirement Accounts</th>
+                                                <th>Vehicles</th>
+                                                <th>Personal Property</th>
+                                                <th>Other Assets</th>
+                                                <th>Liabilities</th>
+                                                <th>Net Worth</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Your data here -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="editModalLabel">Edit Entry</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="editEntryForm">
+              <div class="mb-3">
+                <label for="modalDate" class="form-label">Date</label>
+                <input type="month" id="modalDate" name="date" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="modalCash" class="form-label">Cash</label>
+                <input type="text" id="modalCash" name="cash" step="0.01" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="modalInvestments" class="form-label">Investments</label>
+                <input type="text" id="modalInvestments" name="investments" step="0.01" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="modalRealEstate" class="form-label">Real Estate</label>
+                <input type="text" id="modalRealEstate" name="realEstate" step="0.01" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="modalRetirementAccounts" class="form-label">Retirement Accounts</label>
+                <input type="text" id="modalRetirementAccounts" name="retirementAccounts" step="0.01" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="modalVehicles" class="form-label">Vehicles</label>
+                <input type="text" id="modalVehicles" name="vehicles" step="0.01" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="modalPersonalProperty" class="form-label">Personal Property</label>
+                <input type="text" id="modalPersonalProperty" name="personalProperty" step="0.01" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="modalOtherAssets" class="form-label">Other Assets</label>
+                <input type="text" id="modalOtherAssets" name="otherAssets" step="0.01" class="form-control" required>
+              </div>
+              <div class="mb-3">
+                <label for="modalLiabilities" class="form-label">Liabilities</label>
+                <input type="text" id="modalLiabilities" name="liabilities" step="0.01" class="form-control" required>
+              </div>
+              <div id="modalCustomFieldsContainer"></div>
+              <button type="button" id="modalAddCustomFieldBtn" class="btn btn-secondary">Add Custom Field</button>
+              <input type="hidden" id="modalEntryId">
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/plaid.js"></script>
+    <script src="js/custom.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/form.js"></script>
+    <script src="js/metisMenu.min.js"></script>
+    <script src="js/simplebar.min.js"></script>
+    <script src="js/waves.min.js"></script>
+    <script src="js/app.js"></script>
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', async function() {
+            await prepopulateData();
+            console.log('Data prepopulated successfully');
+        });
+
+        function setFormattedValue(elementId, value) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                const numericValue = parseFloat(value) || 0;
+                const formattedValue = numericValue.toLocaleString('en-US', { 
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2 
+                });
+                element.value = formattedValue;
+                console.log(`Updated ${elementId} to ${formattedValue}`);
+            } else {
+                console.error(`Element with ID ${elementId} not found`);
+            }
+        }
+
+        async function prepopulateData() {
+            try {
+                // Fetch and populate account balances
+                await fetchAndPopulateBalances();
+
+                // Fetch and populate real estate data
+                await fetchRealEstateData();
+
+            } catch (error) {
+                console.error('Error during prepopulation:', error);
+            }
+        }
+
+        async function fetchRealEstateData() {
+            const token = localStorage.getItem('token');
+            try {
+                const response = await fetch('/realestate/list', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (response.ok) {
+                    const properties = await response.json();
+                    let totalRealEstateValue = 0;
+                    properties.forEach(property => {
+                        totalRealEstateValue += property.value - property.mortgage;
+                    });
+                    setFormattedValue('realEstate', totalRealEstateValue);
+                } else {
+                    console.error('Failed to fetch real estate data:', await response.json());
+                }
+            } catch (error) {
+                console.error('Error fetching real estate data:', error);
+            }
+        }
+
+        async function fetchAndPopulateBalances() {
+            const token = localStorage.getItem('token');
+            try {
+                // Fetch categorized accounts from Plaid
+                const plaidResponse = await fetch('/plaid/all_accounts', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!plaidResponse.ok) {
+                    throw new Error('Failed to fetch Plaid accounts');
+                }
+
+                const categorizedAccounts = await plaidResponse.json();
+                console.log('Categorized Accounts:', categorizedAccounts);  // Log to see the fetched Plaid accounts
+
+                // Fetch manually added accounts
+                const manualResponse = await fetch('/plaid/manual_accounts', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!manualResponse.ok) {
+                    const errorText = await manualResponse.text();  // Get error details
+                    console.error('Manual accounts fetch error:', errorText);
+                    throw new Error('Failed to fetch manual accounts');
+                }
+
+                const manualAccounts = await manualResponse.json();
+                console.log('Manual Accounts:', manualAccounts);  // Log to see the fetched manual accounts
+
+                // Combine Plaid and manual accounts
+                const combinedAccounts = combineAccounts(categorizedAccounts, manualAccounts);
+
+                // Populate fields with combined balances, using direct number formatting
+                const formatNumber = (value) => {
+                    return (value || 0).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                };
+
+                document.getElementById('cash').value = formatNumber(calculateTotal(combinedAccounts.bankAccounts));
+                document.getElementById('investments').value = formatNumber(calculateTotal(combinedAccounts.investments));
+                document.getElementById('retirementAccounts').value = formatNumber(calculateTotal(combinedAccounts.retirement));
+                document.getElementById('liabilities').value = formatNumber(calculateTotal(combinedAccounts.loans));
+                document.getElementById('vehicles').value = formatNumber(calculateTotal(combinedAccounts.vehicles));
+                document.getElementById('personalProperty').value = formatNumber(calculateTotal(combinedAccounts.personalProperty));
+                document.getElementById('otherAssets').value = formatNumber(calculateTotal(combinedAccounts.miscellaneous));
+
+                console.log('Balances fetched and populated');
+            } catch (error) {
+                console.error('Error populating balances:', error);
+            }
+        }
+
+        function combineAccounts(plaidAccounts, manualAccounts) {
+            const combined = {
+                bankAccounts: [...plaidAccounts.bankAccounts, ...manualAccounts.filter(acc => acc.category === 'bank')],
+                creditCards: [...plaidAccounts.creditCards, ...manualAccounts.filter(acc => acc.category === 'credit card')],
+                loans: [...plaidAccounts.loans, ...manualAccounts.filter(acc => acc.category === 'loan')],
+                investments: [...plaidAccounts.investments, ...manualAccounts.filter(acc => acc.category === 'investment')],
+                retirement: [...plaidAccounts.retirement, ...manualAccounts.filter(acc => acc.category === 'retirement')],
+                vehicles: [...(plaidAccounts.vehicles || []), ...manualAccounts.filter(acc => acc.category === 'vehicle')],
+                personalProperty: [...(plaidAccounts.personalProperty || []), ...manualAccounts.filter(acc => acc.category === 'personal property')],
+                miscellaneous: [...plaidAccounts.miscellaneous, ...manualAccounts.filter(acc => acc.category === 'misc')]
+            };
+
+            return combined;
+        }
+
+        function calculateTotal(accounts) {
+            return accounts.reduce((sum, acc) => sum + (acc.balances?.current || acc.amount || 0), 0);
+        }
+
+        // --- Real-time Currency Formatting ---
+        function setupInputFormatting(container) {
+            container.querySelectorAll('input[type="text"][step="0.01"], input[type="number"][step="0.01"]').forEach(input => {
+                input.addEventListener('input', function(e) {
+                    let cursorPosition = this.selectionStart;
+                    let originalLength = this.value.length;
+                    let rawValue = this.value.replace(/[^0-9.]/g, '');
+                    
+                    let parts = rawValue.split('.');
+                    let integerPart = parts[0];
+                    let fractionPart = parts.length > 1 ? '.' + parts[1].substring(0, 2) : '';
+
+                    let formattedInteger = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    
+                    this.value = formattedInteger + fractionPart;
+
+                    let newLength = this.value.length;
+                    let newCursorPosition = cursorPosition + (newLength - originalLength);
+                    this.setSelectionRange(newCursorPosition, newCursorPosition);
+                });
+            });
+        }
+        
+        // Setup for existing fields
+        setupInputFormatting(document.getElementById('entryForm'));
+        setupInputFormatting(document.getElementById('editEntryForm'));
+        
+        // Add a mutation observer for custom fields
+        const observer = new MutationObserver((mutationsList) => {
+            for(let mutation of mutationsList) {
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach(node => {
+                        if (node.nodeType === 1) { 
+                            setupInputFormatting(node);
+                        }
+                    });
+                }
+            }
+        });
+        
+        const customFieldsContainer = document.getElementById('customFieldsContainer');
+        if(customFieldsContainer) {
+            observer.observe(customFieldsContainer, { childList: true });
+        }
+        
+        const modalCustomFieldsContainer = document.getElementById('modalCustomFieldsContainer');
+        if(modalCustomFieldsContainer) {
+            observer.observe(modalCustomFieldsContainer, { childList: true });
+        }
+
+    </script>
+    <script src="js/currency-formatter.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/responsive.bootstrap.min.js"></script>
+    <script src="/js/input.js"></script>
+    <script src="js/mixpanel-tracking.js"></script>
+
+    <script>
+        document.getElementById('fillFromLastBtn').addEventListener('click', async () => {
+            try {
+                const response = await fetch('/entries', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                });
+                if (!response.ok) throw new Error('Failed to fetch entries');
+
+                const entries = await response.json();
+                if (entries.length === 0) {
+                    alert('No previous entries found.');
+                    return;
+                }
+
+                entries.sort((a, b) => new Date(b.date) - new Date(a.date));
+                const lastEntry = entries[0];
+
+                const formatNumber = (value) => {
+                    return (value || 0).toLocaleString('en-US', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                };
+
+                document.getElementById('cash').value = formatNumber(lastEntry.cash);
+                document.getElementById('investments').value = formatNumber(lastEntry.investments);
+                document.getElementById('realEstate').value = formatNumber(lastEntry.realEstate);
+                document.getElementById('retirementAccounts').value = formatNumber(lastEntry.retirementAccounts);
+                document.getElementById('vehicles').value = formatNumber(lastEntry.vehicles);
+                document.getElementById('personalProperty').value = formatNumber(lastEntry.personalProperty);
+                document.getElementById('otherAssets').value = formatNumber(lastEntry.otherAssets);
+                document.getElementById('liabilities').value = formatNumber(lastEntry.liabilities);
+
+                const lastDate = new Date(lastEntry.date);
+                lastDate.setUTCMonth(lastDate.getUTCMonth() + 1);
+                document.getElementById('date').value = lastDate.toISOString().slice(0, 7);
+            } catch (error) {
+                console.error('Error filling from last entry:', error);
+                alert('Could not fill data from the last entry.');
+            }
+        });
+    </script>
+
+    <script>
+        function exportTableData() {
+            console.log('Export function called');
+            try {
+                const table = $('#transactionsTable').DataTable();
+                console.log('Got table instance:', table);
+                
+                // Get all data
+                const data = table.rows().data().toArray();
+                console.log('Table data:', data);
+                
+                // Get headers (excluding Actions column)
+                const headers = table.columns().header().toArray()
+                    .slice(0, -1)
+                    .map(th => th.textContent.trim());
+                console.log('Headers:', headers);
+                
+                // Convert to CSV
+                const csvRows = data.map(row => {
+                    const values = Object.values(row).slice(0, -1);
+                    return values.map(value => {
+                        const cleanValue = String(value)
+                            .replace(/[$,]/g, '')
+                            .replace(/"/g, '""');
+                        return `"${cleanValue}"`;
+                    }).join(',');
+                });
+                
+                const csvContent = [
+                    headers.join(','),
+                    ...csvRows
+                ].join('\n');
+                
+                console.log('CSV content:', csvContent);
+                
+                // Download
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'net-worth-data.csv';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                console.log('Export completed');
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('Error exporting data: ' + error.message);
+            }
+        }
+    </script>
+
+    <style>
+        /* Modern Card Styling */
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 25px rgba(0,0,0,0.1);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Modern Table Styling */
+        #transactionsTable {
+            border-collapse: separate;
+            border-spacing: 0 8px;
+            margin-top: -8px;
+        }
+
+        #transactionsTable thead th {
+            padding: 1rem;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #transactionsTable tbody tr {
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+
+        #transactionsTable tbody tr:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        }
+
+        #transactionsTable tbody td {
+            padding: 1rem;
+            border: none;
+            vertical-align: middle;
+        }
+
+        /* Search and Length Controls */
+        .dataTables_wrapper .dataTables_filter input {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            width: 300px;
+            transition: all 0.2s ease;
+        }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.1);
+        }
+
+        .dataTables_wrapper .dataTables_length select {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 0.6rem 2rem 0.6rem 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .dataTables_wrapper .dataTables_length select:focus {
+            border-color: #0d6efd;
+            box-shadow: 0 0 0 0.2rem rgba(13,110,253,0.1);
+        }
+
+        /* Action Buttons Styling */
+        .btn-group .btn {
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-group .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-group .btn-outline-primary {
+            border-color: #e9ecef;
+            color: #6c757d;
+        }
+
+        .btn-group .btn-outline-primary:hover {
+            background: #f8f9fa;
+            border-color: #dee2e6;
+            color: #0d6efd;
+        }
+
+        .btn-group .btn-outline-danger {
+            border-color: #e9ecef;
+            color: #6c757d;
+        }
+
+        .btn-group .btn-outline-danger:hover {
+            background: #fff5f5;
+            border-color: #ffcdd2;
+            color: #dc3545;
+        }
+
+        /* Export Button Styling */
+        .btn-primary {
+            border-radius: 10px;
+            padding: 0.6rem 1.2rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(13,110,253,0.2);
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 767.98px) {
+            .card-body {
+                padding: 1rem;
+            }
+
+            #transactionsTable {
+                border-spacing: 0 4px;
+            }
+
+            #transactionsTable thead th,
+            #transactionsTable tbody td {
+                padding: 0.75rem;
+            }
+
+            .dataTables_wrapper .dataTables_filter input {
+                width: 100%;
+                margin: 0.5rem 0;
+            }
+
+            .btn-group .btn {
+                padding: 0.4rem 0.6rem;
+            }
+        }
+
+        /* Hide pagination and search elements */
+        .dataTables_paginate,
+        .dataTables_length,
+        .dataTables_info,
+        .dataTables_filter {
+            display: none !important;
+        }
+    </style>
+
+</body>
+</html>

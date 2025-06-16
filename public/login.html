@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
+    <title>Sign In</title>
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <script src="https://accounts.google.com/gsi/client" async ></script>
+    <script src="js/auth.js"></script>
+    <link rel="icon" type="image/png" href="app-icons/icon-32x32.png" sizes="32x32">
+    <link rel="apple-touch-icon" href="app-icons/icon-180x180.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" id="google-font">
+    <link rel="stylesheet" media="screen" href="css/landing/theme.min.css">
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <main class="page-wrapper">
+      <div class="d-lg-flex position-relative h-100">
+        <a class="text-nav btn btn-icon bg-light border rounded-circle position-absolute top-0 end-0 z-2 p-0 mt-3 me-3 mt-sm-4 me-sm-4" href="index.html" data-bs-toggle="tooltip" data-bs-placement="left" title="Back to home" aria-label="Back to home">
+          <i class="fa fa-caret-left"></i>
+        </a>
+        <div class="d-flex flex-column align-items-center w-lg-50 h-100 px-3 px-lg-5 pt-5">
+          <div class="w-100 mt-auto" style="max-width: 526px;">
+            <h1>
+              <a href="index.html">
+                    <img src="images/landing/logo.png" alt="Vine Finance" width="350" height="120">
+                </a>
+            </h1>
+            <p class="pb-3 mb-3 mb-lg-4">Don't have an account yet?&nbsp;&nbsp;<a href="register.html">Sign Up Here!</a></p>
+            <form id="loginForm" class="needs-validation" novalidate>
+              <div class="pb-3 mb-3">
+                <div class="position-relative">
+                  <i class="ai-mail fs-lg position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                  <input type="text" class="form-control form-control-lg ps-5" id="email" placeholder="Email address" required>
+                </div>
+              </div>
+              <div class="mb-4">
+                <div class="position-relative">
+                  <i class="ai-lock-closed fs-lg position-absolute top-50 start-0 translate-middle-y ms-3"></i>
+                  <div class="password-toggle">
+                    <input class="form-control form-control-lg ps-5" type="password" id="password" placeholder="Password" required>
+                    <label class="password-toggle-btn" aria-label="Show/hide password">
+                      <input class="password-toggle-check" type="checkbox">
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <button class="btn btn-lg btn-primary w-100 mb-4" type="submit">Sign in</button>
+              <div class="d-flex flex-wrap align-items-center justify-content-between pb-4">
+                <a class="fs-sm fw-semibold text-decoration-none my-1" href="forgot-password.html">Forgot password?</a>
+              </div>
+            </form>
+          </div>
+          
+          <div id="g_id_onload"
+                data-client_id="362856405033-gis328pm4eus4ng508q8kg5okgjd00kg.apps.googleusercontent.com"
+                data-context="signin"
+                data-ux_mode="popup"
+                data-callback="handleCredentialResponse"
+                data-auto_prompt="false">
+           </div>
+           
+           <div class="g_id_signin"
+                data-type="standard"
+                data-shape="rectangular"
+                data-theme="outline"
+                data-text="signin_with"
+                data-size="large"
+                data-logo_alignment="left">
+           </div>
+          <p class="nav w-100 fs-sm pt-5 mt-auto mb-5" style="max-width: 526px;"><span class="text-body-secondary">&copy; May the Forss Be With You ;)</span></p>
+        </div>
+
+        <div class="w-50 bg-size-cover bg-repeat-0 bg-position-center" style="background-image: url(images/landing/cover.jpg);"></div>
+      </div>
+    </main>
+
+    <script src="js/landing/theme.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Event listener for form submission
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            await login(email, password);
+        });
+      });
+    </script>
+    <script src="js/simplebar.min.js"></script>
+    <script src="js/waves.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/mixpanel-tracking.js"></script>
+  </body>
+</html>

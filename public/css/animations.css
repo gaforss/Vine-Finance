@@ -1,0 +1,5 @@
+.card-highlight {
+    transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
+    box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+    background-color: rgba(0, 123, 255, 0.05);
+}

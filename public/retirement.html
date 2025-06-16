@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Retirement Goals & Planning</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link href="css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Mixpanel Library -->
+    <script src="https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js"></script>
+</head>
+<body data-sidebar="dark" data-topbar="dark" data-bs-theme="dark">
+    <div id="layout-wrapper">
+        <header id="page-topbar">
+            <div class="navbar-header">
+                <div class="d-flex">
+                    <div class="navbar-brand-box">
+                        <a href="/dashboard" class="logo logo-dark">
+                            <span class="logo-sm">
+                                <img src="/images/landing/logo-small.png" alt="logo-sm" height="40">
+                            </span>
+                            <span class="logo-lg">
+                                <img src="/images/landing/logo.png" alt="logo-dark" height="40">
+                            </span>
+                        </a>
+                        <a href="/dashboard" class="logo logo-light">
+                            <span class="logo-sm">
+                                <img src="/images/landing/logo-small.png" alt="logo-sm-light" height="40">
+                            </span>
+                            <span class="logo-lg">
+                                <img src="/images/landing/logo.png" alt="logo-light" height="40">
+                            </span>
+                        </a>
+                    </div>
+                    <button type="button" class="btn btn-sm px-3 font-size-16 vertinav-toggle header-item waves-effect" id="vertical-menu-btn">
+                        <i class="fa fa-fw fa-bars"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm px-3 font-size-16 horinav-toggle header-item waves-effect waves-light" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
+                        <i class="fa fa-fw fa-bars"></i>
+                    </button>
+                </div>
+                <div class="d-flex">
+                    <div class="dropdown d-inline-block">
+                        <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span id="firstnamePlaceholder" class="d-none d-xl-inline-block ms-1">Hello, User</span>
+                            <i class="fa fa-caret-down"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header"><span id="userFirstName">User</span></h6>
+                            <a class="dropdown-item" href="/editProfile">Profile</a>
+                            <a class="dropdown-item" href="/logout">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="vertical-menu">
+            <div data-simplebar class="h-100">
+                <div id="sidebar-menu">
+                    <ul class="metismenu list-unstyled" id="side-menu">
+                        <li class="menu-title" key="t-menu">Overview</li>
+                        <li>
+                            <a href="/dashboard">
+                                <i class="fa fa-dashboard"></i><span key="t-dashboard">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="menu-title" key="t-menu">Financial Tools</li>
+                        <li>
+                            <a href="/accounts">
+                                <i class="fa fa-bank"></i><span key="t-dashboard">My Accounts</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/budgeting">
+                                <i class="fa fa-money"></i><span key="t-dashboard">Budget Management</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/retirement">
+                                <i class="fa fa-flag"></i><span key="t-dashboard">Retirement Planning</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/realestate">
+                                <i class="fa fa-home"></i><span key="t-dashboard">Real Estate Portfolio</span></a>
+                        </li>
+                        <li>
+                            <a href="/learning">
+                                <i class="fa fa-graduation-cap"></i><span key="t-dashboard">Learning Center</span>
+                            </a>
+                        </li>
+                        <li class="menu-title" key="t-menu">Profile</li>
+                        <li>
+                            <a href="/editProfile">
+                                <i class="fa fa-user"></i><span key="t-dashboard">My Profile</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="page-content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <div class="card" id="retirementChartSection">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-4">
+                                        <i class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="This chart shows the projected retirement savings required based on your specified budget, age, and retirement goals."></i> How Am I Tracking? | <a href="#" data-bs-toggle="modal" data-bs-target="#retirementGoalsModal">Review Goals</a>
+                                    </h4>
+                                    <div id="retirementChart" class="apex-charts" dir="ltr"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-4">
+                                        <i class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="This chart shows how you are tracking against the top 10% of your peers in your same age bracket."></i> How Do I Compare?</h4>
+                                    <div id="netWorthComparisonChart" class="apex-charts"></div>
+                                </div>
+                                <hr>
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-sm-8">
+                                            <p class="font-size-16 text">Given your age and goals, you can retire by <b><span id="intersectionAge" class="text-success font-size-22">N/A</span></b>!</p>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="mt-4 mt-sm-0">
+                                                <img src="images/retirement.png" class="img-fluid d-block mx-auto" alt="widget-img" style="max-height: 150px; max-width: 100%;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-4">
+                                        <i class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="This chart shows your projected monthly retirement budget by category based on your entered retirement goals."></i> Your Projected Monthly Budget Based On Retirement Goal</h4>
+                                    <div class="row">
+                                        <div class="col-md-2 text-center p-4">
+                                            <i class="fa fa-home text-primary custom-icon" style="font-size: 2em;"></i>
+                                            <h4 class="mt-3" id="mortgageValue">$0</h4>
+                                            <p class="mb-0">Mortgages</p>
+                                        </div>
+                                        <div class="col-md-2 text-center p-4">
+                                            <i class="fa fa-car text-primary custom-icon" style="font-size: 2em;"></i>
+                                            <h4 class="mt-3" id="carsValue">$0</h4>
+                                            <p class="mb-0">Cars</p>
+                                        </div>
+                                        <div class="col-md-2 text-center p-4">
+                                            <i class="fa fa-heartbeat text-primary custom-icon" style="font-size: 2em;"></i>
+                                            <h4 class="mt-3" id="healthCareValue">$0</h4>
+                                            <p class="mb-0">Health Care</p>
+                                        </div>
+                                        <div class="col-md-2 text-center p-4">
+                                            <i class="fa fa-cutlery text-primary custom-icon" style="font-size: 2em;"></i>
+                                            <h4 class="mt-3" id="foodAndDrinksValue">$0</h4>
+                                            <p class="mb-0">Food & Drinks</p>
+                                        </div>
+                                        <div class="col-md-2 text-center p-4">
+                                            <i class="fa fa-plane text-primary custom-icon" style="font-size: 2em;"></i>
+                                            <h4 class="mt-3" id="travelAndEntertainmentValue">$0</h4>
+                                            <p class="mb-0">Entertainment</p>
+                                        </div>
+                                        <div class="col-md-2 text-center p-4">
+                                            <i class="fa fa-line-chart text-primary custom-icon" style="font-size: 2em;"></i>
+                                            <h4 class="mt-3" id="reinvestedFundsValue">$0</h4>
+                                            <p class="mb-0">Reinvested Funds</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- What-If Calculator Section -->
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-4">
+                                        <i class="fa fa-calculator" data-bs-toggle="tooltip" data-bs-placement="top" title="Try different scenarios to see how they affect your retirement date"></i> What-If Calculator</h4>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="whatIfRetirementAge" class="form-label">Try Different Retirement Age</label>
+                                                <input type="number" id="whatIfRetirementAge" class="form-control" min="40" max="85">
+                                                <small class="text-muted">See how retiring earlier or later affects your required savings</small>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="whatIfMonthlySpend" class="form-label">Try Different Monthly Spend</label>
+                                                <input type="number" id="whatIfMonthlySpend" class="form-control" min="1000" step="any">
+                                                <small class="text-muted">See how different spending levels affect your retirement date</small>
+                                            </div>
+                                            <button id="whatIfCalculate" class="btn btn-primary">Calculate Scenario</button>
+                                            <button id="whatIfReset" class="btn btn-secondary ms-2">Reset to Current Goals</button>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div id="whatIfResults" class="p-3 bg-light rounded">
+                                                <h5>Scenario Results</h5>
+                                                <div id="whatIfNewRetirementDate" class="mb-2"></div>
+                                                <div id="whatIfRequiredSavings" class="mb-2"></div>
+                                                <div id="whatIfDifference" class="mb-2"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Retirement Lifestyle Templates -->
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-4">
+                                        <i class="fa fa-magic" data-bs-toggle="tooltip" data-bs-placement="top" title="Choose a preset template based on your desired retirement lifestyle"></i> 
+                                        Retirement Lifestyle Templates
+                                    </h4>
+                                    <p class="text-muted mb-4">Select a template to automatically adjust your budget allocations based on your preferred retirement lifestyle. Each template balances essential expenses with lifestyle spending differently.</p>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="card h-100 template-card" data-template="conservative">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <h5 class="card-title mb-0">Conservative</h5>
+                                                        <span class="badge bg-success">Security Focused</span>
+                                                    </div>
+                                                    <div class="template-description mb-3">
+                                                        <p class="card-text">Prioritizes financial security with:</p>
+                                                        <ul class="list-unstyled">
+                                                            <li><i class="fa fa-check text-success me-2"></i>Higher housing allocation (25%)</li>
+                                                            <li><i class="fa fa-check text-success me-2"></i>Increased healthcare budget (15%)</li>
+                                                            <li><i class="fa fa-check text-success me-2"></i>Moderate lifestyle spending (18%)</li>
+                                                            <li><i class="fa fa-check text-success me-2"></i>Strong reinvestment (25%)</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="template-preview d-none">
+                                                        <h6 class="mb-2">Preview Changes:</h6>
+                                                        <div class="small">
+                                                            <div class="d-flex justify-content-between mb-1">
+                                                                <span>Mortgage:</span>
+                                                                <span class="text-success">+3%</span>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between mb-1">
+                                                                <span>Healthcare:</span>
+                                                                <span class="text-success">+3%</span>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between mb-1">
+                                                                <span>Entertainment:</span>
+                                                                <span class="text-danger">-10%</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <button class="btn btn-outline-primary apply-template w-100" data-template="conservative">
+                                                        <i class="fa fa-shield me-2"></i>Apply Conservative Template
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card h-100 template-card" data-template="moderate">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <h5 class="card-title mb-0">Moderate</h5>
+                                                        <span class="badge bg-primary">Balanced</span>
+                                                    </div>
+                                                    <div class="template-description mb-3">
+                                                        <p class="card-text">Balances security with lifestyle:</p>
+                                                        <ul class="list-unstyled">
+                                                            <li><i class="fa fa-check text-primary me-2"></i>Standard housing (22%)</li>
+                                                            <li><i class="fa fa-check text-primary me-2"></i>Moderate healthcare (12%)</li>
+                                                            <li><i class="fa fa-check text-primary me-2"></i>Active lifestyle (28%)</li>
+                                                            <li><i class="fa fa-check text-primary me-2"></i>Steady reinvestment (25%)</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="template-preview d-none">
+                                                        <h6 class="mb-2">Current Settings</h6>
+                                                        <div class="small text-muted">This is your current balanced allocation</div>
+                                                    </div>
+                                                    <button class="btn btn-outline-primary apply-template w-100" data-template="moderate">
+                                                        <i class="fa fa-balance-scale me-2"></i>Apply Moderate Template
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="card h-100 template-card" data-template="aggressive">
+                                                <div class="card-body">
+                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                        <h5 class="card-title mb-0">Aggressive</h5>
+                                                        <span class="badge bg-warning">Lifestyle Focused</span>
+                                                    </div>
+                                                    <div class="template-description mb-3">
+                                                        <p class="card-text">Emphasizes lifestyle spending:</p>
+                                                        <ul class="list-unstyled">
+                                                            <li><i class="fa fa-check text-warning me-2"></i>Lower housing (20%)</li>
+                                                            <li><i class="fa fa-check text-warning me-2"></i>Basic healthcare (10%)</li>
+                                                            <li><i class="fa fa-check text-warning me-2"></i>Active lifestyle (35%)</li>
+                                                            <li><i class="fa fa-check text-warning me-2"></i>Maintained reinvestment (25%)</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div class="template-preview d-none">
+                                                        <h6 class="mb-2">Preview Changes:</h6>
+                                                        <div class="small">
+                                                            <div class="d-flex justify-content-between mb-1">
+                                                                <span>Mortgage:</span>
+                                                                <span class="text-danger">-2%</span>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between mb-1">
+                                                                <span>Healthcare:</span>
+                                                                <span class="text-danger">-2%</span>
+                                                            </div>
+                                                            <div class="d-flex justify-content-between mb-1">
+                                                                <span>Entertainment:</span>
+                                                                <span class="text-success">+7%</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <button class="btn btn-outline-primary apply-template w-100" data-template="aggressive">
+                                                        <i class="fa fa-rocket me-2"></i>Apply Aggressive Template
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="alert alert-info mt-3">
+                                        <i class="fa fa-info-circle me-2"></i>
+                                        <strong>How it works:</strong> Click a template to automatically adjust your budget allocations. The changes will be applied to your current monthly spend amount. You can always fine-tune the percentages after applying a template.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Export Options -->
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-4">
+                                        <i class="fa fa-download" data-bs-toggle="tooltip" data-bs-placement="top" title="Export your retirement plan for future reference"></i> Export Your Plan</h4>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <button id="exportPDF" class="btn btn-primary">
+                                                <i class="fa fa-file-pdf-o"></i> Save as PDF
+                                            </button>
+                                            <button id="exportCSV" class="btn btn-secondary ms-2">
+                                                <i class="fa fa-file-excel-o"></i> Export Data
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Button to trigger modal -->
+                    <div class="row mt-4">
+                        <div class="col-md-12 text-center">
+                            <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#retirementGoalsModal">
+                                <i class="fa fa-edit"></i> Review & Update Retirement Goals
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="retirementGoalsModal" tabindex="-1" aria-labelledby="retirementGoalsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="retirementGoalsModalLabel">Retirement Goals & Planning</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="retirementForm">
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="currentAge" class="form-label">Current Age</label>
+                  <input type="number" id="currentAge" name="currentAge" class="form-control" required min="18" max="85">
+                  <small class="text-muted">Must be between 18 and 85 years old</small>
+                </div>
+                <div class="col-md-6">
+                  <label for="retirementAge" class="form-label">Planned Retirement Age</label>
+                  <input type="number" id="retirementAge" name="retirementAge" class="form-control" required min="40" max="85">
+                  <small class="text-muted">Must be between 40 and 85 years old</small>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label for="monthlySpend" class="form-label">Project Monthly Spend</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" id="monthlySpend" name="monthlySpend" class="form-control" required min="1000" step="any">
+                </div>
+                <small class="text-muted">Enter your expected monthly spending in retirement (minimum $1,000)</small>
+              </div>
+              <h4>Monthly Spend Categories</h4>
+              <div class="mb-3">
+                <div class="progress">
+                  <div id="percentageIndicator" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                </div>
+                <small class="text-muted">Total must equal 100%</small>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="mortgage" class="form-label">Mortgages (Includes Taxes & Fees):</label>
+                  <div class="input-group">
+                    <input type="range" id="mortgage" name="mortgage" class="form-range percentage-field" min="0" max="100" value="22">
+                    <span class="input-group-text" id="mortgagePercent">22%</span>
+                    <input type="text" id="mortgageValueInput" class="form-control" disabled>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label for="cars" class="form-label">Cars (Includes Taxes & Fees):</label>
+                  <div class="input-group">
+                    <input type="range" id="cars" name="cars" class="form-range percentage-field" min="0" max="100" value="3">
+                    <span class="input-group-text" id="carsPercent">3%</span>
+                    <input type="text" id="carsValueInput" class="form-control" disabled>
+                  </div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="healthCare" class="form-label">Health Care:</label>
+                  <div class="input-group">
+                    <input type="range" id="healthCare" name="healthCare" class="form-range percentage-field" min="0" max="100" value="12">
+                    <span class="input-group-text" id="healthCarePercent">12%</span>
+                    <input type="text" id="healthCareValueInput" class="form-control" disabled>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label for="foodAndDrinks" class="form-label">Food & Drinks:</label>
+                  <div class="input-group">
+                    <input type="range" id="foodAndDrinks" name="foodAndDrinks" class="form-range percentage-field" min="0" max="100" value="10">
+                    <span class="input-group-text" id="foodAndDrinksPercent">10%</span>
+                    <input type="text" id="foodAndDrinksValueInput" class="form-control" disabled>
+                  </div>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label for="travelAndEntertainment" class="form-label">Travel & Entertainment:</label>
+                  <div class="input-group">
+                    <input type="range" id="travelAndEntertainment" name="travelAndEntertainment" class="form-range percentage-field" min="0" max="100" value="28">
+                    <span class="input-group-text" id="travelAndEntertainmentPercent">28%</span>
+                    <input type="text" id="travelAndEntertainmentValueInput" class="form-control" disabled>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <label for="reinvestedFunds" class="form-label">Reinvested Funds:</label>
+                  <div class="input-group">
+                    <input type="range" id="reinvestedFunds" name="reinvestedFunds" class="form-range percentage-field" min="0" max="100" value="25">
+                    <span class="input-group-text" id="reinvestedFundsPercent">25%</span>
+                    <input type="text" id="reinvestedFundsValueInput" class="form-control" disabled>
+                  </div>
+                </div>
+              </div>
+              <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg" id="saveGoalsButton" disabled>Save Goals</button>
+                <button type="button" class="btn btn-secondary" id="resetToDefaults">Reset to Defaults</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add html2pdf library before our retirement.js script -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/js/retirement.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/custom.js"></script>
+    <script src="js/metisMenu.min.js"></script>
+    <script src="js/apexcharts.min.js"></script>
+    <script src="js/simplebar.min.js"></script>
+    <script src="js/waves.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/mixpanel-tracking.js"></script>
+</body>
+</html>

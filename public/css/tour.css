@@ -1,0 +1,100 @@
+#tour-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2147483647; /* Very high z-index to ensure the overlay stays on top */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.tour-step {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 350px; /* Slightly smaller width */
+    width: 90%; /* Ensures responsiveness */
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    position: relative; /* Relative position to be centered by the parent */
+    z-index: 2147483647; /* Very high z-index to ensure the modal stays on top */
+}
+
+.tour-step p {
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: #333;
+}
+
+.tour-step .btn {
+    background-color: #0070BA;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 5px;
+    transition: background-color 0.3s;
+}
+
+.tour-step .btn:hover {
+    background-color: #005c99;
+}
+
+.tour-step .btn.back-btn {
+    background-color: #6c757d;
+}
+
+.tour-step .btn.back-btn:hover {
+    background-color: #5a6268;
+}
+
+.tour-step .btn.finish-btn {
+    background-color: #28a745;
+}
+
+.tour-step .btn.finish-btn:hover {
+    background-color: #218838;
+}
+
+.tour-logo {
+    max-width: 200px;
+    margin-bottom: 20px;
+}
+
+.powered-by {
+    margin-top: 20px;
+    font-size: 12px;
+    color: #666;
+}
+
+.powered-by a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.powered-by a:hover {
+    text-decoration: underline;
+}
+
+.highlight {
+    position: relative;
+    z-index: 2147483647; /* Ensure highlighted element stays on top */
+    border: 3px solid #0070BA;
+    box-shadow: 0 0 10px rgba(0, 112, 186, 0.5);
+    animation: highlight-animation 0.5s infinite alternate;
+}
+
+@keyframes highlight-animation {
+    from {
+        box-shadow: 0 0 10px rgba(0, 112, 186, 0.5);
+    }
+    to {
+        box-shadow: 0 0 20px rgba(0, 112, 186, 1);
+    }
+}

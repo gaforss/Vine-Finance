@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Edit Your Profile</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link href="css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .checklist-card img {
+            max-width: 50px;
+            margin-right: 15px;
+        }
+
+        .checklist-card .card-body {
+            display: flex;
+            align-items: center;
+        }
+
+        .checklist-card .form-check-input {
+            margin-right: 15px;
+        }
+
+        .checklist-card span {
+            flex-grow: 1;
+        }
+
+        .completion-message {
+            margin-top: 20px;
+            padding: 10px;
+            text-align: center;
+            background-color: #d4edda;
+            color: #155724;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body data-sidebar="dark" data-topbar="dark" data-bs-theme="dark">
+    <div id="layout-wrapper">
+        <header id="page-topbar">
+            <div class="navbar-header">
+                <div class="d-flex">
+                    <div class="navbar-brand-box">
+                        <a href="/dashboard" class="logo logo-dark">
+                            <span class="logo-sm">
+                                <img src="/images/landing/logo-small.png" alt="logo-sm" height="40">
+                            </span>
+                            <span class="logo-lg">
+                                <img src="/images/landing/logo.png" alt="logo-dark" height="40">
+                            </span>
+                        </a>
+
+                        <a href="/dashboard" class="logo logo-light">
+                            <span class="logo-sm">
+                                <img src="/images/landing/logo-small.png" alt="logo-sm-light" height="40">
+                            </span>
+                            <span class="logo-lg">
+                                <img src="/images/landing/logo.png" alt="logo-light" height="40">
+                            </span>
+                        </a>
+                    </div>
+                    <button type="button" class="btn btn-sm px-3 font-size-16 vertinav-toggle header-item waves-effect" id="vertical-menu-btn">
+                        <i class="fa fa-fw fa-bars"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm px-3 font-size-16 horinav-toggle header-item waves-effect waves-light" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
+                        <i class="fa fa-fw fa-bars"></i>
+                    </button>
+                </div>
+                <div class="d-flex">
+                    <div class="dropdown d-inline-block">
+                        <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span id="firstnamePlaceholder" class="d-none d-xl-inline-block ms-1">Hello, User</span>
+                            <i class="fa fa-caret-down"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header"><span id="userFirstName">User</span></h6>
+                            <a class="dropdown-item" href="/editProfile">Profile</a>
+                            <a class="dropdown-item" href="/logout">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="vertical-menu">
+            <div data-simplebar class="h-100">
+                <div id="sidebar-menu">
+                    <ul class="metismenu list-unstyled" id="side-menu">
+                        <li class="menu-title" key="t-menu">Overview</li>
+                        <li>
+                            <a href="/dashboard">
+                                <i class="fa fa-dashboard"></i><span key="t-dashboard">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="menu-title" key="t-menu">Financial Tools</li>
+                        <li>
+                            <a href="/accounts">
+                                <i class="fa fa-bank"></i><span key="t-dashboard">My Accounts</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/budgeting">
+                                <i class="fa fa-money"></i><span key="t-dashboard">Budget Management</span>
+                            </a>
+                        </li>
+                        <li>
+                        <li>
+                            <a href="/retirement">
+                                <i class="fa fa-flag"></i><span key="t-dashboard">Retirement Planning</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/realestate">
+                                <i class="fa fa-home"></i><span key="t-dashboard">Real Estate Portfolio</span></a>
+                        </li>
+                        <li>
+                            <a href="/learning">
+                                <i class="fa fa-graduation-cap"></i><span key="t-dashboard">Learning Center</span>
+                            </a>
+                        </li>
+                        <li class="menu-title" key="t-menu">Profile</li>
+                        <li>
+                            <a href="/editProfile">
+                                <i class="fa fa-user"></i><span key="t-dashboard">My Profile</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="page-content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12 col-lg-5">
+                            <!-- Profile Details Section -->
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Profile Details</h4>
+                                    <p class="card-title-desc">Update your profile information below.</p>
+                                    <form id="profileForm" method="POST" enctype="multipart/form-data">
+                                        <div class="row">
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label for="username" class="form-label">Username</label>
+                                                    <input class="form-control" type="text" id="username" name="username" placeholder="Username" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label for="email" class="form-label">Email</label>
+                                                    <input class="form-control" type="text" id="email" placeholder="Email" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label for="firstName" class="form-label">First Name</label>
+                                                    <input class="form-control" type="text" id="firstName" name="firstName" placeholder="First Name">
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label for="lastName" class="form-label">Last Name</label>
+                                                    <input class="form-control" type="text" id="lastName" name="lastName" placeholder="Last Name">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-end">
+                                            <button class="btn btn-secondary me-2" type="button" onclick="window.location='/dashboard'">Cancel</button>
+                                            <button class="btn btn-primary" type="submit">Save changes</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <!-- Session Activity Section -->
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Session Activity</h4>
+                                    <p class="card-title-desc">Verify your session activity to ensure no unauthorized access has occurred.</p>
+                                    <div class="session-activity-list" data-simplebar>
+                                        <ul class="list-group" id="sessionActivityList">
+                                            <!-- Session activities will be populated here -->
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Delete Profile Section -->
+                            <div class="card mt-4">
+                                <div class="card-body">
+                                    <h4 class="card-title">Delete Your Profile</h4>
+                                    <form id="deleteProfileForm">
+                                        <button class="btn btn-danger w-100" type="submit">Delete Profile</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Onboarding Checklist -->
+                        <div class="col-12 col-lg-7">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Onboarding Checklist</h4>
+                                    <ul id="onboardingChecklist" class="list-group list-group-flush">
+                                        <!-- The checklist items will be populated here -->
+                                    </ul>
+                                    <div id="completionMessage" class="completion-message" style="display: none;">
+                                        <p>🎉 Great job! You've completed all onboarding steps.</p>
+                                        <p>Remember to log your monthly submissions to stay on top of your financial goals!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="js/custom.js"></script>
+    <script src="js/metisMenu.min.js"></script>
+    <script src="js/simplebar.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/editProfile.js"></script>
+    <script src="js/mixpanel-tracking.js"></script>
+</body>
+
+</html>

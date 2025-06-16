@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Accounts</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="images/favicon.ico">
+
+    <!-- Plaid Link -->
+    <script src="https://cdn.plaid.com/link/v2/stable/link-initialize.js"></script>
+    <script src="/js/plaid.js"></script>
+    <link href="css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body data-sidebar="dark" data-topbar="dark" data-bs-theme="dark">
+    <div id="layout-wrapper">
+        <header id="page-topbar">
+            <div class="navbar-header d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="navbar-brand-box">
+                        <a href="/dashboard" class="logo logo-dark">
+                            <span class="logo-sm">
+                                <img src="/images/landing/logo-small.png" alt="logo-sm" height="40">
+                            </span>
+                            <span class="logo-lg">
+                                <img src="/images/landing/logo.png" alt="logo-dark" height="40">
+                            </span>
+                        </a>
+                        <a href="/dashboard" class="logo logo-light">
+                            <span class="logo-sm">
+                                <img src="/images/landing/logo-small.png" alt="logo-sm-light" height="40">
+                            </span>
+                            <span class="logo-lg">
+                                <img src="/images/landing/logo.png" alt="logo-light" height="40">
+                            </span>
+                        </a>
+                    </div>
+                    <button type="button" class="btn btn-sm px-3 font-size-16 vertinav-toggle header-item waves-effect" id="vertical-menu-btn">
+                        <i class="fa fa-fw fa-bars"></i>
+                    </button>
+                    <button type="button" class="btn btn-sm px-3 font-size-16 horinav-toggle header-item waves-effect waves-light" data-bs-toggle="collapse" data-bs-target="#topnav-menu-content">
+                        <i class="fa fa-fw fa-bars"></i>
+                    </button>
+                </div>
+                <div class="d-flex">
+                    <div class="dropdown d-inline-block">
+                        <button type="button" class="btn header-item waves-effect" id="page-header-user-dropdown"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span id="firstnamePlaceholder" class="d-none d-xl-inline-block ms-1">Hello, User</span>
+                            <i class="fa fa-caret-down"></i>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <h6 class="dropdown-header"><span id="userFirstName">User</span></h6>
+                            <a class="dropdown-item" href="/editProfile">Profile</a>
+                            <a class="dropdown-item" href="/logout">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="vertical-menu">
+            <div data-simplebar class="h-100">
+                <div id="sidebar-menu">
+                    <ul class="metismenu list-unstyled" id="side-menu">
+                        <li class="menu-title" key="t-menu">Overview</li>
+                        <li>
+                            <a href="/dashboard">
+                                <i class="fa fa-dashboard"></i><span key="t-dashboard">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="menu-title" key="t-menu">Financial Tools</li>
+                        <li>
+                            <a href="/accounts">
+                                <i class="fa fa-bank"></i><span key="t-dashboard">My Accounts</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/budgeting">
+                                <i class="fa fa-money"></i><span key="t-dashboard">Budget Management</span>
+                            </a>
+                        </li>
+                        <li>
+                        <li>
+                            <a href="/retirement">
+                                <i class="fa fa-flag"></i><span key="t-dashboard">Retirement Planning</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/realestate">
+                                <i class="fa fa-home"></i><span key="t-dashboard">Real Estate Portfolio</span></a>
+                        </li>
+                        <li>
+                            <a href="/learning">
+                                <i class="fa fa-graduation-cap"></i><span key="t-dashboard">Learning Center</span>
+                            </a>
+                        </li>
+                        <li class="menu-title" key="t-menu">Profile</li>
+                        <li>
+                            <a href="/editProfile">
+                                <i class="fa fa-user"></i><span key="t-dashboard">My Profile</span></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="page-content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <div class="row align-items-center bg-pattern">
+                                        <div class="col-sm-8">
+                                            <div class="avatar-xs mb-3">
+                                                <span class="avatar-title rounded-circle bg-light font-size-18">
+                                                    <i class="fa fa-lock"></i>
+                                                </span>
+                                            </div>
+                                            <p class="font-size-18">Securely link you <b>Accounts</b> for Better Visibility</p>
+                                            <div class="mt-4">
+                                                <a class="btn btn-success waves-effect waves-light" id="link-button">Link An Account <i class="fa fa-caret-right"></i> </a>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="mt-4 mt-sm-0">
+                                                <img src="images/link-account.png" class="img-fluid">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr class="text-muted my-3">
+                                    
+                                    <h1 class="card-title">Balances</h1>
+                                    <div class="mb-3">
+                                        <label for="cash" class="form-label"><i class="fa fa-money"></i> Cash</label>
+                                        <input type="text" class="form-control" id="cash" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="investments" class="form-label"><i class="fa fa-line-chart"></i> Investments</label>
+                                        <input type="text" class="form-control" id="investments" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="realEstate" class="form-label"><i class="fa fa-home"></i> Real Estate</label>
+                                        <input type="text" class="form-control" id="realEstate" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="retirementAccounts" class="form-label"><i class="fa fa-flag"></i> Retirement</label>
+                                        <input type="text" class="form-control" id="retirementAccounts" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="liabilities" class="form-label"><i class="fa fa-university"></i> Liabilities</label>
+                                        <input type="text" class="form-control" id="liabilities" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="insurance" class="form-label"><i class="fa fa-shield"></i> Insurance</label>
+                                        <input type="text" class="form-control" id="insurance" readonly>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="miscellaneous" class="form-label"><i class="fa fa-asterisk"></i> Miscellaneous</label>
+                                        <input type="text" class="form-control" id="miscellaneous" readonly>
+                                    </div>
+
+                                    <hr class="text-muted my-3">
+
+                                    <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addManualAccountModal">
+                                        <i class="fa fa-user-plus"></i> Add Manual Account
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fa fa-bank"></i> Bank Accounts</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="bank-accounts-list"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fa fa-credit-card"></i> Credit Cards</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="creditcards-list"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fa fa-university"></i> Loans</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="loans-list"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fa fa-line-chart"></i> Investment Accounts</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="investments-list"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fa fa-flag"></i> Retirement Accounts</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="retirement-list"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fa fa-shield"></i> Insurance Accounts</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="insurance-list"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fa fa-bitcoin"></i> Digital/Crypto Accounts</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="digital-list"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title"><i class="fa fa-asterisk"></i> Miscellaneous Accounts</h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th></th>
+                                                    <th></th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="miscellaneous-list"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="transactionsModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="transactionsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="transactionsModalLabel">Transactions</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Name</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-list"></tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editAccountModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="editAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editAccountModalLabel">Edit Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-account-form">
+                        <input type="hidden" id="editAccountId">
+                        <div class="mb-3">
+                            <label for="editAccountName" class="form-label">Account Name</label>
+                            <input type="text" class="form-control" id="editAccountName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editAccountAmount" class="form-label">Account Balance</label>
+                            <input type="number" class="form-control" id="editAccountAmount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editAccountCategory" class="form-label">Category</label>
+                            <select class="form-select" id="editAccountCategory" required>
+                                <option value="bank">Bank Account</option>
+                                <option value="credit card">Credit Card</option>
+                                <option value="loan">Loan</option>
+                                <option value="investment">Investment</option>
+                                <option value="retirement">Retirement Account</option>
+                                <option value="insurance">Insurance</option>
+                                <option value="crypto">Crypto Account</option>
+                                <option value="misc">Miscellaneous</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveEditButton">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addManualAccountModal" tabindex="-1" aria-labelledby="addManualAccountModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addManualAccountModalLabel">Add Manual Account</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="manual-account-form">
+                        <div class="mb-3">
+                            <label for="accountName" class="form-label">Account Name</label>
+                            <input type="text" class="form-control" id="accountName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="accountAmount" class="form-label">Account Balance</label>
+                            <input type="number" class="form-control" id="accountAmount" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="accountCategory" class="form-label">Category</label>
+                            <select class="form-select" id="accountCategory" required>
+                                <option value="bank">Bank Account</option>
+                                <option value="credit card">Credit Card</option>
+                                <option value="loan">Loan</option>
+                                <option value="investment">Investment</option>
+                                <option value="retirement">Retirement Account</option>
+                                <option value="insurance">Insurance</option>
+                                <option value="crypto">Crypto Account</option>
+                                <option value="misc">Miscellaneous</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="addAccountButton">Add Account</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/custom.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/form.js"></script>
+    <script src="js/metisMenu.min.js"></script>
+    <script src="js/simplebar.min.js"></script>
+    <script src="js/waves.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/mixpanel-tracking.js"></script>
+</body>
+</html>

@@ -1,8 +1,42 @@
 $(document).ready(function() {
-            $('#profileForm').submit(function(e) {
+            $('#editProfileForm').submit(function(e) {
                 e.preventDefault();
-                trackEvent('Profile Update');
-                this.submit();
+
+                const form = $(this);
+                const token = localStorage.getItem('token');
+                const formData = form.serialize();
+
+                $.ajax({
+                    url: form.attr('action'),
+                    method: form.attr('method'),
+                    data: formData,
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    },
+                    success: function(response) {
+                        console.log('Profile updated successfully', response);
+                        const saveButton = form.find('button[type="submit"]');
+                        saveButton.text('Saved!').removeClass('btn-danger').addClass('btn-success');
+
+                        if (response.user && response.user.firstName) {
+                             $('#firstnamePlaceholder').text(`Hello, ${response.user.firstName}`);
+                             $('#userFirstName').text(response.user.firstName);
+                        }
+
+                        setTimeout(function() {
+                            saveButton.text('Save changes').removeClass('btn-success');
+                        }, 2000);
+                    },
+                    error: function(error) {
+                        console.error('Error updating profile:', error);
+                        const saveButton = form.find('button[type="submit"]');
+                        saveButton.text('Error!').removeClass('btn-success').addClass('btn-danger');
+
+                        setTimeout(function() {
+                            saveButton.text('Save changes').removeClass('btn-danger');
+                        }, 3000);
+                    }
+                });
             });
 
             const token = localStorage.getItem('token');

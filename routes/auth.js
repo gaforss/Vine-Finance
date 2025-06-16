@@ -163,6 +163,40 @@ router.post('/login', async (req, res, next) => {
     }
 });
 
+// Update user profile
+router.post('/api/profile', protect, async (req, res) => {
+    console.log('[POST /auth/api/profile] - Received profile update request.');
+    try {
+        const { firstName, lastName } = req.body;
+        const userId = req.user._id;
+
+        console.log(`[POST /auth/api/profile] - User ID: ${userId}`);
+        console.log(`[POST /auth/api/profile] - Request body:`, req.body);
+
+        const user = await User.findById(userId);
+        if (!user) {
+            console.log(`[POST /auth/api/profile] - User not found with ID: ${userId}`);
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        console.log(`[POST /auth/api/profile] - User found. Current name: ${user.firstName} ${user.lastName}`);
+
+        user.firstName = firstName || user.firstName;
+        user.lastName = lastName || user.lastName;
+        
+        console.log(`[POST /auth/api/profile] - Attempting to save updated name: ${user.firstName} ${user.lastName}`);
+
+        const updatedUser = await user.save();
+        
+        console.log(`[POST /auth/api/profile] - Profile updated successfully for user: ${userId}`);
+
+        res.json({ message: 'Profile updated successfully', user: updatedUser });
+    } catch (error) {
+        console.error('[POST /auth/api/profile] - Error updating profile:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
 // Fetch user data
 router.get('/api/user', protect, async (req, res) => {
     try {

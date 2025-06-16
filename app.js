@@ -19,6 +19,7 @@ const PORT = process.env.PORT || 3000;
 
 // Middleware setup
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
@@ -123,6 +124,7 @@ app.get('/learning', trackPageView('Learning'), (req, res) => {
 });
 
 // API Routes
+app.use('/auth', authRouter);
 const entriesRouter = require('./routes/entries');
 const importRouter = require('./routes/import');
 const passwordRouter = require('./routes/passwordReset');

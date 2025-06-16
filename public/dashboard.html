@@ -68,6 +68,7 @@
                         <div class="dropdown-menu dropdown-menu-end">
                             <h6 class="dropdown-header"><span id="userFirstName">User</span></h6>
                             <a class="dropdown-item" href="/editProfile" data-track-click="Navigation" data-track-prop-destination="Profile" data-track-prop-location="Header">Profile</a>
+                            <a class="dropdown-item" href="javascript:void(0);" id="restart-tour-btn">Restart Tour</a>
                             <a class="dropdown-item" href="/logout" id="logout" data-track-click="Logout">Logout</a>
                         </div>
                     </div>
@@ -101,7 +102,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="/realestate" data-track-click="Navigation" data-track-prop-destination="Real Estate" data-track-prop-location="Sidebar">
+                            <a href="/realestate" id="realEstateSidebarLink" data-track-click="Navigation" data-track-prop-destination="Real Estate" data-track-prop-location="Sidebar">
                                 <i class="fa fa-home"></i><span key="t-dashboard">Real Estate Portfolio</span></a>
                         </li>
                         <li>
@@ -262,44 +263,64 @@
     <div class="rightbar-overlay"></div>
 
     <!-- Removed Step 3 -->
-    <div id="tour-overlay" style="display: none;">
-        <div class="tour-step" id="tour-step-1" data-target="#financialSnapshot">
+    <div id="tour-overlay" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="tour-step-1-heading">
+        <div class="tour-step" id="tour-step-1" data-target="#financialSnapshot" role="document" aria-labelledby="tour-step-1-heading" aria-describedby="tour-step-1-desc">
+            <h2 id="tour-step-1-heading" class="visually-hidden">Step 1: Financial Snapshot</h2>
+            <button class="tour-close-btn" aria-label="Close tour">&times;</button>
             <img src="images/landing/logo.png" alt="Your Logo" class="tour-logo">
-            <p>Welcome to Vine! Since this is your first time here, this is your Financial Snapshot, where you can see an overview of your financial data.</p>
-            <p>1/5</p> <!-- Updated step number -->
-            <button class="btn tour-next-btn" data-track-click="Tour Interaction" data-track-prop-action="Next" data-track-prop-step="1">Next</button>
+            <p id="tour-step-1-desc">Welcome to your new financial dashboard! This is your central hub for tracking your net worth.</p>
+            <div class="tour-progress"><div class="tour-progress-bar"></div></div>
+            <div class="tour-navigation">
+                <button class="btn tour-next-btn">Next</button>
+            </div>
         </div>
-        <div class="tour-step" id="tour-step-2" data-target="#addMonthlyEntry">
+        <div class="tour-step" id="tour-step-2" data-target="#addMonthlyEntry" role="document" aria-labelledby="tour-step-2-heading" aria-describedby="tour-step-2-desc">
+            <h2 id="tour-step-2-heading" class="visually-hidden">Step 2: Add Monthly Entry</h2>
+            <button class="tour-close-btn" aria-label="Close tour">&times;</button>
             <img src="images/landing/logo.png" alt="Your Logo" class="tour-logo">
-            <p>You can add and adjust your net worth by logging monthly entries in the top right corner.</p>
-            <p>2/5</p> <!-- Updated step number -->
-            <button class="btn back-btn tour-prev-btn" data-track-click="Tour Interaction" data-track-prop-action="Back" data-track-prop-step="2">Back</button>
-            <button class="btn tour-next-btn" data-track-click="Tour Interaction" data-track-prop-action="Next" data-track-prop-step="2">Next</button>
+            <p id="tour-step-2-desc">You can add and adjust your net worth by logging monthly entries in the top right corner.</p>
+            <div class="tour-progress"><div class="tour-progress-bar"></div></div>
+            <div class="tour-navigation">
+                <button class="btn back-btn tour-prev-btn">Back</button>
+                <button class="btn tour-next-btn">Next</button>
+            </div>
         </div>
-        <div class="tour-step" id="tour-step-3" data-target="#realEstateSection">
+        <div class="tour-step" id="tour-step-3" data-target="#realEstateSidebarLink" role="document" aria-labelledby="tour-step-3-heading" aria-describedby="tour-step-3-desc">
+            <h2 id="tour-step-3-heading" class="visually-hidden">Step 3: Real Estate</h2>
+            <button class="tour-close-btn" aria-label="Close tour">&times;</button>
             <img src="images/landing/logo.png" alt="Your Logo" class="tour-logo">
-            <p>This is the Real Estate tab where you can log your homes and even track monthly rent collected from your tenants.</p>
-            <p>3/5</p> <!-- Updated step number -->
-            <button class="btn back-btn tour-prev-btn" data-track-click="Tour Interaction" data-track-prop-action="Back" data-track-prop-step="3">Back</button>
-            <button class="btn tour-next-btn" data-track-click="Tour Interaction" data-track-prop-action="Next" data-track-prop-step="3">Next</button>
+            <p id="tour-step-3-desc">Use the 'Real Estate Portfolio' link in the sidebar to log your homes and track rent collected from your tenants.</p>
+            <div class="tour-progress"><div class="tour-progress-bar"></div></div>
+            <div class="tour-navigation">
+                <button class="btn back-btn tour-prev-btn">Back</button>
+                <button class="btn tour-next-btn">Next</button>
+            </div>
         </div>
-        <div class="tour-step" id="tour-step-4">
+        <div class="tour-step" id="tour-step-4" role="document" aria-labelledby="tour-step-4-heading" aria-describedby="tour-step-4-desc">
+            <h2 id="tour-step-4-heading" class="visually-hidden">Step 4: Import Template</h2>
+            <button class="tour-close-btn" aria-label="Close tour">&times;</button>
             <img src="images/landing/logo.png" alt="Your Logo" class="tour-logo">
-            <p>Do you have historical submissions that you'd like to import? Use this template to get started.</p>
-            <p><a href="files/template.xlsx" download="template.xlsx" data-track-click="Download" data-track-prop-file="template.xlsx"><i class="fa fa-download"></i> Template</a></p>
-            <p>4/5</p> <!-- Updated step number -->
-            <button class="btn back-btn tour-prev-btn" data-track-click="Tour Interaction" data-track-prop-action="Back" data-track-prop-step="4">Back</button>
-            <button class="btn tour-next-btn" data-track-click="Tour Interaction" data-track-prop-action="Skip Template" data-track-prop-step="4">Skip This Template</button>
+            <p id="tour-step-4-desc">Do you have historical submissions that you'd like to import? Use this template to get started.</p>
+            <p><a href="files/template.xlsx" download="template.xlsx"><i class="fa fa-download"></i> Template</a></p>
+            <div class="tour-progress"><div class="tour-progress-bar"></div></div>
+            <div class="tour-navigation">
+                <button class="btn back-btn tour-prev-btn">Back</button>
+                <button class="btn tour-next-btn">Skip This Template</button>
+            </div>
         </div>
-        <div class="tour-step" id="tour-step-complete">
+        <div class="tour-step" id="tour-step-complete" role="document" aria-labelledby="tour-step-complete-heading" aria-describedby="tour-step-complete-desc">
+            <h2 id="tour-step-complete-heading" class="visually-hidden">Step 5: Link Accounts</h2>
+            <button class="tour-close-btn" aria-label="Close tour">&times;</button>
             <img src="images/landing/logo.png" alt="Your Logo" class="tour-logo">
-            <p>If you are ready to link your accounts, you can do so here.</p>
-            <p><a class="btn btn-success waves-effect waves-light btn-lg" id="link-button" data-track-click="Link Account" data-track-prop-source="Tour">Securely Link An Account <i class="fa fa-lock"></i></a></p>
-            <p>5/5</p> <!-- Updated step number -->
-            <button class="btn back-btn tour-prev-btn" data-track-click="Tour Interaction" data-track-prop-action="Back" data-track-prop-step="5">Back</button>
-            <button class="btn finish-btn tour-complete-btn" data-track-click="Tour Interaction" data-track-prop-action="Complete" data-track-prop-step="5">Let's Go!</button>
+            <p id="tour-step-complete-desc">If you are ready to link your accounts, you can do so here.</p>
+            <p><a class="btn btn-success waves-effect waves-light btn-lg" id="link-button">Securely Link An Account <i class="fa fa-lock"></i></a></p>
+            <div class="tour-progress"><div class="tour-progress-bar"></div></div>
+            <div class="tour-navigation">
+                <button class="btn back-btn tour-prev-btn">Back</button>
+                <button class="btn finish-btn tour-complete-btn">Let's Go!</button>
+            </div>
             <hr class="text-muted my-3">
-            <p class="powered-by">Powered by <a href="https://plaid.com" target="_blank" data-track-click="External Link" data-track-prop-destination="Plaid">Plaid</a></p>
+            <p class="powered-by">Powered by <a href="https://plaid.com" target="_blank">Plaid</a></p>
         </div>
     </div>
 

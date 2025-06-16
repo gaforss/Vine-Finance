@@ -4,58 +4,81 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 2147483647; /* Very high z-index to ensure the overlay stays on top */
-    display: flex;
+    background-color: rgba(0, 0, 0, 0.5); /* Adjusted for a subtler blur */
+    -webkit-backdrop-filter: blur(3px);
+    backdrop-filter: blur(3px);
+    z-index: 10000; /* Above app content */
+    display: none; /* Hidden by default */
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    box-sizing: border-box;
 }
 
 .tour-step {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 350px; /* Slightly smaller width */
-    width: 90%; /* Ensures responsiveness */
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+    background: #2A3042;
+    color: #E0E0E0;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 400px;
+    width: 90%;
     text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    position: relative; /* Relative position to be centered by the parent */
-    z-index: 2147483647; /* Very high z-index to ensure the modal stays on top */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 10002; /* Above highlight */
+    border: 1px solid #40485D;
+}
+
+.tour-step.active {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+.tour-logo {
+    margin-bottom: 20px;
 }
 
 .tour-step p {
     margin-bottom: 20px;
     font-size: 16px;
-    color: #333;
+    color: #E0E0E0;
+    line-height: 1.6;
 }
 
 .tour-step .btn {
-    background-color: #0070BA;
     border: none;
     color: white;
     padding: 10px 20px;
-    border-radius: 4px;
+    border-radius: 5px;
     cursor: pointer;
     font-size: 14px;
-    margin: 5px;
-    transition: background-color 0.3s;
+    margin: 0;
+    transition: background-color 0.3s, transform 0.2s;
 }
 
 .tour-step .btn:hover {
-    background-color: #005c99;
+    transform: translateY(-2px);
+}
+
+.tour-step .btn.tour-next-btn {
+    background-color: #007BFF;
+}
+
+.tour-step .btn.tour-next-btn:hover {
+    background-color: #0069D9;
 }
 
 .tour-step .btn.back-btn {
-    background-color: #6c757d;
+    background-color: #6C757D;
 }
 
 .tour-step .btn.back-btn:hover {
-    background-color: #5a6268;
+    background-color: #5A6268;
 }
 
 .tour-step .btn.finish-btn {
-    background-color: #28a745;
+    background-color: #28A745;
 }
 
 .tour-step .btn.finish-btn:hover {
@@ -83,18 +106,80 @@
 }
 
 .highlight {
-    position: relative;
-    z-index: 2147483647; /* Ensure highlighted element stays on top */
-    border: 3px solid #0070BA;
-    box-shadow: 0 0 10px rgba(0, 112, 186, 0.5);
-    animation: highlight-animation 0.5s infinite alternate;
+    position: absolute;
+    z-index: 10001; /* Above overlay */
+    border: 2px solid #007BFF;
+    border-radius: 5px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 0 0 rgba(0, 123, 255, 0.7);
+    animation: pulse 2s infinite;
 }
 
-@keyframes highlight-animation {
-    from {
-        box-shadow: 0 0 10px rgba(0, 112, 186, 0.5);
-    }
-    to {
-        box-shadow: 0 0 20px rgba(0, 112, 186, 1);
-    }
+.tour-progress {
+    width: 100%;
+    background-color: #40485D;
+    border-radius: 5px;
+    margin-top: 15px;
+    overflow: hidden;
 }
+
+.tour-progress-bar {
+    width: 0%;
+    height: 8px;
+    background-color: #007BFF;
+    border-radius: 5px;
+    transition: width 0.5s ease-in-out;
+}
+
+.tour-close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: none;
+    color: #E0E0E0;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.tour-close-btn:hover {
+    color: #FFF;
+}
+
+.tour-navigation {
+    display: flex;
+    justify-content: flex-end; /* Default to right-align */
+    align-items: center;
+    width: 100%;
+    margin-top: 25px;
+}
+
+.tour-navigation .back-btn {
+    margin-right: auto; /* Pushes back button to the left */
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(0, 123, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+  }
+}
+
+

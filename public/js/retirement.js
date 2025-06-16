@@ -1,4 +1,33 @@
+// Retirement lifestyle templates
+const retirementTemplates = {
+    conservative: {
+        mortgage: 25,        // Higher housing allocation
+        cars: 5,            // Higher car budget
+        healthCare: 15,     // Higher healthcare focus
+        foodAndDrinks: 12,  // Moderate food budget
+        travelAndEntertainment: 18, // Lower lifestyle spending
+        reinvestedFunds: 25  // Strong reinvestment
+    },
+    moderate: {
+        mortgage: 22,        // Standard housing
+        cars: 3,            // Standard car budget
+        healthCare: 12,     // Standard healthcare
+        foodAndDrinks: 10,  // Standard food budget
+        travelAndEntertainment: 28, // Active lifestyle
+        reinvestedFunds: 25  // Steady reinvestment
+    },
+    aggressive: {
+        mortgage: 20,        // Lower housing
+        cars: 2,            // Lower car budget
+        healthCare: 10,     // Basic healthcare
+        foodAndDrinks: 8,   // Lower food budget
+        travelAndEntertainment: 35, // Higher lifestyle spending
+        reinvestedFunds: 25  // Maintained reinvestment
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
+
     fetchRetirementGoals();
     setupPercentageListeners();
     calculateValues();
@@ -168,6 +197,136 @@ document.addEventListener('DOMContentLoaded', () => {
             preview.classList.add('d-none');
         });
     });
+
+    // Template Application Function
+    function applyRetirementTemplate(templateName) {
+        console.log('Applying template:', templateName);
+        const template = retirementTemplates[templateName];
+        if (!template) {
+            console.error('Template not found:', templateName);
+            return;
+        }
+
+        // Store current values for comparison
+        const currentValues = {
+            mortgage: parseFloat(document.getElementById('mortgage').value) || 0,
+            cars: parseFloat(document.getElementById('cars').value) || 0,
+            healthCare: parseFloat(document.getElementById('healthCare').value) || 0,
+            foodAndDrinks: parseFloat(document.getElementById('foodAndDrinks').value) || 0,
+            travelAndEntertainment: parseFloat(document.getElementById('travelAndEntertainment').value) || 0,
+            reinvestedFunds: parseFloat(document.getElementById('reinvestedFunds').value) || 0
+        };
+
+        // Update all percentage inputs
+        Object.entries(template).forEach(([category, value]) => {
+            console.log(`Updating ${category} to ${value}%`);
+            const input = document.getElementById(category);
+            if (input) {
+                // Set the slider value
+                input.value = value;
+                
+                // Update the percentage display
+                const percentElement = document.getElementById(`${category}Percent`);
+                if (percentElement) {
+                    percentElement.textContent = `${value}%`;
+                }
+                
+                // Update the value input
+                const valueInput = document.getElementById(`${category}ValueInput`);
+                if (valueInput) {
+                    const monthlySpend = parseFloat(document.getElementById('monthlySpend').value) || 0;
+                    const categoryValue = (monthlySpend * value / 100).toFixed(2);
+                    valueInput.value = `$${parseFloat(categoryValue).toLocaleString('en-US')}`;
+                }
+
+                // Update the main display value
+                const displayValue = document.getElementById(`${category}Value`);
+                if (displayValue) {
+                    const monthlySpend = parseFloat(document.getElementById('monthlySpend').value) || 0;
+                    const categoryValue = (monthlySpend * value / 100).toFixed(2);
+                    displayValue.textContent = `$${parseFloat(categoryValue).toLocaleString('en-US')}`;
+                }
+
+                // Trigger input event to ensure all listeners are notified
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+            } else {
+                console.error(`Input element not found for category: ${category}`);
+            }
+        });
+
+        // Update the main display values
+        updatePercentageDisplays();
+        calculateValues();
+        validateTotalPercentage();
+
+        // Show detailed feedback
+        const changes = Object.entries(template).map(([category, value]) => {
+            const diff = value - currentValues[category];
+            return {
+                category: formatCategoryName(category),
+                diff,
+                isPositive: diff > 0,
+                newValue: value
+            };
+        }).filter(change => change.diff !== 0);
+
+        const feedback = document.createElement('div');
+        feedback.className = 'alert alert-success mt-2';
+        feedback.innerHTML = `
+            <h6 class="mb-2">${templateName.charAt(0).toUpperCase() + templateName.slice(1)} Template Applied</h6>
+            <div class="small">
+                ${changes.map(change => `
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>${change.category}:</span>
+                        <span class="${change.isPositive ? 'text-success' : 'text-danger'}">
+                            ${change.isPositive ? '+' : ''}${change.diff}% (${change.newValue}%)
+                        </span>
+                    </div>
+                `).join('')}
+            </div>
+            <div class="mt-2">
+                <small class="text-muted">
+                    <i class="fa fa-info-circle me-1"></i>
+                    ${getTemplateDescription(templateName)}
+                </small>
+            </div>
+            <div class="mt-2">
+                <small class="text-muted">
+                    <i class="fa fa-sliders me-1"></i>
+                    You can fine-tune these values using the sliders above.
+                </small>
+            </div>
+        `;
+
+        const templateCard = document.querySelector(`[data-template="${templateName}"]`).closest('.card-body');
+        if (templateCard) {
+            templateCard.appendChild(feedback);
+            setTimeout(() => feedback.remove(), 5000);
+        }
+    }
+
+    // Helper function to get template description
+    function getTemplateDescription(templateName) {
+        const descriptions = {
+            conservative: "Focuses on essential expenses and financial security",
+            moderate: "Balances essential expenses with lifestyle spending",
+            aggressive: "Prioritizes lifestyle spending and experiences"
+        };
+        return descriptions[templateName] || "";
+    }
+
+    // Helper function to format category names
+    function formatCategoryName(category) {
+        const names = {
+            mortgage: 'Mortgage',
+            cars: 'Cars',
+            healthCare: 'Healthcare',
+            foodAndDrinks: 'Food & Drinks',
+            travelAndEntertainment: 'Entertainment',
+            reinvestedFunds: 'Reinvested'
+        };
+        return names[category] || category;
+    }
 });
 
 async function fetchRetirementProjections() {
@@ -738,33 +897,6 @@ function validateTotalPercentage() {
     }
 }
 
-// Retirement lifestyle templates
-const retirementTemplates = {
-    conservative: {
-        mortgage: 25,        // Higher housing allocation
-        cars: 5,            // Higher car budget
-        healthCare: 15,     // Higher healthcare focus
-        foodAndDrinks: 12,  // Moderate food budget
-        travelAndEntertainment: 18, // Lower lifestyle spending
-        reinvestedFunds: 25  // Strong reinvestment
-    },
-    moderate: {
-        mortgage: 22,        // Standard housing
-        cars: 3,            // Standard car budget
-        healthCare: 12,     // Moderate healthcare
-        foodAndDrinks: 10,  // Standard food budget
-        travelAndEntertainment: 28, // Active lifestyle
-        reinvestedFunds: 25  // Steady reinvestment
-    },
-    aggressive: {
-        mortgage: 20,        // Lower housing
-        cars: 2,            // Lower car budget
-        healthCare: 10,     // Basic healthcare
-        foodAndDrinks: 8,   // Lower food budget
-        travelAndEntertainment: 35, // Higher lifestyle spending
-        reinvestedFunds: 25  // Maintained reinvestment
-    }
-};
 
 // What-If Calculator Functions
 async function calculateWhatIfScenario() {
@@ -821,135 +953,6 @@ async function calculateWhatIfScenario() {
     }
 }
 
-// Template Application Function
-function applyRetirementTemplate(templateName) {
-    console.log('Applying template:', templateName);
-    const template = retirementTemplates[templateName];
-    if (!template) {
-        console.error('Template not found:', templateName);
-        return;
-    }
-
-    // Store current values for comparison
-    const currentValues = {
-        mortgage: parseFloat(document.getElementById('mortgage').value) || 0,
-        cars: parseFloat(document.getElementById('cars').value) || 0,
-        healthCare: parseFloat(document.getElementById('healthCare').value) || 0,
-        foodAndDrinks: parseFloat(document.getElementById('foodAndDrinks').value) || 0,
-        travelAndEntertainment: parseFloat(document.getElementById('travelAndEntertainment').value) || 0,
-        reinvestedFunds: parseFloat(document.getElementById('reinvestedFunds').value) || 0
-    };
-
-    // Update all percentage inputs
-    Object.entries(template).forEach(([category, value]) => {
-        console.log(`Updating ${category} to ${value}%`);
-        const input = document.getElementById(category);
-        if (input) {
-            // Set the slider value
-            input.value = value;
-            
-            // Update the percentage display
-            const percentElement = document.getElementById(`${category}Percent`);
-            if (percentElement) {
-                percentElement.textContent = `${value}%`;
-            }
-            
-            // Update the value input
-            const valueInput = document.getElementById(`${category}ValueInput`);
-            if (valueInput) {
-                const monthlySpend = parseFloat(document.getElementById('monthlySpend').value) || 0;
-                const categoryValue = (monthlySpend * value / 100).toFixed(2);
-                valueInput.value = `$${parseFloat(categoryValue).toLocaleString('en-US')}`;
-            }
-
-            // Update the main display value
-            const displayValue = document.getElementById(`${category}Value`);
-            if (displayValue) {
-                const monthlySpend = parseFloat(document.getElementById('monthlySpend').value) || 0;
-                const categoryValue = (monthlySpend * value / 100).toFixed(2);
-                displayValue.textContent = `$${parseFloat(categoryValue).toLocaleString('en-US')}`;
-            }
-
-            // Trigger input event to ensure all listeners are notified
-            input.dispatchEvent(new Event('input', { bubbles: true }));
-        } else {
-            console.error(`Input element not found for category: ${category}`);
-        }
-    });
-
-    // Update the main display values
-    updatePercentageDisplays();
-    calculateValues();
-    validateTotalPercentage();
-
-    // Show detailed feedback
-    const changes = Object.entries(template).map(([category, value]) => {
-        const diff = value - currentValues[category];
-        return {
-            category: formatCategoryName(category),
-            diff,
-            isPositive: diff > 0,
-            newValue: value
-        };
-    }).filter(change => change.diff !== 0);
-
-    const feedback = document.createElement('div');
-    feedback.className = 'alert alert-success mt-2';
-    feedback.innerHTML = `
-        <h6 class="mb-2">${templateName.charAt(0).toUpperCase() + templateName.slice(1)} Template Applied</h6>
-        <div class="small">
-            ${changes.map(change => `
-                <div class="d-flex justify-content-between mb-1">
-                    <span>${change.category}:</span>
-                    <span class="${change.isPositive ? 'text-success' : 'text-danger'}">
-                        ${change.isPositive ? '+' : ''}${change.diff}% (${change.newValue}%)
-                    </span>
-                </div>
-            `).join('')}
-        </div>
-        <div class="mt-2">
-            <small class="text-muted">
-                <i class="fa fa-info-circle me-1"></i>
-                ${getTemplateDescription(templateName)}
-            </small>
-        </div>
-        <div class="mt-2">
-            <small class="text-muted">
-                <i class="fa fa-sliders me-1"></i>
-                You can fine-tune these values using the sliders above.
-            </small>
-        </div>
-    `;
-
-    const templateCard = document.querySelector(`[data-template="${templateName}"]`).closest('.card-body');
-    if (templateCard) {
-        templateCard.appendChild(feedback);
-        setTimeout(() => feedback.remove(), 5000);
-    }
-}
-
-// Helper function to get template description
-function getTemplateDescription(templateName) {
-    const descriptions = {
-        conservative: "Focuses on essential expenses and financial security",
-        moderate: "Balances essential expenses with lifestyle spending",
-        aggressive: "Prioritizes lifestyle spending and experiences"
-    };
-    return descriptions[templateName] || "";
-}
-
-// Helper function to format category names
-function formatCategoryName(category) {
-    const names = {
-        mortgage: 'Mortgage',
-        cars: 'Cars',
-        healthCare: 'Healthcare',
-        foodAndDrinks: 'Food & Drinks',
-        travelAndEntertainment: 'Entertainment',
-        reinvestedFunds: 'Reinvested'
-    };
-    return names[category] || category;
-}
 
 // Export Functions
 async function exportToPDF() {

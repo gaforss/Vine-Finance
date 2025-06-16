@@ -259,7 +259,6 @@ async function updateUIAfterFetchingBalances(categorizedAccounts, token) {
     const allData = {
         ...categorizedAccounts,
         realEstate: realEstateData.totalEquity, // Use equity, not just value
-        mortgage: realEstateData.totalMortgage,
     };
 
     console.log("Passing combined data to calculateAndDisplayBalances:", allData);
@@ -304,7 +303,6 @@ async function calculateAndDisplayBalances(allData) {
     let insuranceBalance = 0;
     let miscBalance = 0;
     let realEstateValue = parseFloat(allData.realEstate || 0);
-    let mortgageValue = parseFloat(allData.mortgage || 0);
 
     clearAccountLists();
 
@@ -347,8 +345,6 @@ async function calculateAndDisplayBalances(allData) {
         liabilitiesBalance += allData.creditCards.reduce((sum, acc) => sum + parseFloat(acc.amount || acc.balances?.current || 0), 0);
         populateAccountList('creditcards-list', allData.creditCards);
     }
-
-    liabilitiesBalance += mortgageValue;
 
     setFormattedValue('cash', cashBalance);
     setFormattedValue('investments', investmentsBalance);
@@ -983,17 +979,14 @@ async function fetchMiscellaneousAccounts() {
 async function fetchLiabilities() {
     const token = localStorage.getItem('token');
     try {
-        const [loansResponse, realEstateData] = await Promise.all([
-            fetch('/plaid/loans', { headers: { 'Authorization': `Bearer ${token}` } }),
-            fetchRealEstateData()
-        ]);
+        const loansResponse = await fetch('/plaid/loans', { headers: { 'Authorization': `Bearer ${token}` } });
 
         if (!loansResponse.ok) {
             throw new Error('Failed to fetch loans');
         }
 
         const loans = await loansResponse.json();
-        const liabilities = loans.map(loan => loan.balances.current).concat(realEstateData.totalMortgage);
+        const liabilities = loans.map(loan => loan.balances.current);
 
         populateLiabilities(liabilities);
     } catch (error) {

@@ -21,6 +21,81 @@
     <script type="text/javascript">
         mixpanel.init("883554c993442ff0049a280607fd6324");
     </script>
+    <style>
+        .stepper-wrapper {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .stepper-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        .stepper-item::before {
+            position: absolute;
+            content: "";
+            border-bottom: 2px solid #ccc;
+            width: 100%;
+            top: 20px;
+            left: -50%;
+            z-index: 2;
+        }
+        .stepper-item::after {
+            position: absolute;
+            content: "";
+            border-bottom: 2px solid #ccc;
+            width: 100%;
+            top: 20px;
+            left: 50%;
+            z-index: 2;
+        }
+        .stepper-item .step-counter {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ccc;
+            margin-bottom: 6px;
+        }
+        .stepper-item.active .step-counter {
+            background-color: #4a90e2;
+        }
+        .stepper-item.completed .step-counter {
+            background-color: #4caf50;
+        }
+        .stepper-item:first-child::before {
+            content: none;
+        }
+        .stepper-item:last-child::after {
+            content: none;
+        }
+        .form-step {
+            display: none;
+        }
+        .form-step.active {
+            display: block;
+        }
+        .pre-filled-indicator {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-left: 8px;
+            background-color: #28a745;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 16px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body data-sidebar="dark" data-topbar="dark" data-bs-theme="dark">
     <div id="layout-wrapper">
@@ -92,7 +167,6 @@
                             </a>
                         </li>
                         <li>
-                        <li>
                             <a href="/retirement">
                                 <i class="fa fa-flag"></i><span key="t-dashboard">Retirement Planning</span>
                             </a>
@@ -133,57 +207,97 @@
                                         </li>
                                     </ul>
 
+                                    <br>
+
                                     <!-- Tab Content -->
                                     <div class="tab-content" id="myTabContent">
                                         <!-- Manual Entry Pane -->
                                         <div class="tab-pane fade show active" id="manual-entry" role="tabpanel" aria-labelledby="manual-entry-tab">
                                             <div class="accordion-body">
-                                                <button type="button" id="fillFromLastBtn" class="btn btn-info btn-sm mb-3">Fill from Last Month's Entry</button>
+                                                <div id="pre-filled-notice" class="alert alert-info alert-dismissible fade show" role="alert">
+                                                    Some fields are pre-filled from your connected accounts. You can manage these on the <a href="/accounts" class="alert-link">Accounts page</a>.
+                                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                </div>
+
+                                                <br>
+                                                
+                                                <div class="stepper-wrapper">
+                                                    <div class="stepper-item active" data-step="1">
+                                                        <div class="step-counter">1</div>
+                                                        <div class="step-name">Assets</div>
+                                                    </div>
+                                                    <div class="stepper-item" data-step="2">
+                                                        <div class="step-counter">2</div>
+                                                        <div class="step-name">Liabilities</div>
+                                                    </div>
+                                                    <div class="stepper-item" data-step="3">
+                                                        <div class="step-counter">3</div>
+                                                        <div class="step-name">Review</div>
+                                                    </div>
+                                                </div>
                                                 <form id="entryForm">
                                                     <input type="hidden" id="entryId" value="">
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label for="date" class="form-label"><i class="fa fa-calendar"></i> Date</label>
-                                                                <input type="month" id="date" name="date" class="form-control" required>
+                                                    <div class="form-step active" data-step="1">
+                                                        <h5 class="mb-3">Assets</h5>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3">
+                                                                    <label for="date" class="form-label"><i class="fa fa-calendar"></i> Date</label>
+                                                                    <input type="month" id="date" name="date" class="form-control" required>
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="cash" class="form-label"><i class="fa fa-money"></i> Cash <span class="pre-filled-indicator" style="display:none;" title="Pre-filled from connected accounts">✓</span></label>
+                                                                    <input type="text" id="cash" name="cash" step="0.01" class="form-control" required value="0">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="investments" class="form-label"><i class="fa fa-line-chart"></i> Brokerage Accounts <span class="pre-filled-indicator" style="display:none;" title="Pre-filled from connected accounts">✓</span></label>
+                                                                    <input type="text" id="investments" name="investments" step="0.01" class="form-control" required value="0">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="retirementAccounts" class="form-label"><i class="fa fa-line-chart"></i> Retirement Accounts <span class="pre-filled-indicator" style="display:none;" title="Pre-filled from connected accounts">✓</span></label>
+                                                                    <input type="text" id="retirementAccounts" name="retirementAccounts" step="0.01" class="form-control" required value="0">
+                                                                </div>
                                                             </div>
-                                                            <div class="mb-3">
-                                                                <label for="cash" class="form-label"><i class="fa fa-money"></i> Cash</label>
-                                                                <input type="text" id="cash" name="cash" step="0.01" class="form-control" required value="0">
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <label for="investments" class="form-label"><i class="fa fa-calendar"></i> Brokerage Accounts</label>
-                                                                <input type="text" id="investments" name="investments" step="0.01" class="form-control" required value="0">
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <label for="realEstate" class="form-label"><i class="fa fa-home"></i> Real Estate</label>
-                                                                <input type="text" id="realEstate" name="realEstate" step="0.01" class="form-control" required value="0">
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <label for="retirementAccounts" class="form-label"><i class="fa fa-line-chart"></i> Retirement Accounts</label>
-                                                                <input type="text" id="retirementAccounts" name="retirementAccounts" step="0.01" class="form-control" required value="0">
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3">
+                                                                    <label for="realEstate" class="form-label"><i class="fa fa-home"></i> Real Estate <span class="pre-filled-indicator" style="display:none;" title="Pre-filled from Real Estate page">✓</span></label>
+                                                                    <input type="text" id="realEstate" name="realEstate" step="0.01" class="form-control" required value="0">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="vehicles" class="form-label"><i class="fa fa-car"></i> Vehicles</label>
+                                                                    <input type="text" id="vehicles" name="vehicles" step="0.01" class="form-control" required value="0">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="personalProperty" class="form-label"><i class="fa fa-user"></i> Personal Property</label>
+                                                                    <input type="text" id="personalProperty" name="personalProperty" step="0.01" class="form-control" required value="0">
+                                                                </div>
+                                                                <div class="mb-3">
+                                                                    <label for="otherAssets" class="form-label"><i class="fa fa-plus-square"></i> Other</label>
+                                                                    <input type="text" id="otherAssets" name="otherAssets" step="0.01" class="form-control" required value="0">
+                                                                </div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label for="vehicles" class="form-label"><i class="fa fa-car"></i> Vehicles</label>
-                                                                <input type="text" id="vehicles" name="vehicles" step="0.01" class="form-control" required value="0">
+                                                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                                                    </div>
+                                                    <div class="form-step" data-step="2">
+                                                        <h5 class="mb-3">Liabilities</h5>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="mb-3">
+                                                                    <label for="liabilities" class="form-label"><i class="fa fa-credit-card"></i> Liabilities <span class="pre-filled-indicator" style="display:none;" title="Pre-filled from connected accounts">✓</span></label>
+                                                                    <input type="text" id="liabilities" name="liabilities" step="0.01" class="form-control" required value="0">
+                                                                </div>
                                                             </div>
-                                                            <div class="mb-3">
-                                                                <label for="personalProperty" class="form-label"><i class="fa fa-user"></i> Personal Property</label>
-                                                                <input type="text" id="personalProperty" name="personalProperty" step="0.01" class="form-control" required value="0">
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <label for="otherAssets" class="form-label"><i class="fa fa-calendar"></i> Other</label>
-                                                                <input type="text" id="otherAssets" name="otherAssets" step="0.01" class="form-control" required value="0">
-                                                            </div>
-                                                            <div class="mb-3">
-                                                                <label for="liabilities" class="form-label"><i class="fa fa-exclamation"></i> Liabilities</label>
-                                                                <input type="text" id="liabilities" name="liabilities" step="0.01" class="form-control" required value="0">
-                                                            </div>
-                                                            <div id="customFieldsContainer"></div>
-                                                            <button type="submit" class="btn btn-primary">Save Entry</button>
                                                         </div>
+                                                        <div id="customFieldsContainer"></div>
+                                                        <button type="button" class="btn btn-secondary prev-btn">Previous</button>
+                                                        <button type="button" class="btn btn-primary next-btn">Next</button>
+                                                    </div>
+                                                    <div class="form-step" data-step="3">
+                                                        <h5 class="mb-3">Review</h5>
+                                                        <div id="review-summary"></div>
+                                                        <button type="button" class="btn btn-secondary prev-btn">Previous</button>
+                                                        <button type="submit" class="btn btn-success">Save Entry</button>
                                                     </div>
                                                 </form>
                                             </div>
@@ -317,6 +431,7 @@
     <script src="js/simplebar.min.js"></script>
     <script src="js/waves.min.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/stepper.js"></script>
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', async function() {
             await prepopulateData();
@@ -408,25 +523,23 @@
                 console.log('Manual Accounts:', manualAccounts);  // Log to see the fetched manual accounts
 
                 // Combine Plaid and manual accounts
-                const combinedAccounts = combineAccounts(categorizedAccounts, manualAccounts);
-
-                // Populate fields with combined balances, using direct number formatting
-                const formatNumber = (value) => {
-                    return (value || 0).toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2
-                    });
+                const allAccounts = {
+                    depository: [...categorizedAccounts.depository, ...manualAccounts.depository],
+                    investment: [...categorizedAccounts.investment, ...manualAccounts.investment],
+                    loan: [...categorizedAccounts.loan, ...manualAccounts.loan],
+                    credit: [...categorizedAccounts.credit, ...manualAccounts.credit]
                 };
 
-                document.getElementById('cash').value = formatNumber(calculateTotal(combinedAccounts.bankAccounts));
-                document.getElementById('investments').value = formatNumber(calculateTotal(combinedAccounts.investments));
-                document.getElementById('retirementAccounts').value = formatNumber(calculateTotal(combinedAccounts.retirement));
-                document.getElementById('liabilities').value = formatNumber(calculateTotal(combinedAccounts.loans));
-                document.getElementById('vehicles').value = formatNumber(calculateTotal(combinedAccounts.vehicles));
-                document.getElementById('personalProperty').value = formatNumber(calculateTotal(combinedAccounts.personalProperty));
-                document.getElementById('otherAssets').value = formatNumber(calculateTotal(combinedAccounts.miscellaneous));
 
-                console.log('Balances fetched and populated');
+
+                let totalCash = 0;
+                let totalInvestments = 0;
+                let totalLiabilities = 0;
+
+                allAccounts.depository.forEach(account => totalCash += account.balances.current);
+                allAccounts.investment.forEach(account => totalInvestments += account.balances.current);
+                allAccounts.loan.forEach(account => totalLiabilities += account.balances.current);
+                allAccounts.credit.forEach(account => totalLiabilities += account.balances.current);
             } catch (error) {
                 console.error('Error populating balances:', error);
             }

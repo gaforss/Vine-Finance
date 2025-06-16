@@ -520,6 +520,14 @@ async function renderRetirementChart() {
                 }
             },
             yaxis: {
+                title: {
+                    text: 'Net Worth ($)',
+                    style: {
+                        fontSize: '14px',
+                        fontFamily: 'Helvetica, Arial, sans-serif',
+                        color: '#9aa0ac'
+                    }
+                },
                 labels: {
                     style: {
                         fontSize: '12px',

@@ -1,6 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const XLSX = require('xlsx');
+const exceljs = require('exceljs');
 const { protect } = require('../middleware/authMiddleware');
 const mongoose = require('mongoose');
 const fs = require('fs');
@@ -10,6 +11,32 @@ const mixpanel = require('../mixpanel');
 
 const router = express.Router();
 const upload = multer({ dest: 'uploads/' });
+
+router.get('/template', (req, res) => {
+    const workbook = new exceljs.Workbook();
+    const worksheet = workbook.addWorksheet('Data-Import-Template');
+
+    const headers = [
+        'Date',
+        'Checking Account', 'Savings Account', 'Money Market Account',
+        'Brokerage Account', 'Mutual Funds', 'Stocks', 'Bonds', 'Exchange-Traded Funds (ETFs)', 'Certificates of Deposit (CDs)', 'Treasury Bonds',
+        'Primary Residence', 'Rental Properties', 'Vacation Home', 'Commercial Real Estate',
+        '401(k)', '403(b)', 'Traditional IRA', 'Roth IRA', 'SEP IRA', 'SIMPLE IRA', 'Pension', 'Annuities', 'Thrift Savings Plan (TSP)', 'Rollover IRA',
+        'Cars', 'Motorcycles', 'Boats', 'Recreational Vehicles (RVs)', 'Airplanes',
+        'Jewelry', 'Art', 'Antiques', 'Collectibles', 'Electronics', 'Furniture',
+        'Business Ownership', 'Intellectual Property', 'Cryptocurrency', 'Livestock', 'Equipment and Machinery',
+        'Mortgage', 'Mortgage2', 'Home Equity Line of Credit (HELOC)', 'Car Loans', 'Student Loans', 'Credit Card Debt', 'Personal Loans', 'Medical Debt', 'Business Loans'
+    ];
+
+    worksheet.columns = headers.map(header => ({ header, key: header, width: 25 }));
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="Vine-Finance-Import-Template.xlsx"');
+
+    workbook.xlsx.write(res).then(() => {
+        res.end();
+    });
+});
 
 router.post('/', protect, upload.single('file'), async (req, res) => {
     try {

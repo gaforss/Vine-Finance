@@ -288,15 +288,22 @@ document.getElementById('uploadForm').addEventListener('submit', async function(
 
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
+    const uploadStatusDiv = document.getElementById('uploadStatus');
+
+    if (!file) {
+        showUploadStatus('Please select a file to upload.', true);
+        return;
+    }
+
     const formData = new FormData();
     formData.append('file', file);
 
     const token = localStorage.getItem('token');
     const headers = { 'Authorization': `Bearer ${token}` };
 
-    console.log('File selected:', file);
-    console.log('Form data:', formData);
-    console.log('Headers for request:', headers);
+    // Show a loading spinner and clear previous status
+    uploadStatusDiv.innerHTML = '<div class="d-flex align-items-center"><strong>Uploading...</strong><div class="spinner-border ms-auto" role="status" aria-hidden="true"></div></div>';
+    uploadStatusDiv.className = 'mt-3 alert alert-info';
 
     try {
         const response = await fetch('/import', {
@@ -305,53 +312,27 @@ document.getElementById('uploadForm').addEventListener('submit', async function(
             body: formData
         });
 
-        console.log('Response status:', response.status);
         const result = await response.json();
-        console.log('Upload result:', result);
-        alert(result.message);
         if (response.ok) {
-            console.log('Result data:', result.data);
-            populateUploadedData(result.data);
+            showUploadStatus('Data imported successfully!', false);
+            await fetchEntries(); // Refresh the data table
+            document.getElementById('uploadForm').reset();
+        } else {
+            showUploadStatus(result.message || 'An unknown error occurred during import.', true);
         }
     } catch (error) {
         console.error('Error during upload:', error);
-        alert('Error during upload: ' + error.message);
+        showUploadStatus('An unexpected network error occurred. Please try again.', true);
     }
 });
 
-function populateUploadedData(data) {
-    if (!data) {
-        console.error('No data received to populate');
-        return;
+function showUploadStatus(message, isError = false) {
+    const statusDiv = document.getElementById('uploadStatus');
+    if (statusDiv) {
+        statusDiv.textContent = message;
+        statusDiv.className = 'mt-3 alert';
+        statusDiv.classList.add(isError ? 'alert-danger' : 'alert-success');
     }
-
-    console.log('Data received to populate:', data);
-
-    const transactionsTable = $('#transactionsTable').DataTable();
-    console.log('Updating DataTable with uploaded data:', transactionsTable);
-    transactionsTable.clear().draw();
-
-    data.forEach(entry => {
-        const dateObj = new Date(entry.date);
-        const formattedDate = isNaN(dateObj) ? 'Invalid Date' : dateObj.toLocaleDateString('en-US', { timeZone: 'UTC' });
-        
-        const rowData = [
-            dateObj.getTime(), // Hidden column for sorting
-            formattedDate,
-            (entry.cash || 0).toFixed(2),
-            (entry.investments || 0).toFixed(2),
-            (entry.realEstate || 0).toFixed(2),
-            (entry.retirementAccounts || 0).toFixed(2),
-            (entry.vehicles || 0).toFixed(2),
-            (entry.personalProperty || 0).toFixed(2),
-            (entry.otherAssets || 0).toFixed(2),
-            (entry.liabilities || 0).toFixed(2),
-            ((entry.cash || 0) + (entry.investments || 0) + (entry.realEstate || 0) + (entry.retirementAccounts || 0) + (entry.vehicles || 0) + (entry.personalProperty || 0) + (entry.otherAssets || 0) - (entry.liabilities || 0)).toFixed(2),
-            `<button class="btn btn-warning btn-sm" onclick="editEntry('${entry._id}')"> <i class="fa fa-edit"></i> </button>
-             <button class="btn btn-danger btn-sm" onclick="deleteEntry('${entry._id}')"><i class="fa fa-close"></i> </button>`
-        ];
-        transactionsTable.row.add(rowData).draw();
-    });
 }
 
 async function deleteEntry(id) {

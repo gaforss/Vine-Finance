@@ -123,107 +123,85 @@
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <!-- First Accordion -->
-                                    <div class="accordion" id="accordionOne">
-                                        <div class="accordion-item">
-                                            <h2 class="accordion-header" id="headingOne-1">
-                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne-1" aria-expanded="false" aria-controls="collapseOne-1">
-                                                    <i class="fa fa-calendar"></i> | Complete Monthly Entry
-                                                </button>
-                                            </h2>
-                                            <div id="collapseOne-1" class="accordion-collapse collapse" aria-labelledby="headingOne-1" data-bs-parent="#accordionOne">
-                                                <div class="accordion-body">
-                                                    <button type="button" id="fillFromLastBtn" class="btn btn-info btn-sm mb-3">Fill from Last Month's Entry</button>
-                                                    <form id="entryForm">
-                                                        <input type="hidden" id="entryId" value="">
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <div class="mb-3">
-                                                                    <label for="date" class="form-label">
-                                                                        <i class="fa fa-calendar"></i> Date
-                                                                    </label>
-                                                                    <input type="month" id="date" name="date" class="form-control" required>
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="cash" class="form-label">
-                                                                        <i class="fa fa-money"></i> Cash
-                                                                    </label>
-                                                                    <input type="text" id="cash" name="cash" step="0.01" class="form-control" required value="0">
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="investments" class="form-label">
-                                                                        <i class="fa fa-calendar"></i> Brokerage Accounts
-                                                                    </label>
-                                                                    <input type="text" id="investments" name="investments" step="0.01" class="form-control" required value="0">
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="realEstate" class="form-label">
-                                                                        <i class="fa fa-home"></i> Real Estate
-                                                                    </label>
-                                                                    <input type="text" id="realEstate" name="realEstate" step="0.01" class="form-control" required value="0">
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="retirementAccounts" class="form-label">
-                                                                        <i class="fa fa-line-chart"></i> Retirement Accounts
-                                                                    </label>
-                                                                    <input type="text" id="retirementAccounts" name="retirementAccounts" step="0.01" class="form-control" required value="0">
-                                                                </div>
+                                    <!-- Tab Navigation -->
+                                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link active" id="manual-entry-tab" data-bs-toggle="tab" data-bs-target="#manual-entry" type="button" role="tab" aria-controls="manual-entry" aria-selected="true">Manual Entry</button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="import-file-tab" data-bs-toggle="tab" data-bs-target="#import-file" type="button" role="tab" aria-controls="import-file" aria-selected="false">Import from File</button>
+                                        </li>
+                                    </ul>
+
+                                    <!-- Tab Content -->
+                                    <div class="tab-content" id="myTabContent">
+                                        <!-- Manual Entry Pane -->
+                                        <div class="tab-pane fade show active" id="manual-entry" role="tabpanel" aria-labelledby="manual-entry-tab">
+                                            <div class="accordion-body">
+                                                <button type="button" id="fillFromLastBtn" class="btn btn-info btn-sm mb-3">Fill from Last Month's Entry</button>
+                                                <form id="entryForm">
+                                                    <input type="hidden" id="entryId" value="">
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="date" class="form-label"><i class="fa fa-calendar"></i> Date</label>
+                                                                <input type="month" id="date" name="date" class="form-control" required>
                                                             </div>
-                                                            <div class="col-md-6">
-                                                                <div class="mb-3">
-                                                                    <label for="vehicles" class="form-label">
-                                                                        <i class="fa fa-car"></i> Vehicles
-                                                                    </label>
-                                                                    <input type="text" id="vehicles" name="vehicles" step="0.01" class="form-control" required value="0">
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="personalProperty" class="form-label">
-                                                                        <i class="fa fa-user"></i> Personal Property
-                                                                    </label>
-                                                                    <input type="text" id="personalProperty" name="personalProperty" step="0.01" class="form-control" required value="0">
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="otherAssets" class="form-label">
-                                                                        <i class="fa fa-calendar"></i> Other
-                                                                    </label>
-                                                                    <input type="text" id="otherAssets" name="otherAssets" step="0.01" class="form-control" required value="0">
-                                                                </div>
-                                                                <div class="mb-3">
-                                                                    <label for="liabilities" class="form-label">
-                                                                        <i class="fa fa-exclamation"></i> Liabilities
-                                                                    </label>
-                                                                    <input type="text" id="liabilities" name="liabilities" step="0.01" class="form-control" required value="0">
-                                                                </div>
-                                                                <div id="customFieldsContainer"></div>
-                                                                <button type="submit" class="btn btn-primary">Save Entry</button>
+                                                            <div class="mb-3">
+                                                                <label for="cash" class="form-label"><i class="fa fa-money"></i> Cash</label>
+                                                                <input type="text" id="cash" name="cash" step="0.01" class="form-control" required value="0">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="investments" class="form-label"><i class="fa fa-calendar"></i> Brokerage Accounts</label>
+                                                                <input type="text" id="investments" name="investments" step="0.01" class="form-control" required value="0">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="realEstate" class="form-label"><i class="fa fa-home"></i> Real Estate</label>
+                                                                <input type="text" id="realEstate" name="realEstate" step="0.01" class="form-control" required value="0">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="retirementAccounts" class="form-label"><i class="fa fa-line-chart"></i> Retirement Accounts</label>
+                                                                <input type="text" id="retirementAccounts" name="retirementAccounts" step="0.01" class="form-control" required value="0">
                                                             </div>
                                                         </div>
-                                                    </form>
-                                                </div>
+                                                        <div class="col-md-6">
+                                                            <div class="mb-3">
+                                                                <label for="vehicles" class="form-label"><i class="fa fa-car"></i> Vehicles</label>
+                                                                <input type="text" id="vehicles" name="vehicles" step="0.01" class="form-control" required value="0">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="personalProperty" class="form-label"><i class="fa fa-user"></i> Personal Property</label>
+                                                                <input type="text" id="personalProperty" name="personalProperty" step="0.01" class="form-control" required value="0">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="otherAssets" class="form-label"><i class="fa fa-calendar"></i> Other</label>
+                                                                <input type="text" id="otherAssets" name="otherAssets" step="0.01" class="form-control" required value="0">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="liabilities" class="form-label"><i class="fa fa-exclamation"></i> Liabilities</label>
+                                                                <input type="text" id="liabilities" name="liabilities" step="0.01" class="form-control" required value="0">
+                                                            </div>
+                                                            <div id="customFieldsContainer"></div>
+                                                            <button type="submit" class="btn btn-primary">Save Entry</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <hr>
-
-                                    <!-- Second Accordion -->
-                                    <div class="accordion" id="accordionTwo">
-                                        <div class="accordion-item">
-                                            <h2 class="accordion-header" id="headingOne-2">
-                                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne-2" aria-expanded="false" aria-controls="collapseOne-2">
-                                                    <i class="fa fa-upload"></i> | Import Data File
-                                                </button>
-                                            </h2>
-                                            <div id="collapseOne-2" class="accordion-collapse collapse" aria-labelledby="headingOne-2" data-bs-parent="#accordionTwo">
-                                                <div class="accordion-body">
-                                                    <form id="uploadForm" enctype="multipart/form-data">
-                                                        <div class="mb-3">
-                                                            <label for="fileInput" class="form-label">Select Excel File:</label>
-                                                            <input type="file" id="fileInput" name="file" class="form-control" accept=".xlsx, .xls" required>
-                                                        </div>
-                                                        <button type="submit" class="btn btn-success">Upload</button>
-                                                    </form>
-                                                </div>
+                                        <!-- Import from File Pane -->
+                                        <div class="tab-pane fade" id="import-file" role="tabpanel" aria-labelledby="import-file-tab">
+                                            <div class="accordion-body">
+                                                <p>To import your data, please use an Excel file (.xlsx or .xls) with the same columns as the manual entry form. You can download a template to get started.</p>
+                                                <a href="/import/template" class="btn btn-secondary mb-3"><i class="fa fa-download"></i> Download Template</a>
+                                                <form id="uploadForm" enctype="multipart/form-data">
+                                                    <div class="mb-3">
+                                                        <label for="fileInput" class="form-label">Select Excel File:</label>
+                                                        <input type="file" id="fileInput" name="file" class="form-control" accept=".xlsx, .xls" required>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-success">Upload</button>
+                                                    <div id="uploadStatus" class="mt-3"></div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>

@@ -135,6 +135,8 @@ const budgetingRouter = require('./routes/budgeting');
 const snapshotRouter = require('./routes/snapshot');
 
 app.use('/entries', protect, entriesRouter);
+const templateRouter = require('./routes/import');
+app.use('/import', templateRouter);
 app.use('/import', protect, importRouter);
 app.use('/auth', authRouter);
 app.use('/password', passwordRouter);

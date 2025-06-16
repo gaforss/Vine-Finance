@@ -26,14 +26,14 @@ const retirementTemplates = {
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
 
-    fetchRetirementGoals();
+    await fetchRetirementGoals();
     setupPercentageListeners();
     calculateValues();
-    renderRetirementChart();
-    fetchAssumedMonthlyBudget();
-    renderNetWorthComparisonChart();
+    const { goalMet } = await renderRetirementChart();
+    await fetchAssumedMonthlyBudget();
+    await renderNetWorthComparisonChart(goalMet);
 
     // <a href="/retirement#openRetirementGoals">Review Your Retirement Goals</a>
 
@@ -43,13 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.show();
     }
 
-    // What-If Calculator
-    document.getElementById('whatIfCalculate')?.addEventListener('click', calculateWhatIfScenario);
-    document.getElementById('whatIfReset')?.addEventListener('click', () => {
-        document.getElementById('whatIfRetirementAge').value = '';
-        document.getElementById('whatIfMonthlySpend').value = '';
-        document.getElementById('whatIfResults').innerHTML = '<h5>Scenario Results</h5>';
-    });
+
 
     // Templates
     document.querySelectorAll('.apply-template').forEach(button => {
@@ -392,7 +386,19 @@ async function fetchRetirementProjections() {
         // Update the DOM with intersection age or shortfall message
         const outcomeElement = document.getElementById('retirement-outcome');
         if (data.goalMet) {
-            outcomeElement.innerHTML = `<p class="font-size-16 text">Given your age and goals, you can retire by <b><span id="intersectionAge" class="text-success font-size-22">${data.intersectionAge}</span></b>!</p>`;
+            outcomeElement.innerHTML = `
+                <div class="card text-center border-success">
+                    <div class="card-body">
+                        <i class="fa fa-check-circle text-success fa-3x mb-3"></i>
+                        <h4 class="card-title">You're On Track for Retirement!</h4>
+                        <p class="card-text fs-5">Based on your current plan, you can retire by age</p>
+                        <h1 class="display-1 text-success">${data.intersectionAge}</h1>
+                    </div>
+                    <div class="card-footer text-muted">
+                        Keep up the great work! Consider reviewing your goals periodically to stay on course.
+                    </div>
+                </div>
+            `;
         } else {
             outcomeElement.innerHTML = `
                 <div class="alert alert-warning">
@@ -481,6 +487,19 @@ async function renderRetirementChart() {
                     opacity: 0.2
                 }
             },
+            stroke: {
+                curve: 'smooth',
+                width: 2
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.7,
+                    opacityTo: 0.9,
+                    stops: [0, 90, 100]
+                }
+            },
             series: seriesData,
             xaxis: {
                 type: 'category',
@@ -501,14 +520,6 @@ async function renderRetirementChart() {
                 }
             },
             yaxis: {
-                title: {
-                    text: 'Net Worth ($)',
-                    style: {
-                        fontSize: '14px',
-                        fontFamily: 'Helvetica, Arial, sans-serif',
-                        color: '#9aa0ac'
-                    }
-                },
                 labels: {
                     style: {
                         fontSize: '12px',
@@ -596,11 +607,14 @@ async function renderRetirementChart() {
         const chart = new ApexCharts(document.querySelector("#retirementChart"), options);
         await chart.render();
 
+        return { goalMet };
+
         // Display the intersection age
         document.getElementById('intersectionAge').textContent = intersectionAge.toLocaleString('en-US');
 
     } catch (error) {
         console.error('Error rendering retirement chart:', error);
+        return { goalMet: false };
     }
 }
 
@@ -690,7 +704,7 @@ async function fetchNetWorthComparison() {
     }
 }
 
-async function renderNetWorthComparisonChart(ageBracket) {
+async function renderNetWorthComparisonChart(goalMet, ageBracket) {
     try {
         const data = await fetchNetWorthComparison(ageBracket);
         console.log('Rendering net worth comparison chart with data:', data);
@@ -703,6 +717,36 @@ async function renderNetWorthComparisonChart(ageBracket) {
         let percentage = (userNetWorth / ageGroupAverage) * 100;
         percentage = Math.min(percentage, 100); // Cap the percentage at 100
         percentage = parseFloat(percentage.toFixed(2));
+
+        const insightsContainer = document.getElementById('comparisonInsights');
+        let insightMessage = '';
+        let insightColorClass = '';
+
+        if (goalMet) {
+            if (percentage > 100) {
+                insightMessage = `Excellent! You're exceeding the top 10% of your peers and are on track to meet your retirement goals. Your financial planning is outstanding.`;
+                insightColorClass = 'text-success';
+            } else if (percentage >= 75) {
+                insightMessage = `You're doing great, ranking in the top 25% of your peers and on track for your retirement goals. Keep up the great work!`;
+                insightColorClass = 'text-info';
+            } else {
+                insightMessage = `You're on track to meet your retirement goals! While you're currently tracking behind some peers, your personal plan is solid.`;
+                insightColorClass = 'text-primary';
+            }
+        } else {
+            if (percentage > 100) {
+                insightMessage = `You are ahead of your peers, which is great, but you are not on track to meet your ambitious retirement goals. Let's adjust your plan to close the gap.`;
+                insightColorClass = 'text-warning';
+            } else if (percentage >= 50) {
+                insightMessage = `You're tracking with your peers, but your current plan shows a shortfall for your retirement goals. Let's focus on increasing your savings rate.`;
+                insightColorClass = 'text-warning';
+            } else {
+                insightMessage = `There is a significant gap compared to your peers, and you are not on track to meet your retirement goals. It's time to take action and revise your financial strategy.`;
+                insightColorClass = 'text-danger';
+            }
+        }
+
+        insightsContainer.innerHTML = `<p class="${insightColorClass}">${insightMessage}</p>`;
 
         const options = {
             chart: {
@@ -738,23 +782,17 @@ async function renderNetWorthComparisonChart(ageBracket) {
                         }
                     },
                     dataLabels: {
-                        show: true,
                         name: {
-                            fontSize: '12px',
-                            color: '#888',
-                            offsetY: -10
+                            show: false,
                         },
                         value: {
+                            fontSize: '32px',
+                            offsetY: 10,
                             formatter: function (val) {
                                 return val + "%";
-                            },
-                            color: '#111',
-                            fontSize: '20px',
-                            fontWeight: 'bold',
-                            show: true,
-                            offsetY: 10,
+                            }
                         }
-                    }
+                    },
                 }
             },
             fill: {
@@ -962,61 +1000,6 @@ function validateTotalPercentage() {
     }
 }
 
-
-// What-If Calculator Functions
-async function calculateWhatIfScenario() {
-    const retirementAge = parseInt(document.getElementById('whatIfRetirementAge').value);
-    const monthlySpend = parseFloat(document.getElementById('whatIfMonthlySpend').value);
-    
-    if (!retirementAge || !monthlySpend) {
-        alert('Please enter both retirement age and monthly spend for the scenario');
-        return;
-    }
-
-    try {
-        const userId = await getUserId();
-        const currentGoals = await fetch(`/retirement/goals?userId=${userId}`).then(r => r.json());
-        const currentAge = currentGoals.currentAge;
-        
-        // Calculate new required savings
-        const retirementDuration = Math.max(30, 85 - retirementAge);
-        const annualSpend = monthlySpend * 12;
-        const requiredSavings = annualSpend * retirementDuration;
-        
-        // Calculate new intersection age
-        const { projections } = await fetchRetirementProjections();
-        const fivePercentProjection = projections.find(p => p.rate === 5);
-        const newIntersectionAge = fivePercentProjection.data.find(d => d.value >= requiredSavings)?.year || 'N/A';
-        
-        // Update results display
-        const resultsDiv = document.getElementById('whatIfResults');
-        const currentIntersectionAge = document.getElementById('intersectionAge').textContent;
-        
-        let differenceText = '';
-        if (newIntersectionAge !== 'N/A' && currentIntersectionAge !== 'N/A') {
-            const diff = newIntersectionAge - parseInt(currentIntersectionAge);
-            differenceText = diff > 0 
-                ? `This scenario would delay your retirement by ${diff} years`
-                : `This scenario would allow you to retire ${Math.abs(diff)} years earlier`;
-        }
-        
-        resultsDiv.innerHTML = `
-            <h5>Scenario Results</h5>
-            <div class="mb-2">
-                <strong>New Retirement Date:</strong> Age ${newIntersectionAge}
-            </div>
-            <div class="mb-2">
-                <strong>Required Savings:</strong> $${requiredSavings.toLocaleString('en-US')}
-            </div>
-            <div class="mb-2">
-                <strong>Impact:</strong> ${differenceText}
-            </div>
-        `;
-    } catch (error) {
-        console.error('Error calculating what-if scenario:', error);
-        alert('Error calculating scenario. Please try again.');
-    }
-}
 
 
 // Export Functions

@@ -108,63 +108,28 @@
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-md-9">
-                            <div class="card" id="retirementChartSection">
-                                <div class="card-body">
+                            <div class="card h-100" id="retirementChartSection">
+                                <div class="card-body d-flex flex-column">
                                     <h4 class="card-title mb-4">
                                         <i class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="This chart shows the projected retirement savings required based on your specified budget, age, and retirement goals."></i> How Am I Tracking? | <a href="#" data-bs-toggle="modal" data-bs-target="#retirementGoalsModal">Review Goals</a>
                                     </h4>
-                                    <div id="retirementChart" class="apex-charts" dir="ltr"></div>
+                                    <div id="retirementChart" class="apex-charts flex-grow-1" dir="ltr"></div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="card">
-                                <div class="card-body">
+                            <div class="card h-100">
+                                <div class="card-body d-flex flex-column">
                                     <h4 class="card-title mb-4">
                                         <i class="fa fa-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="This chart shows how you are tracking against the top 10% of your peers in your same age bracket."></i> How Do I Compare?</h4>
-                                    <div id="netWorthComparisonChart" class="apex-charts"></div>
+                                    <div id="netWorthComparisonChart" class="apex-charts flex-grow-1"></div>
+                                    <div id="comparisonInsights" class="mt-3"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-3">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="card">
-                                        <div class="card-body">
-                                            <h4 class="card-title mb-4">
-                                                <i class="fa fa-calculator" data-bs-toggle="tooltip" data-bs-placement="top" title="Try different scenarios to see how they affect your retirement date"></i> What-If Calculator</h4>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label for="whatIfRetirementAge" class="form-label">Try Different Retirement Age</label>
-                                                        <input type="number" id="whatIfRetirementAge" class="form-control" min="40" max="85">
-                                                        <small class="text-muted">See how retiring earlier or later affects your required savings</small>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label for="whatIfMonthlySpend" class="form-label">Try Different Monthly Spend</label>
-                                                        <input type="number" id="whatIfMonthlySpend" class="form-control" min="1000" step="any">
-                                                        <small class="text-muted">See how different spending levels affect your retirement date</small>
-                                                    </div>
-                                                    <button id="whatIfCalculate" class="btn btn-primary" data-track-click="What-If Calculator">Calculate Scenario</button>
-                                                    <button id="whatIfReset" class="btn btn-secondary ms-2">Reset to Current Goals</button>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div id="whatIfResults" class="p-3 bg-light rounded">
-                                                        <h5>Scenario Results</h5>
-                                                        <div id="whatIfNewRetirementDate" class="mb-2"></div>
-                                                        <div id="whatIfRequiredSavings" class="mb-2"></div>
-                                                        <div id="whatIfDifference" class="mb-2"></div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-9">
+                        <div class="col-md-12">
                             <div class="row">
                                 <div class="col-lg-12">
                                     <div id="retirement-outcome" class="mt-4"></div>

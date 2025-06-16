@@ -130,6 +130,55 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Save Goals
+    document.getElementById('retirementGoalsForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const form = e.target;
+        const formData = new FormData(form);
+        const goals = Object.fromEntries(formData.entries());
+        goals.userId = await getUserId();
+
+        const totalPercentage = ['mortgage', 'cars', 'healthCare', 'foodAndDrinks', 'travelAndEntertainment', 'reinvestedFunds']
+            .reduce((sum, key) => sum + (parseFloat(goals[key]) || 0), 0);
+
+        if (Math.round(totalPercentage) !== 100) {
+            alert('The total percentage of all categories must be exactly 100%. Please adjust the sliders.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/retirement/goals', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(goals)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to save retirement goals.');
+            }
+
+            const modalElement = document.getElementById('retirementGoalsModal');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            }
+
+            alert('Retirement goals saved successfully!');
+
+            // Refresh all data and charts
+            await fetchRetirementGoals();
+            await calculateValues();
+            await renderRetirementChart();
+            await renderNetWorthComparisonChart();
+
+        } catch (error) {
+            console.error('Error saving retirement goals:', error);
+            alert(`Error: ${error.message}`);
+        }
+    });
+
     // Template hover preview functionality
     document.querySelectorAll('.template-card').forEach(card => {
         const templateName = card.dataset.template;

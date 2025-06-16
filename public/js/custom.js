@@ -147,6 +147,12 @@ async function fetchUserData() {
 }
 
 async function populateSessionActivity() {
+    const sessionActivityList = document.getElementById('sessionActivityList');
+    // If the element doesn't exist on the page, don't proceed
+    if (!sessionActivityList) {
+        return;
+    }
+
     const token = localStorage.getItem('token');
     try {
         console.log('Fetching user session activity');
@@ -160,12 +166,6 @@ async function populateSessionActivity() {
         if (response.ok) {
             const userData = await response.json();
             console.log('User data received:', userData);
-
-            const sessionActivityList = document.getElementById('sessionActivityList');
-            if (!sessionActivityList) {
-                console.error('Session activity list element not found in the DOM.');
-                return;
-            }
 
             sessionActivityList.innerHTML = ''; // Clear any existing items
 

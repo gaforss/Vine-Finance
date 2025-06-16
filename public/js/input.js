@@ -53,6 +53,29 @@ window.exportTableData = function() {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
+    const fillFromLastBtn = document.getElementById('fillFromLastBtn');
+    if (fillFromLastBtn) {
+        fillFromLastBtn.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/entries/last');
+                if (response.ok) {
+                    const lastEntry = await response.json();
+                    if (lastEntry) {
+                        document.getElementById('cash').value = lastEntry.cash;
+                        document.getElementById('creditCardDebt').value = lastEntry.creditCardDebt;
+                        document.getElementById('investments').value = lastEntry.investments;
+                        document.getElementById('loans').value = lastEntry.loans;
+                        document.getElementById('otherAssets').value = lastEntry.otherAssets;
+                                                document.getElementById('otherLiabilities').value = lastEntry.otherLiabilities;
+                    }
+                } else {
+                    console.error('Failed to fetch last entry');
+                }
+            } catch (error) {
+                console.error('Error fetching last entry:', error);
+            }
+        });
+    }
     console.log('DOMContentLoaded event triggered');
     let transactionsTable;
     

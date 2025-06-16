@@ -200,4 +200,18 @@ router.delete('/deleteDummyData/:userId', async (req, res) => {
     }
 });
 
+// Fetch the last entry for the logged-in user
+router.get('/last', protect, async (req, res) => {
+    try {
+        const lastEntry = await NetWorth.findOne({ user: req.user._id }).sort({ date: 'desc' });
+        if (!lastEntry) {
+            return res.status(404).send('No entries found');
+        }
+        res.json(lastEntry);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error fetching last entry');
+    }
+});
+
 module.exports = router;

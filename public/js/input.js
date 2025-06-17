@@ -1,5 +1,6 @@
 // Make exportTableData function globally available
 window.exportTableData = function() {
+    mixpanel.track('Export All Data Clicked');
     console.log('Export function called');
     try {
         const table = $('#transactionsTable').DataTable();
@@ -53,6 +54,34 @@ window.exportTableData = function() {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Mixpanel User Identification & Page View Tracking
+    try {
+        const token = localStorage.getItem('token');
+        if (token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+            }).join(''));
+            
+            const user = JSON.parse(jsonPayload);
+            if (user.id) {
+                mixpanel.identify(user.id);
+                mixpanel.people.set({
+                    '$name': user.name, // Assuming name is in the payload
+                    '$email': user.email // Assuming email is in the payload
+                });
+                console.log('Mixpanel user identified:', user.id);
+            }
+        }
+    } catch (e) {
+        console.error('Error identifying user for Mixpanel:', e);
+    }
+
+    mixpanel.track('Page Viewed', {
+        'Page Name': 'Input Information'
+    });
+    console.log('Mixpanel event tracked: Page Viewed');
     const fillFromLastBtn = document.getElementById('fillFromLastBtn');
     if (fillFromLastBtn) {
         fillFromLastBtn.addEventListener('click', async () => {
@@ -248,5 +277,33 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.log('DataTable already initialized, getting existing instance');
         transactionsTable = $('#transactionsTable').DataTable();
+    }
+
+    const entryForm = document.getElementById('entryForm');
+    if (entryForm) {
+        entryForm.addEventListener('submit', function() {
+            mixpanel.track('Manual Entry Submitted');
+        });
+    }
+
+    const uploadForm = document.getElementById('uploadForm');
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', function() {
+            mixpanel.track('File Uploaded');
+        });
+    }
+
+    const manualEntryTab = document.getElementById('manual-entry-tab');
+    if (manualEntryTab) {
+        manualEntryTab.addEventListener('click', function() {
+            mixpanel.track('Tab Clicked', { 'Tab Name': 'Manual Entry' });
+        });
+    }
+
+    const importFileTab = document.getElementById('import-file-tab');
+    if (importFileTab) {
+        importFileTab.addEventListener('click', function() {
+            mixpanel.track('Tab Clicked', { 'Tab Name': 'Import from File' });
+        });
     }
 }); 

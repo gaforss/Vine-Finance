@@ -64,6 +64,9 @@ function setFormattedValue(elementId, value) {
 }
 
 async function deleteDummyData() {
+    if (typeof mixpanel !== 'undefined') {
+        mixpanel.track('Delete Demo Data Clicked');
+    }
     try {
         const userId = await getUserId();
         const response = await fetch(`/entries/deleteDummyData/${userId}`, {

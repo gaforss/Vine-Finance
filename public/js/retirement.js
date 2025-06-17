@@ -375,250 +375,150 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function fetchRetirementProjections() {
     try {
         const userId = await getUserId();
-        console.log(`Fetching projections for User ID: ${userId}`);
         const response = await fetch(`/retirement/projections?userId=${userId}`);
         if (!response.ok) {
             throw new Error('Failed to fetch retirement projections');
         }
         const data = await response.json();
         console.log('Fetched Projections:', data);
-
-        // Update the DOM with intersection age or shortfall message
-        const outcomeElement = document.getElementById('retirement-outcome');
-        if (data.goalMet) {
-            outcomeElement.innerHTML = `
-                <div class="card text-center border-success">
-                    <div class="card-body">
-                        <i class="fa fa-check-circle text-success fa-3x mb-3"></i>
-                        <h4 class="card-title">You're On Track for Retirement!</h4>
-                        <p class="card-text fs-5">Based on your current plan, you can retire by age</p>
-                        <h1 class="display-1 text-success">${data.intersectionAge}</h1>
-                    </div>
-                    <div class="card-footer text-muted">
-                        Keep up the great work! Consider reviewing your goals periodically to stay on course.
-                    </div>
-                </div>
-            `;
-        } else {
-            outcomeElement.innerHTML = `
-                <div class="alert alert-warning">
-                    <h5 class="alert-heading">You're Not Quite on Track</h5>
-                    <p>Based on your current plan, you're projected to have a shortfall of <strong class="text-danger">$${Math.round(data.shortfall).toLocaleString()}</strong> by your target retirement age.</p>
-                    <hr>
-                    <p class="mb-0">Here are some ways you can close the gap:</p>
-                    <ul>
-                        <li><strong>Increase your annual savings:</strong> Even small increases can make a big difference over time.</li>
-                        <li><strong>Adjust your retirement spending:</strong> Re-evaluating your budget can lower your required savings.</li>
-                        <li><strong>Consider a later retirement date:</strong> A few more years of growth and savings can have a major impact.</li>
-                    </ul>
-                </div>`;
-        }
-
         return data;
     } catch (error) {
         console.error('Error fetching retirement projections:', error);
-        return { projections: [], currentNetWorth: 0, intersectionAge: 'N/A' };
+        // Return a default object structure on error to prevent downstream issues
+        return { projections: [], currentNetWorth: 0, intersectionAge: null, goalMet: false, shortfall: 0, requiredSavings: 0 };
     }
 }
 
 async function renderRetirementChart() {
     try {
         const { projections, currentNetWorth, intersectionAge, goalMet, shortfall, requiredSavings: apiRequiredSavings } = await fetchRetirementProjections();
-        if (projections.length === 0) {
-            return;
+
+        // Update the retirement outcome message first
+        const outcomeElement = document.getElementById('retirement-outcome');
+        if (goalMet) {
+            outcomeElement.innerHTML = `
+                <div class="card text-center border-success shadow-sm">
+                    <div class="card-body p-4">
+                        <i class="fa fa-check-circle text-success fa-3x mb-3"></i>
+                        <h4 class="card-title">You're On Track for Retirement!</h4>
+                        <p class="card-text text-muted mb-1">Based on your current plan, you can retire by age:</p>
+                        <p class="display-3 text-success fw-bold">${intersectionAge}</p>
+                    </div>
+                    <div class="card-footer text-muted">
+                        Keep up the great work! Review your goals periodically to stay on course.
+                    </div>
+                </div>
+            `;
+        } else {
+            outcomeElement.innerHTML = `
+                 <div class="alert alert-warning">
+                     <h5 class="alert-heading">You're Not Quite on Track</h5>
+                     <p>Based on your current plan, you're projected to have a shortfall of <strong class="text-danger">$${Math.round(shortfall).toLocaleString()}</strong> by your target retirement age.</p>
+                     <hr>
+                     <p class="mb-0">Consider increasing your annual savings or adjusting your retirement age to meet your goals.</p>
+                 </div>
+            `;
         }
 
-        const userId = await getUserId();
-        const response = await fetch(`/retirement/goals?userId=${userId}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch retirement goals');
+        const chartEl = document.querySelector("#retirementChart");
+        // Destroy previous chart instance if it exists to prevent memory leaks
+        if (window.retirementChart instanceof ApexCharts) {
+            window.retirementChart.destroy();
         }
-        const goals = await response.json();
+
+        if (!projections || projections.length === 0) {
+            chartEl.innerHTML = '<div class="text-center p-5"><p>No projection data available. Please set your retirement goals to see your forecast.</p></div>';
+            return { goalMet };
+        }
+
+        const goals = await fetchRetirementGoals(true); // Fetch goals without updating DOM again
 
         const monthlySpend = goals.monthlySpend || 0;
         const retirementAge = goals.retirementAge || 65;
         const currentAge = goals.currentAge || 30;
+        const projectionYears = retirementAge - currentAge;
 
-        const currentYear = new Date().getFullYear();
-        const yearsUntilRetirement = retirementAge - currentAge;
         const retirementDuration = Math.max(30, 85 - retirementAge);
         const annualSpend = monthlySpend * 12;
         const requiredSavings = apiRequiredSavings || (annualSpend * retirementDuration);
 
-        console.log(`Rendering chart with the following data:`);
-        console.log(`Current Age: ${currentAge}`);
-        console.log(`Retirement Age: ${retirementAge}`);
-        console.log(`Monthly Spend: ${monthlySpend}`);
-        console.log(`Current Net Worth: ${currentNetWorth}`);
-        console.log(`Required Savings: ${requiredSavings}`);
-        console.log(`Intersection Age: ${intersectionAge}`);
-
         const seriesData = projections.map(p => {
-            if (!p.data || p.data.length === 0) {
-                console.error(`No data available for rate: ${p.rate}%`);
-                return null;
-            }
-
-            const dataPoints = p.data.map(d => ({
-                x: d.year,
-                y: Math.round(d.value)
-            }));
-
+            if (!p.data || p.data.length === 0) return null;
             return {
                 name: `${Math.round(p.rate)}% Growth`,
-                data: dataPoints,
+                data: p.data.map(d => ({ x: d.age, y: Math.round(d.value) })),
                 type: p.rate === 5 ? 'area' : 'line',
-                dashArray: p.rate === 5 ? 0 : 5 // Use dash array for dotted lines for 7%, 9%, and 11%
+                dashArray: p.rate === 5 ? 0 : 5
             };
         }).filter(series => series !== null);
 
         const options = {
             chart: {
                 type: 'area',
-                height: 400,
-                toolbar: {
-                    show: false
-                },
-                dropShadow: {
-                    enabled: true,
-                    top: 3,
-                    left: 3,
-                    blur: 4,
-                    opacity: 0.2
-                }
+                height: 450,
+                toolbar: { show: false },
+                fontFamily: 'inherit',
             },
-            stroke: {
-                curve: 'smooth',
-                width: 2
-            },
+            colors: ['#4B8B3B', '#8BC34A', '#CDDC39', '#FFEB3B'],
+            series: seriesData,
+            stroke: { curve: 'smooth', width: 2 },
             fill: {
                 type: 'gradient',
-                gradient: {
-                    shadeIntensity: 1,
-                    opacityFrom: 0.7,
-                    opacityTo: 0.9,
-                    stops: [0, 90, 100]
-                }
+                gradient: { shade: 'light', type: 'vertical', shadeIntensity: 0.3, opacityFrom: 0.8, opacityTo: 0.2, stops: [0, 100] }
             },
-            series: seriesData,
             xaxis: {
-                type: 'category',
-                title: {
-                    text: 'My Age',
-                    style: {
-                        fontSize: '14px',
-                        fontFamily: 'Helvetica, Arial, sans-serif',
-                        color: '#9aa0ac'
-                    }
+                type: 'numeric',
+                title: { text: 'Your Age', style: { fontSize: '14px', fontWeight: 'bold' } },
+                labels: { 
+                    style: { colors: '#6c757d' },
+                    formatter: (val) => Math.floor(val)
                 },
-                labels: {
-                    style: {
-                        fontSize: '12px',
-                        fontFamily: 'Helvetica, Arial, sans-serif',
-                        colors: ['#9aa0ac']
-                    }
-                }
+                axisBorder: { show: false },
+                axisTicks: { show: true },
+                tickAmount: projectionYears, // Ensure a tick for every year
             },
             yaxis: {
-                title: {
-                    text: 'Net Worth ($)',
-                    style: {
-                        fontSize: '14px',
-                        fontFamily: 'Helvetica, Arial, sans-serif',
-                        color: '#9aa0ac'
-                    }
-                },
+                title: { text: '' },
                 labels: {
-                    style: {
-                        fontSize: '12px',
-                        fontFamily: 'Helvetica, Arial, sans-serif',
-                        colors: ['#9aa0ac']
-                    },
-                    formatter: function (val) {
-                        return `$${Math.round(val).toLocaleString('en-US')}`;
-                    }
+                    style: { colors: '#6c757d' },
+                    formatter: (val) => `$${(val / 1000000).toFixed(1)}M`
                 }
             },
             tooltip: {
-                theme: 'dark',
-                x: {
-                    formatter: function (val) {
-                        return `Year ${val}`;
-                    }
-                },
-                y: {
-                    formatter: function (val) {
-                        return `$${Math.round(val).toLocaleString('en-US')}`;
-                    }
-                },
-                style: {
-                    fontSize: '12px',
-                    fontFamily: 'Helvetica, Arial, sans-serif'
-                }
+                theme: 'light',
+                x: { formatter: (val) => `At Age: ${val}` },
+                y: { formatter: (val) => `$${val.toLocaleString()}` },
+                marker: { show: true },
             },
             annotations: {
-                yaxis: [
-                    {
-                        y: requiredSavings,
-                        borderColor: '#FFC72C',
-                        opacity: 0.5,
-                        label: {
-                            borderColor: '#003087',
-                            style: {
-                                color: '#fff',
-                                background: '#003087',
-                                fontSize: '12px',
-                                fontFamily: 'Helvetica, Arial, sans-serif'
-                            },
-                            text: `Required Savings: $${requiredSavings.toLocaleString('en-US')}`
-                        }
+                yaxis: [{
+                    y: requiredSavings,
+                    borderColor: '#007bff',
+                    borderWidth: 2,
+                    strokeDashArray: 5,
+                    label: {
+                        borderColor: '#007bff',
+                        style: { color: '#fff', background: '#007bff' },
+                        text: `Retirement Goal: $${(requiredSavings / 1000000).toFixed(1)}M`
                     }
-                ]
+                }]
             },
             grid: {
-                borderColor: '#e7e7e7',
-                show: false
+                borderColor: '#e9ecef',
+                strokeDashArray: 4,
             },
-            stroke: {
-                curve: 'smooth',
-                width: 3
-            },
+            dataLabels: { enabled: false },
+            legend: { show: true, position: 'top', horizontalAlign: 'center', floating: true, offsetY: 10, offsetX: 0 },
             markers: {
-                size: 0 // Remove the white dots
-            },
-            fill: {
-                type: 'gradient',
-                gradient: {
-                    shade: 'light',
-                    type: 'vertical',
-                    shadeIntensity: 0.5,
-                    gradientToColors: ['#003087', '#009cde', '#FFC72C'],
-                    inverseColors: false,
-                    opacityFrom: 1,
-                    opacityTo: 0.6,
-                    stops: [0, 90, 100]
-                }
-            },
-            legend: {
-                show: false
-            },
-            theme: {
-                mode: 'light',
-                palette: 'palette1'
-            },
-            colors: ['#003087', '#009cde', '#FFC72C'],
-            dataLabels: {
-                enabled: false
+                size: 0,
+                hover: { size: 5 }
             }
         };
 
-        const chart = new ApexCharts(document.querySelector("#retirementChart"), options);
-        await chart.render();
+        window.retirementChart = new ApexCharts(chartEl, options);
+        await window.retirementChart.render();
 
         return { goalMet };
-
-        // Display the intersection age
-        document.getElementById('intersectionAge').textContent = intersectionAge.toLocaleString('en-US');
 
     } catch (error) {
         console.error('Error rendering retirement chart:', error);
@@ -830,21 +730,25 @@ async function renderNetWorthComparisonChart(goalMet, ageBracket) {
     }
 }
 
-async function fetchRetirementGoals() {
+async function fetchRetirementGoals(returnDataOnly = false) {
     try {
         const userId = await getUserId();
-        console.log('User ID:', userId);
         const response = await fetch(`/retirement/goals?userId=${userId}`);
         if (!response.ok) {
             throw new Error('Failed to fetch retirement goals');
         }
         const goals = await response.json();
-        console.log('Retirement goals:', goals);
+
+        if (returnDataOnly) {
+            return goals;
+        }
 
         // Set values from goals or defaults if not provided
         document.getElementById('currentAge').value = goals.currentAge;
         document.getElementById('retirementAge').value = goals.retirementAge;
         document.getElementById('monthlySpend').value = goals.monthlySpend;
+        document.getElementById('annualSavings').value = goals.annualSavings;
+
         document.getElementById('mortgage').value = goals.mortgage;
         document.getElementById('cars').value = goals.cars;
         document.getElementById('healthCare').value = goals.healthCare;
@@ -859,49 +763,7 @@ async function fetchRetirementGoals() {
     }
 }
 
-document.getElementById('retirementForm').addEventListener('submit', async function(event) {
-    event.preventDefault();
 
-    if (!validateTotalPercentage()) {
-        alert('The total percentage of all categories must equal 100%.');
-        return;
-    }
-
-    const form = document.getElementById('retirementForm');
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
-    data.userId = await getUserId();
-
-    try {
-        console.log('Saving retirement goals:', data);
-        const response = await fetch('/retirement/goals', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to save retirement goals');
-        }
-
-        alert('Retirement goals saved successfully');
-
-        // Clear the form
-        form.reset();
-
-        // Close the modal
-        const modal = new bootstrap.Modal(document.getElementById('retirementGoalsModal'));
-        modal.hide();
-
-        // Refresh the page
-        window.location.reload();
-    } catch (error) {
-        console.error('Error saving retirement goals:', error);
-        alert('Error saving retirement goals: ' + error.message);
-    }
-});
 
 async function getUserId() {
     const token = localStorage.getItem('token');

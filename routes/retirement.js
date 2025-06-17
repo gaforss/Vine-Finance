@@ -19,6 +19,7 @@ router.get('/goals', async (req, res) => {
                 currentAge: 25,
                 retirementAge: 60,
                 monthlySpend: 7500,
+                annualSavings: 0, // Add default for annual savings
                 mortgage: 22,
                 cars: 3,
                 healthCare: 12,
@@ -46,13 +47,14 @@ router.post('/goals', async (req, res) => {
     }
 
     try {
-        const { currentAge, retirementAge, monthlySpend, mortgage, cars, healthCare, foodAndDrinks, travelAndEntertainment, reinvestedFunds } = req.body;
+        const { currentAge, retirementAge, monthlySpend, annualSavings, mortgage, cars, healthCare, foodAndDrinks, travelAndEntertainment, reinvestedFunds } = req.body;
 
         let goals = await RetirementGoals.findOne({ userId });
         if (goals) {
             goals.currentAge = currentAge;
             goals.retirementAge = retirementAge;
             goals.monthlySpend = monthlySpend;
+            goals.annualSavings = annualSavings; // Ensure this is saved
             goals.mortgage = mortgage;
             goals.cars = cars;
             goals.healthCare = healthCare;
@@ -65,6 +67,7 @@ router.post('/goals', async (req, res) => {
                 currentAge,
                 retirementAge,
                 monthlySpend,
+                annualSavings, // Ensure this is saved
                 mortgage,
                 cars,
                 healthCare,
@@ -91,28 +94,39 @@ router.post('/goals', async (req, res) => {
 
 router.get('/projections', async (req, res) => {
     const userId = req.query.userId;
+    console.log(`
+
+
+--- RETIREMENT CALCULATION START ---`);
+    console.log(`[INFO] Received request for user: ${userId}`);
+
     if (!userId) {
+        console.error('[ERROR] User ID is required');
         return res.status(400).json({ message: 'User ID is required' });
     }
 
     try {
         let goals = await RetirementGoals.findOne({ userId });
         if (!goals) {
-            // Provide default goals if none are found
+            console.log('[INFO] No goals found for user. Using default values.');
             goals = {
                 currentAge: 25,
                 retirementAge: 65,
                 monthlySpend: 5000,
+                annualSavings: 0,
                 currentNetWorth: 0
             };
         }
+        console.log('[INFO] Using retirement goals:', JSON.stringify(goals, null, 2));
 
-        const { currentAge, retirementAge, monthlySpend, annualSavings } = goals;
+        const currentAge = Number(goals.currentAge);
+        const retirementAge = Number(goals.retirementAge);
+        const monthlySpend = Number(goals.monthlySpend);
+        const annualSavings = Number(goals.annualSavings) || 0;
 
-        // Ensure correct retrieval of currentNetWorth
         let currentNetWorth = goals.currentNetWorth;
         if (!currentNetWorth || currentNetWorth === 0) {
-            // Fetch the most recent net worth entry for the user if not present in goals
+            console.log('[INFO] currentNetWorth not in goals or is 0, fetching from latest NetWorth entry.');
             const netWorthEntry = await NetWorth.findOne({ user: userId }).sort({ date: -1 });
             if (netWorthEntry) {
                 const assetCategories = ['bank', 'investment', 'retirement', 'crypto', 'misc'];
@@ -127,36 +141,46 @@ router.get('/projections', async (req, res) => {
                 const totalLiabilities = (netWorthEntry.liabilities || 0) +
                                        (netWorthEntry.customFields || []).filter(field => field.type === 'liability').reduce((a, b) => a + (b.amount || 0), 0) +
                                        (netWorthEntry.accounts || []).filter(account => liabilityCategories.includes(account.category)).reduce((a, b) => a + (b.amount || 0), 0);
-
+                
                 currentNetWorth = totalAssets - totalLiabilities;
+                console.log(`[INFO] Fetched Net Worth: ${currentNetWorth} (Assets: ${totalAssets}, Liabilities: ${totalLiabilities})`);
             } else {
-                // Default to 0 if no net worth data is found
+                console.log('[INFO] No NetWorth entry found. Defaulting to 0.');
                 currentNetWorth = 0;
             }
         }
 
+        console.log(`[CALC] Starting projection with: Current Age=${currentAge}, Retirement Age=${retirementAge}, Initial Net Worth=${currentNetWorth}, Annual Savings=${annualSavings}`);
         const projectionYears = retirementAge - currentAge;
+        console.log(`[CALC] Projection Years: ${projectionYears}`);
 
         const annualGrowthRates = [0.05, 0.07, 0.09, 0.11];
 
         const projections = annualGrowthRates.map(rate => {
+            console.log(`\n[CALC] Calculating for growth rate: ${rate * 100}%`);
             let futureValue = currentNetWorth;
             const projectionData = [];
-            for (let i = 0; i < projectionYears; i++) {
-                futureValue = (futureValue * (1 + rate)) + (annualSavings || 0);
-                projectionData.push({
-                    year: currentAge + i + 1,
-                    value: futureValue
-                });
-            }
-            return {
-                rate: rate * 100,
-                data: projectionData,
-                currentAge,
-                retirementAge
-            };
-        });
 
+            // Loop from current age to retirement age
+            for (let i = 1; i <= projectionYears; i++) {
+                const age = currentAge + i;
+                // At the start of the year, we have the value from the end of the previous year.
+                const startingValue = futureValue;
+                // Add the annual savings.
+                const valueWithSavings = startingValue + (annualSavings || 0);
+                // The new future value is the value with savings, grown by the rate.
+                futureValue = valueWithSavings * (1 + rate);
+
+                console.log(`  [Age ${age}] Start: ${startingValue.toFixed(2)} + Savings: ${(annualSavings || 0).toFixed(2)} -> Pre-growth: ${valueWithSavings.toFixed(2)} * Growth: ${(1 + rate).toFixed(2)} -> End: ${futureValue.toFixed(2)}`);
+                
+                // Push the data point for the chart.
+                projectionData.push({ age: age, value: futureValue });
+            }
+            const totalAtRetirement = futureValue;
+            console.log(`[CALC] Total at retirement for ${rate * 100}% rate: ${totalAtRetirement.toFixed(2)}`);
+            return { rate: rate * 100, data: projectionData, totalAtRetirement };
+        });
+        
         mixpanel.track('Retirement Projections Generated', {
             distinct_id: userId,
             currentNetWorth,
@@ -165,25 +189,26 @@ router.get('/projections', async (req, res) => {
             timestamp: new Date().toISOString()
         });
 
-        const fivePercentProjection = projections.find(projection => projection.rate === 5);
-        const totalAtRetirement = fivePercentProjection.data.length > 0 ? fivePercentProjection.data[fivePercentProjection.data.length - 1].value : currentNetWorth;
+        const fivePercentProjection = projections.find(p => p.rate === 5);
+        const totalAtRetirement = fivePercentProjection.totalAtRetirement;
 
-        const requiredSavings = monthlySpend * 12 * Math.max(30, 85 - retirementAge);
+        const yearsInRetirement = Math.max(1, 85 - retirementAge); // Assume at least 1 year of retirement
+        const requiredSavings = monthlySpend * 12 * yearsInRetirement;
+        console.log(`[CALC] Required savings for retirement: ${requiredSavings.toFixed(2)} (Monthly Spend: ${monthlySpend} * 12 * ${yearsInRetirement} years)`);
+
         const intersectionData = fivePercentProjection.data.find(d => d.value >= requiredSavings);
-        const intersectionAge = intersectionData ? intersectionData.year : 'N/A';
+        const intersectionAge = intersectionData ? intersectionData.age : 'N/A';
         const goalMet = !!intersectionData;
         const shortfall = goalMet ? 0 : requiredSavings - totalAtRetirement;
 
-        res.json({
-            projections,
-            currentNetWorth,
-            totalAtRetirement,
-            intersectionAge,
-            goalMet,
-            shortfall,
-            requiredSavings
-        });
+        console.log(`[RESULT] Goal Met: ${goalMet}`);
+        console.log(`[RESULT] Intersection Age: ${intersectionAge}`);
+        console.log(`[RESULT] Shortfall: ${shortfall.toFixed(2)}`);
+        console.log(`--- RETIREMENT CALCULATION END ---\n\n`);
+
+        res.json({ projections, currentNetWorth, totalAtRetirement, intersectionAge, goalMet, shortfall, requiredSavings });
     } catch (error) {
+        console.error('[ERROR] Server error during projection calculation:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 });

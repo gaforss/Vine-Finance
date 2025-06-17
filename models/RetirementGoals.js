@@ -4,7 +4,7 @@ const retirementGoalsSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   currentAge: { type: Number, required: true },
   retirementAge: { type: Number, required: true },
-  currentNetWorth: { type: Number, required: true, default: 0 },
+  currentNetWorth: { type: Number, required: false, default: 0 },
   monthlySpend: { type: Number, required: true },
   mortgage: { type: Number, required: true },
   cars: { type: Number, required: true },

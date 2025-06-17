@@ -14,6 +14,58 @@
     <link href="css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />
     <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .account-card {
+            background: linear-gradient(135deg, #2a2a3e 0%, #3a3a52 100%);
+            border: none;
+            border-radius: 15px;
+            color: #fff;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .account-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        .account-card .card-body {
+            padding: 1.5rem;
+        }
+        .account-card .institution-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+            background-color: #fff;
+        }
+        .account-card .account-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        .account-card .institution-name {
+            font-size: 0.9rem;
+            color: #b0b0c0;
+        }
+        .account-card .balance-label {
+            color: #b0b0c0;
+        }
+        .account-card .balance-amount {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+        .manual-account-icon-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 15px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .manual-account-icon-container .fa-plus,
+        .manual-account-icon-container .fa-link {
+            color: #3a3a52;
+        }
+    </style>
 </head>
 <body data-sidebar="dark" data-topbar="dark" data-bs-theme="dark">
     <div id="layout-wrapper">
@@ -177,136 +229,49 @@
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <h5 class="card-title"><i class="fa fa-bank"></i> Bank Accounts</h5>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th></th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="bank-accounts-list"></tbody>
-                                        </table>
-                                    </div>
+                                    <div id="bank-accounts-list" class="row"></div>
                                 </div>
                             </div>
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <h5 class="card-title"><i class="fa fa-credit-card"></i> Credit Cards</h5>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th></th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="creditcards-list"></tbody>
-                                        </table>
-                                    </div>
+                                    <div id="creditcards-list" class="row"></div>
                                 </div>
                             </div>
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <h5 class="card-title"><i class="fa fa-university"></i> Loans</h5>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th></th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="loans-list"></tbody>
-                                        </table>
-                                    </div>
+                                    <div id="loans-list" class="row"></div>
                                 </div>
                             </div>
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <h5 class="card-title"><i class="fa fa-line-chart"></i> Investment Accounts</h5>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th></th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="investments-list"></tbody>
-                                        </table>
-                                    </div>
+                                    <div id="investments-list" class="row"></div>
                                 </div>
                             </div>
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <h5 class="card-title"><i class="fa fa-flag"></i> Retirement Accounts</h5>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th></th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="retirement-list"></tbody>
-                                        </table>
-                                    </div>
+                                    <div id="retirement-list" class="row"></div>
                                 </div>
                             </div>
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <h5 class="card-title"><i class="fa fa-shield"></i> Insurance Accounts</h5>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th></th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="insurance-list"></tbody>
-                                        </table>
-                                    </div>
+                                    <div id="insurance-list" class="row"></div>
                                 </div>
                             </div>
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <h5 class="card-title"><i class="fa fa-bitcoin"></i> Digital/Crypto Accounts</h5>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th></th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="digital-list"></tbody>
-                                        </table>
-                                    </div>
+                                    <div id="digital-list" class="row"></div>
                                 </div>
                             </div>
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <h5 class="card-title"><i class="fa fa-asterisk"></i> Miscellaneous Accounts</h5>
-                                    <div class="table-responsive">
-                                        <table class="table table-hover">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th></th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="miscellaneous-list"></tbody>
-                                        </table>
+                                    <div id="miscellaneous-list" class="row"></div>
                                     </div>
                                 </div>
                             </div>

@@ -1031,52 +1031,74 @@ function populateAccountList(listId, accounts) {
     }
     listElement.innerHTML = ''; // Clear existing list
 
-    // Filter out specific demo accounts that should not be displayed
-    const filteredAccounts = accounts.filter(account => 
+    const filteredAccounts = accounts.filter(account =>
         account.name !== 'LinkedIn Bank' && account.name !== 'Microsoft Bank'
     );
 
+    if (filteredAccounts.length === 0) {
+        return;
+    }
+
     filteredAccounts.forEach(account => {
-        const row = document.createElement('tr');
         const balance = account.balances ? account.balances.current : account.amount;
-        
-        const nameCell = document.createElement('td');
-        nameCell.textContent = `${account.name} - ${account.institutionName || 'Manual'}`;
+        const formattedBalance = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(balance);
 
-        const balanceCell = document.createElement('td');
-        balanceCell.className = 'text-end';
-        balanceCell.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(balance);
+        const card = document.createElement('div');
+        card.className = 'col-xl-6 col-md-6';
 
-        const actionsCell = document.createElement('td');
-        actionsCell.className = 'text-end';
-
+        let actionsHtml = '';
         if (account.type === 'manual' && account._id) {
-            const editButton = document.createElement('button');
-            editButton.className = 'btn btn-sm btn-primary me-2 edit-account-btn';
-            editButton.innerHTML = '<i class="fa fa-pencil"></i>';
-            editButton.dataset.accountId = account._id;
-            editButton.dataset.accountName = account.name;
-            editButton.dataset.accountAmount = balance;
-            editButton.dataset.accountCategory = account.category;
-            actionsCell.appendChild(editButton);
-
-            const deleteButton = document.createElement('button');
-            deleteButton.className = 'btn btn-sm btn-danger delete-account-btn';
-            deleteButton.innerHTML = '<i class="fa fa-trash"></i>';
-            deleteButton.dataset.accountId = account._id;
-            actionsCell.appendChild(deleteButton);
+            actionsHtml = `
+                <a class="dropdown-item edit-account-btn" href="#" data-account-id="${account._id}" data-account-name="${account.name}" data-account-amount="${balance}" data-account-category="${account.category}">Edit</a>
+                <a class="dropdown-item delete-account-btn" href="#" data-account-id="${account._id}">Delete</a>
+            `;
         } else if (account.account_id) {
-            const viewLink = document.createElement('a');
-            viewLink.href = '#';
-            viewLink.className = 'view-transactions-link';
-            viewLink.innerHTML = 'View Transactions <i class="fa fa-caret-right"></i>';
-            viewLink.dataset.accountId = account.account_id;
-            actionsCell.appendChild(viewLink);
+            actionsHtml = `<a class="dropdown-item view-transactions-link" href="#" data-account-id="${account.account_id}">View Transactions</a>`;
         }
 
-        row.appendChild(nameCell);
-        row.appendChild(balanceCell);
-        row.appendChild(actionsCell);
-        listElement.appendChild(row);
+        let logoHtml;
+        if (account.type === 'manual') {
+            logoHtml = `
+                <div class="manual-account-icon-container">
+                    <i class="fa fa-plus"></i>
+                </div>
+            `;
+        } else {
+            logoHtml = `
+                <div class="manual-account-icon-container">
+                    <i class="fa fa-link"></i>
+                </div>
+            `;
+        }
+
+        card.innerHTML = `
+            <div class="card account-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-4">
+                        ${logoHtml}
+                        <div>
+                            <p class="institution-name mb-0">${account.institutionName || 'Manual Account'}</p>
+                            <h5 class="account-name mb-1">${account.name}</h5>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="balance-label mb-1">Available Balance</p>
+                            <h4 class="balance-amount mb-0">${formattedBalance}</h4>
+                        </div>
+                        <div class="dropdown">
+                            <a class="font-size-20 text-white dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-ellipsis-v"></i>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end">
+                                ${actionsHtml}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        listElement.appendChild(card);
     });
 }

@@ -98,7 +98,23 @@ router.get('/accounts', protect, async (req, res) => {
                 const response = await plaidClient.accountsGet({
                     access_token: item.accessToken,
                 });
-                allAccounts = allAccounts.concat(response.data.accounts);
+
+                const accountsWithDetails = await Promise.all(response.data.accounts.map(async (account) => {
+                    try {
+                        const institutionResponse = await plaidClient.institutionsGetById({
+                            institution_id: response.data.item.institution_id,
+                            country_codes: ['US'],
+                        });
+                        account.institutionLogo = institutionResponse.data.institution.logo;
+                        account.institutionName = institutionResponse.data.institution.name;
+                    } catch (error) {
+                        console.error(`Could not fetch institution details for ${response.data.item.institution_id}:`, error);
+                        account.institutionLogo = null;
+                        account.institutionName = 'N/A';
+                    }
+                    return account;
+                }));
+                allAccounts = allAccounts.concat(accountsWithDetails);
             } catch (error) {
                 console.error(`Error fetching accounts for item ${item.itemId}:`, error);
                 // Decide how to handle per-item errors. Maybe skip or collect errors.
@@ -652,11 +668,27 @@ async function fetchPlaidAccounts(userId) {
     }
 
     const response = await plaidClient.accountsGet({ access_token: plaidToken.accessToken });
-    const plaidAccounts = response.data.accounts.map(account => ({
+    const accountsResponse = await plaidClient.accountsGet({ access_token: plaidToken.accessToken });
+    let accounts = await Promise.all(accountsResponse.data.accounts.map(async (account) => {
+        try {
+            const institutionResponse = await plaidClient.institutionsGetById({
+                institution_id: account.institution_id,
+                country_codes: ['US'],
+            });
+            account.institutionLogo = institutionResponse.data.institution.logo;
+        } catch (error) {
+            console.error(`Could not fetch institution logo for ${account.institution_id}:`, error);
+            account.institutionLogo = null; // Set logo to null if fetch fails
+        }
+        return account;
+    }));
+
+    const plaidAccounts = accounts.map(account => ({
         _id: account.account_id,
         name: account.name,
         amount: account.balances.current,
-        category: categorizePlaidAccount(account.subtype)
+        category: categorizePlaidAccount(account.subtype),
+        institutionLogo: account.institutionLogo
     }));
 
     return plaidAccounts;

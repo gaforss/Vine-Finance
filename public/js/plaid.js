@@ -8,6 +8,13 @@ document.addEventListener('DOMContentLoaded', async function() {
     console.log('Balances fetched and populated');
 
     const linkButton = document.getElementById('link-button');
+
+    const linkAccountFromMessage = document.getElementById('link-account-from-message');
+    if (linkAccountFromMessage) {
+        linkAccountFromMessage.addEventListener('click', () => {
+            document.getElementById('link-button').click();
+        });
+    }
     if (linkButton) {
         console.log('Link button found, adding click event listener');
         linkButton.addEventListener('click', async () => {
@@ -220,64 +227,65 @@ async function fetchAndPopulateBalances() {
 }
 
 async function updateUIAfterFetchingBalances(categorizedAccounts, token) {
+    const noAccountsMessage = document.getElementById('no-accounts-message');
+    const accountsContainer = document.getElementById('accounts-container');
+
+    try {
+        const manualAccountResponse = await fetch('/plaid/manual_accounts', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (manualAccountResponse.ok) {
+            const manualAccounts = await manualAccountResponse.json();
+            const categoryMap = {
+                'bank': 'bankAccounts', 'credit card': 'creditCards', 'loan': 'loans',
+                'investment': 'investments', 'retirement': 'retirement', 'insurance': 'insurance',
+                'crypto': 'digital', 'misc': 'miscellaneous'
+            };
+            manualAccounts.forEach(account => {
+                const key = categoryMap[account.category];
+                if (key) {
+                    if (!categorizedAccounts[key]) categorizedAccounts[key] = [];
+                    categorizedAccounts[key].push(account);
+                }
+            });
+        } else {
+            console.error('Failed to fetch manual accounts');
+        }
+    } catch (error) {
+        console.error('Error fetching or processing manual accounts:', error);
+    }
+
+    const totalAccounts = Object.values(categorizedAccounts).reduce((sum, category) => sum + (Array.isArray(category) ? category.length : 0), 0);
+
+    if (totalAccounts === 0) {
+        if(noAccountsMessage) noAccountsMessage.style.display = 'block';
+        if(accountsContainer) accountsContainer.style.display = 'none';
+        const realEstateData = await fetchRealEstateData();
+        const allData = { realEstate: realEstateData.totalEquity };
+        calculateAndDisplayBalances(allData);
+        return;
+    }
+
+    if(noAccountsMessage) noAccountsMessage.style.display = 'none';
+    if(accountsContainer) accountsContainer.style.display = 'block';
+
     clearAccountLists();
 
-    // Update UI with categorized accounts
-    if (categorizedAccounts.bankAccounts) {
-        populateAccountList('bank-accounts-list', categorizedAccounts.bankAccounts);
-    }
-
-    const manualAccountResponse = await fetch('/plaid/manual_accounts', {
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    });
-
-    if (manualAccountResponse.ok) {
-        const manualAccounts = await manualAccountResponse.json();
-        console.log('Manual Accounts:', manualAccounts);
-
-        manualAccounts.forEach(account => {
-            switch (account.category) {
-                case 'bank':
-                    categorizedAccounts.bankAccounts.push(account);
-                    break;
-                case 'credit card':
-                    categorizedAccounts.creditCards.push(account);
-                    break;
-                case 'loan':
-                    categorizedAccounts.loans.push(account);
-                    break;
-                case 'investment':
-                    categorizedAccounts.investments.push(account);
-                    break;
-                case 'retirement':
-                    categorizedAccounts.retirement.push(account);
-                    break;
-                case 'insurance':
-                    categorizedAccounts.insurance.push(account);
-                    break;
-                case 'crypto':
-                    categorizedAccounts.digital.push(account);
-                    break;
-                case 'misc':
-                    categorizedAccounts.miscellaneous.push(account);
-                    break;
-            }
-        });
-    } else {
-        console.error('Failed to fetch manual accounts');
-    }
+    populateAccountList('bank-accounts-list', categorizedAccounts.bankAccounts || []);
+    populateAccountList('creditcards-list', categorizedAccounts.creditCards || []);
+    populateAccountList('loans-list', categorizedAccounts.loans || []);
+    populateAccountList('investments-list', categorizedAccounts.investments || []);
+    populateAccountList('retirement-list', categorizedAccounts.retirement || []);
+    populateAccountList('insurance-list', categorizedAccounts.insurance || []);
+    populateAccountList('digital-list', categorizedAccounts.digital || []);
+    populateAccountList('miscellaneous-list', categorizedAccounts.miscellaneous || []);
 
     const realEstateData = await fetchRealEstateData();
-    console.log('Fetched real estate data:', realEstateData);
-
     const allData = {
         ...categorizedAccounts,
-        realEstate: realEstateData.totalEquity, // Use equity, not just value
+        realEstate: realEstateData.totalEquity,
     };
-
-    console.log("Passing combined data to calculateAndDisplayBalances:", allData);
 
     calculateAndDisplayBalances(allData);
 }

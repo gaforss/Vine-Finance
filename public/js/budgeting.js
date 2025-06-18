@@ -5,10 +5,44 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // This function will orchestrate all the initial data fetching and rendering
     async function initializePage() {
-        initializeSortByDropdown();
-        await fetchSavingsGoals();
-        await fetchCashFlowData();
-        await fetchCategorizedSpending('yearly');
+        const hasAccounts = await checkForLinkedAccounts();
+        if (hasAccounts) {
+            document.getElementById('cta-container').style.display = 'none';
+            document.getElementById('main-budgeting-content').style.display = 'block';
+            initializeSortByDropdown();
+            await fetchSavingsGoals();
+            await fetchCashFlowData();
+            await fetchCategorizedSpending('yearly');
+        } else {
+            document.getElementById('cta-container').style.display = 'block';
+            document.getElementById('main-budgeting-content').style.display = 'none';
+        }
+    }
+
+    async function checkForLinkedAccounts() {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch('/plaid/balances', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                // Check if there are any accounts in any of the categories
+                return (data.bankAccounts && data.bankAccounts.length > 0) ||
+                       (data.investments && data.investments.length > 0) ||
+                       (data.digital && data.digital.length > 0) ||
+                       (data.retirement && data.retirement.length > 0) ||
+                       (data.liabilities && data.liabilities.length > 0) ||
+                       (data.insurance && data.insurance.length > 0) ||
+                       (data.misc && data.misc.length > 0);
+            }
+            return false;
+        } catch (error) {
+            console.error('Error checking for linked accounts:', error);
+            return false;
+        }
     }
 
     // Initialize DataTables and then the rest of the page

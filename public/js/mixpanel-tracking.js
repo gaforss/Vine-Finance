@@ -3,7 +3,8 @@
 mixpanel.init("883554c993442ff0049a280607fd6324", {
     debug: true,
     track_pageview: true,
-    persistence: 'localStorage'
+    persistence: 'localStorage',
+    ignore_dnt: true
 });
 
 // Function to get user data from the token

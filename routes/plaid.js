@@ -881,6 +881,7 @@ router.get('/transactions/cashflow', protect, async (req, res) => {
             } catch (error) {
                 console.error(`Error fetching transactions for item ${item.itemId}:`, error.response ? error.response.data : error.message);
             }
+
         }
 
         mixpanel.track('Transactions Retrieved for Cash Flow', {
@@ -904,4 +905,4 @@ router.get('/transactions/cashflow', protect, async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports = router;module.exports = router;

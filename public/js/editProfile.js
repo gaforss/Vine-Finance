@@ -56,32 +56,56 @@ $(document).ready(function() {
                     'Authorization': `Bearer ${token}`
                 },
                 success: function(steps) {
-                    console.log("Fetched onboarding steps:", steps);
+                    console.log("Full onboarding steps data received from server:", JSON.stringify(steps, null, 2));
                     const checklist = $('#onboardingChecklist');
                     checklist.empty();
 
-                    let allCompleted = true;
-
                     steps.forEach(step => {
-                        if (step.step && typeof step.completed === 'boolean') {
+                        if (step.title && step.icon && typeof step.completed === 'boolean') {
                             const isChecked = step.completed ? 'checked' : '';
-                            if (!step.completed) allCompleted = false;
+                            
+                            let iconClasses = `fa ${step.icon}`;
+                            if (step.animate && !step.completed) {
+                                iconClasses += ' fa-spin';
+                            }
 
-                            checklist.append(`
-                                <li class="list-group-item checklist-card">
-                                    <div class="card-body">
-                                        <input type="checkbox" class="form-check-input" ${isChecked}>
-                                        <img src="images/landing/logo-small.png" alt="Step Image">
-                                        <span>${step.step}</span>
+                            let stepHtml = `
+                                <li class="list-group-item checklist-item" data-step-title="${step.title}">
+                                    <div class="checklist-item-content">
+                                        <div class="checklist-icon">
+                                            <i class="${iconClasses}"></i>
+                                        </div>
+                                        <div class="checklist-text">
+                                            <h5>${step.title}</h5>
+                                            <p>${step.description}</p>`;
+                            
+                            if (step.templateLink) {
+                                stepHtml += `<p>If you need the template, download it <a href="files/template.xlsx" download="template.xlsx"><i class="fa fa-download"></i> here</a>.</p>`;
+                            }
+                    
+                            stepHtml += `
+                                        </div>
+                                        <div class="checklist-checkbox">
+                                            <input type="checkbox" class="form-check-input" ${isChecked}>
+                                        </div>
                                     </div>
-                                </li>
-                            `);
+                                </li>`;
+                    
+                            const listItem = $(stepHtml);
+                            if (step.completed) {
+                                listItem.addClass('completed');
+                            }
+                            checklist.append(listItem);
                         } else {
                             console.warn("Skipping invalid step:", step);
                         }
                     });
 
-                    if (allCompleted) {
+                    // We need to re-check completion status after rendering
+                    const allSteps = checklist.find('.checklist-item');
+                    const completedSteps = checklist.find('.checklist-item.completed');
+                    
+                    if (allSteps.length > 0 && allSteps.length === completedSteps.length) {
                         $('#completionMessage').show();
                     } else {
                         $('#completionMessage').hide();
@@ -89,10 +113,27 @@ $(document).ready(function() {
 
                     // Handle changes when a user checks/unchecks a step
                     checklist.on('change', 'input[type="checkbox"]', function() {
-                        const step = $(this).closest('.card-body').find('span').html(); // Get the HTML content of the span
+                        const title = $(this).closest('.checklist-item').data('step-title');
                         const completed = $(this).is(':checked');
 
-                        if (!step || typeof completed !== 'boolean') {
+                        const listItem = $(this).closest('.checklist-item');
+                        if (completed) {
+                            listItem.addClass('completed');
+                        } else {
+                            listItem.removeClass('completed');
+                        }
+
+                        const stepData = steps.find(s => s.title === title);
+                        if (stepData && stepData.icon && stepData.animate) {
+                            const icon = listItem.find('.checklist-icon i');
+                            if (completed) {
+                                icon.removeClass('fa-spin');
+                            } else {
+                                icon.addClass('fa-spin');
+                            }
+                        }
+
+                        if (!title || typeof completed !== 'boolean') {
                             console.error("Invalid step or completion status. Cannot update.");
                             return;
                         }
@@ -103,10 +144,12 @@ $(document).ready(function() {
                             headers: {
                                 'Authorization': `Bearer ${token}`
                             },
-                            data: JSON.stringify({ step, completed }),
+                            data: JSON.stringify({ title, completed }),
                             contentType: 'application/json',
                             success: function(response) {
-                                if (response.allCompleted) {
+                                const allSteps = checklist.find('.checklist-item');
+                                const completedSteps = checklist.find('.checklist-item.completed');
+                                if (allSteps.length === completedSteps.length) {
                                     $('#completionMessage').show();
                                 } else {
                                     $('#completionMessage').hide();

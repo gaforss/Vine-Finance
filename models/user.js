@@ -39,8 +39,12 @@ const userSchema = new mongoose.Schema({
     default: true,
   },
   onboardingSteps: [{
-        step: String,
+        title: String,
+        description: String,
+        templateLink: Boolean,
         completed: Boolean,
+        icon: String,
+        animate: Boolean
   }],
   hasDeletedDummyData: {
     type: Boolean,

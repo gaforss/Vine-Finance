@@ -291,63 +291,46 @@ router.get('/api/onboarding-steps', protect, async (req, res) => {
     try {
         const user = await User.findById(req.user._id);
 
-        if (!user.onboardingSteps || user.onboardingSteps.length === 0) {
-            user.onboardingSteps = [
+        const stepsAreInvalid = !user.onboardingSteps || 
+                                user.onboardingSteps.length === 0 || 
+                                user.onboardingSteps[0].animate === undefined;
+
+        if (stepsAreInvalid) {
+            const newSteps = [
                 { 
-                    step: `
-                        <div class="onboarding-step">
-                            <div class="onboarding-content">
-                                <h5>1. Replace Demo Entries with Your Values</h5>
-                                <p>Remove your demo data <a href="/input">here</a> and import your historical data if available. Otherwise, manually add your first entry and then mark this step as completed.</p>
-                                <p>If you need the template, download it <a href="files/template.xlsx" download="template.xlsx"><i class="fa fa-download"></i> here</a>.</p>
-                            </div>
-                        </div>
-                    `, 
-                    completed: false 
+                    title: "1. Replace Demo Entries with Your Values",
+                    description: "Remove your demo data <a href=\"/input\">here</a> and import your historical data if available. Otherwise, manually add your first entry and then mark this step as completed.",
+                    templateLink: true,
+                    completed: false,
+                    icon: "fa-spinner",
+                    animate: true
                 },
                 { 
-                    step: `
-                        <div class="onboarding-step">
-                            <div class="onboarding-content">
-                                <h5>2. Link Your First Account</h5>
-                                <p>Link your first <a href="/accounts">account</a> and manually add any additional accounts.</p>
-                                <p>These accounts will help bring your financial data to life and prefill input fields for new monthly entries.</p>
-                            </div>
-                        </div>
-                    `, 
-                    completed: false 
+                    title: "2. Link Your First Account",
+                    description: "Link your first <a href=\"/accounts\">account</a> and manually add any additional accounts. These accounts will help bring your financial data to life and prefill input fields for new monthly entries.",
+                    completed: false,
+                    icon: "fa-link"
                 },
                 { 
-                    step: `
-                        <div class="onboarding-step">
-                            <div class="onboarding-content">
-                                <h5>3. Set Your Retirement Goals</h5>
-                                <p>Set your retirement goals <a href="/retirement">here</a>.</p>
-                                <p>Define your current age, desired monthly spending, and spending categories to track progress towards retirement based on your current net worth.</p>
-                            </div>
-                        </div>
-                    `, 
-                    completed: false 
+                    title: "3. Set Your Retirement Goals",
+                    description: "Set your retirement goals <a href=\"/retirement\">here</a>. Define your current age, desired monthly spending, and spending categories to track progress towards retirement based on your current net worth.",
+                    completed: false,
+                    icon: "fa-bullseye"
                 },
                 { 
-                    step: `
-                        <div class="onboarding-step">
-                            <div class="onboarding-content">
-                                <h5>4. Add a Property</h5>
-                                <p>Add a property <a href="/realestate">here</a>.</p>
-                                <p>Track properties, including rentals, manage rental contracts, overdue payments, and store documents for easy access during tax season.</p>
-                            </div>
-                        </div>
-                    `, 
-                    completed: false 
+                    title: "4. Add a Property",
+                    description: "Add a property <a href=\"/realestate\">here</a>. Track properties, including rentals, manage rental contracts, overdue payments, and store documents for easy access during tax season.",
+                    completed: false,
+                    icon: "fa-home"
                 }
             ];
+            user.onboardingSteps = newSteps;
             await user.save();
-        } else {
-            user.onboardingSteps = user.onboardingSteps.filter(s => s.step && typeof s.completed === 'boolean');
+            return res.json(newSteps);
         }
         
-        res.json(user.onboardingSteps);
+        const validSteps = user.onboardingSteps.filter(s => s.title && s.icon);
+        res.json(validSteps);
     } catch (error) {
         console.error('Error fetching onboarding steps:', error);
         res.status(500).json({ message: 'Server error' });
@@ -357,27 +340,27 @@ router.get('/api/onboarding-steps', protect, async (req, res) => {
 // Update a single onboarding step
 router.post('/api/onboarding-step', protect, async (req, res) => {
     try {
-        const { step, completed } = req.body;
+        const { title, completed } = req.body;
         
         const user = await User.findById(req.user._id);
 
-        // Ensure valid step and completed values are received
-        if (step && typeof completed === 'boolean') {
-            const stepToUpdate = user.onboardingSteps.find(s => s.step === step);
+        // Ensure valid title and completed values are received
+        if (title && typeof completed === 'boolean') {
+            const stepToUpdate = user.onboardingSteps.find(s => s.title === title);
             if (stepToUpdate) {
                 stepToUpdate.completed = completed;
             } else {
-                user.onboardingSteps.push({ step, completed });
+                return res.status(404).json({ message: 'Step not found' });
             }
 
             await user.save();
         } else {
-            console.error('Invalid step or completion status received:', step, completed);
+            console.error('Invalid step or completion status received:', title, completed);
             return res.status(400).json({ message: 'Invalid step data' });
         }
 
         // Filter out any steps that don't have the necessary fields
-        const validSteps = user.onboardingSteps.filter(s => s.step && typeof s.completed === 'boolean');
+        const validSteps = user.onboardingSteps.filter(s => s.title && typeof s.completed === 'boolean');
 
         // Check if all valid steps are completed
         const allCompleted = validSteps.every(s => s.completed);

@@ -55,34 +55,48 @@ document.addEventListener('DOMContentLoaded', function () {
     function generateFinancialInsights(cashFlowData, spendingData, goalsData) {
         console.log('[Insights] Starting financial insights generation...');
         const insightsList = document.getElementById('insights-list');
-        insightsList.innerHTML = '<li class="list-group-item">Analyzing your financial data...</li>';
+        insightsList.innerHTML = '<li class="list-group-item"><i class="fa fa-spinner fa-spin me-2"></i>Analyzing your financial data...</li>';
 
         const insights = [];
 
         if (cashFlowData) {
             const { income, expenses, netIncome } = cashFlowData;
             console.log(`[Insights] Cash Flow Data: Income=${income}, Expenses=${expenses}, Net=${netIncome}`);
+            
             if (netIncome > 0) {
-                insights.push(`<strong>Positive Cash Flow:</strong> You've earned $${netIncome.toFixed(2)} more than you spent. Well done!`);
+                const savingsRate = ((netIncome / income) * 100).toFixed(1);
+                insights.push(`<strong>Positive Cash Flow:</strong> You're saving $${netIncome.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})} monthly (${savingsRate}% savings rate). Excellent work!`);
             } else {
-                insights.push(`<strong>Negative Cash Flow:</strong> You've spent $${Math.abs(netIncome).toFixed(2)} more than you earned. Let's review your spending.`);
+                insights.push(`<strong>Negative Cash Flow:</strong> You're spending $${Math.abs(netIncome).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})} more than you earn. Consider reviewing your expenses.`);
             }
         }
 
         if (spendingData && spendingData.length > 0) {
             const topCategory = spendingData.reduce((prev, current) => (prev.value > current.value) ? prev : current);
+            const totalSpending = spendingData.reduce((sum, item) => sum + item.value, 0);
+            const topCategoryPercentage = ((topCategory.value / totalSpending) * 100).toFixed(1);
+            
             console.log(`[Insights] Top Spending Category: ${topCategory.name} at $${topCategory.value.toFixed(2)}`);
-            insights.push(`<strong>Top Spending Category:</strong> Your highest spending this month was on "${topCategory.name}" ($${topCategory.value.toFixed(2)}).`);
+            insights.push(`<strong>Top Spending Category:</strong> "${topCategory.name}" represents ${topCategoryPercentage}% of your total spending ($${topCategory.value.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}).`);
         }
 
         if (goalsData && goalsData.length > 0) {
             const completedGoals = goalsData.filter(g => g.currentAmount >= g.targetAmount);
             const onTrackGoals = goalsData.filter(g => g.currentAmount < g.targetAmount && (g.currentAmount / g.targetAmount) >= 0.5);
-            console.log(`[Insights] Goals: ${completedGoals.length} completed, ${onTrackGoals.length} on track.`);
+            const behindGoals = goalsData.filter(g => g.currentAmount < g.targetAmount && (g.currentAmount / g.targetAmount) < 0.5);
+            
+            console.log(`[Insights] Goals: ${completedGoals.length} completed, ${onTrackGoals.length} on track, ${behindGoals.length} behind.`);
+            
             if (completedGoals.length > 0) {
-                insights.push(`<strong>Goal Achievement:</strong> Congratulations on completing ${completedGoals.length} savings goal(s)!`);
-            } else if (onTrackGoals.length > 0) {
-                insights.push(`<strong>Goal Progress:</strong> You're making great progress on ${onTrackGoals.length} of your savings goals! Keep it up!`);
+                insights.push(`<strong>Goal Achievement:</strong> Congratulations! You've completed ${completedGoals.length} savings goal${completedGoals.length > 1 ? 's' : ''}.`);
+            }
+            
+            if (onTrackGoals.length > 0) {
+                insights.push(`<strong>On Track:</strong> You're making great progress on ${onTrackGoals.length} goal${onTrackGoals.length > 1 ? 's' : ''}. Keep up the momentum!`);
+            }
+            
+            if (behindGoals.length > 0) {
+                insights.push(`<strong>Needs Attention:</strong> ${behindGoals.length} goal${behindGoals.length > 1 ? 's are' : ' is'} behind schedule. Consider increasing your savings rate.`);
             }
         }
 
@@ -93,10 +107,27 @@ document.addEventListener('DOMContentLoaded', function () {
     function displayInsights(insights) {
         const insightsList = document.getElementById('insights-list');
         if (insights.length === 0) {
-            insightsList.innerHTML = '<li class="list-group-item">No specific insights to show right now. Link an account to get started!</li>';
+            insightsList.innerHTML = `
+                <li class="list-group-item">
+                    <div class="d-flex align-items-center">
+                        <i class="fa fa-info-circle text-info me-3"></i>
+                        <div>
+                            <strong>No specific insights to show right now.</strong><br>
+                            <small class="text-muted">Link an account to get started!</small>
+                        </div>
+                    </div>
+                </li>`;
             return;
         }
-        insightsList.innerHTML = insights.map(insight => `<li class="list-group-item"><i class="fa fa-check-circle text-success me-2"></i>${insight}</li>`).join('');
+        
+        insightsList.innerHTML = insights.map(insight => `
+            <li class="list-group-item">
+                <div class="d-flex align-items-start">
+                    <i class="fa fa-check-circle text-success me-3 mt-1"></i>
+                    <div>${insight}</div>
+                </div>
+            </li>
+        `).join('');
     }
 
     // --- Data Fetching ---
@@ -178,15 +209,167 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!document.getElementById('cashFlowChart')) return;
         if (cashFlowChart) cashFlowChart.destroy();
         console.log('[Debug] Rendering cash flow chart with:', { income, expenses, netIncome });
+        
+        // Create time-based data for better flow visualization
+        const currentDate = new Date();
+        const dates = [];
+        const incomeData = [];
+        const expensesData = [];
+        const netData = [];
+        
+        // Generate data for the last 7 days to show flow
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(currentDate);
+            date.setDate(date.getDate() - i);
+            dates.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            
+            // Simulate daily variations (in real app, this would come from actual transaction data)
+            const dailyIncome = income / 7 * (0.8 + Math.random() * 0.4); // ±20% variation
+            const dailyExpenses = expenses / 7 * (0.8 + Math.random() * 0.4);
+            const dailyNet = dailyIncome - dailyExpenses;
+            
+            incomeData.push(Math.round(dailyIncome));
+            expensesData.push(Math.round(dailyExpenses));
+            netData.push(Math.round(dailyNet));
+        }
+        
         const options = {
-            series: [{ name: 'Income', data: [income] }, { name: 'Expenses', data: [expenses] }],
-            chart: { type: 'bar', height: 350, stacked: true, toolbar: { show: false } },
-            plotOptions: { bar: { horizontal: false } },
-            xaxis: { categories: ['Cash Flow'] },
-            yaxis: { title: { text: 'Amount (USD)' } },
-            colors: ['#28a745', '#dc3545'],
-            tooltip: { y: { formatter: val => `$${val.toFixed(2)}` } }
+            series: [
+                {
+                    name: 'Income',
+                    type: 'area',
+                    data: incomeData,
+                    color: '#0070ba'
+                },
+                {
+                    name: 'Expenses',
+                    type: 'area',
+                    data: expensesData,
+                    color: '#009cde'
+                },
+                {
+                    name: 'Net Cash Flow',
+                    type: 'line',
+                    data: netData,
+                    color: '#28a745'
+                }
+            ],
+            chart: {
+                height: 300,
+                type: 'line',
+                background: 'transparent',
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 150
+                    },
+                    dynamicAnimation: {
+                        enabled: true,
+                        speed: 350
+                    }
+                },
+                toolbar: {
+                    show: false
+                }
+            },
+            stroke: {
+                curve: 'smooth',
+                width: [0, 0, 3],
+                dashArray: [0, 0, 0]
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shade: 'light',
+                    type: 'vertical',
+                    shadeIntensity: 0.3,
+                    opacityFrom: 0.7,
+                    opacityTo: 0.3,
+                    stops: [0, 100]
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            markers: {
+                size: 0,
+                colors: ['#0070ba', '#009cde', '#28a745'],
+                strokeColors: '#fff',
+                strokeWidth: 2,
+                hover: {
+                    size: 0
+                }
+            },
+            xaxis: {
+                categories: dates,
+                labels: {
+                    style: {
+                        fontSize: '12px',
+                        fontWeight: 600
+                    }
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Amount ($)',
+                    style: {
+                        fontSize: '14px',
+                        fontWeight: 600
+                    }
+                },
+                labels: {
+                    formatter: function(val) {
+                        return '$' + parseFloat(val).toLocaleString('en-US', {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0
+                        });
+                    }
+                }
+            },
+            tooltip: {
+                shared: true,
+                intersect: false,
+                y: {
+                    formatter: function(val, opts) {
+                        const seriesName = opts.seriesNames[opts.seriesIndex];
+                        return seriesName + ': $' + parseFloat(val).toLocaleString('en-US', {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0
+                        });
+                    }
+                }
+            },
+            legend: {
+                position: 'top',
+                horizontalAlign: 'center',
+                fontSize: '14px',
+                fontWeight: 600
+            },
+            grid: {
+                borderColor: '#e0e0e0',
+                strokeDashArray: 3
+            },
+            theme: {
+                mode: 'light',
+                palette: 'palette1'
+            },
+            colors: ['#0070ba', '#009cde', '#28a745'],
+            responsive: [{
+                breakpoint: 768,
+                options: {
+                    chart: {
+                        height: 250
+                    },
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }]
         };
+        
         cashFlowChart = new ApexCharts(document.getElementById('cashFlowChart'), options);
         cashFlowChart.render();
     }
@@ -202,27 +385,121 @@ document.addEventListener('DOMContentLoaded', function () {
     function getSpendingChartOptions(data) {
         return {
             series: data.map(item => item.value),
-            chart: { type: 'donut', height: 350, toolbar: { show: false } },
+            chart: {
+                type: 'donut',
+                height: 350,
+                toolbar: {
+                    show: false
+                },
+                background: 'transparent',
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 150
+                    },
+                    dynamicAnimation: {
+                        enabled: true,
+                        speed: 350
+                    }
+                }
+            },
             labels: data.map(item => item.name),
-            colors: ['#009cde', '#f2c500', '#28a745', '#dc3545', '#6f42c1', '#fd7e14', '#20c997'],
-            legend: { position: 'bottom' },
-            dataLabels: { enabled: true, formatter: val => `${val.toFixed(1)}%` },
+            colors: ['#0070ba', '#009cde', '#003087', '#00aaff', '#66ccff', '#b3e6ff'],
+            legend: {
+                show: false
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function(val, opts) {
+                    return opts.w.globals.seriesPercent[opts.seriesIndex][0].toFixed(1) + '%';
+                },
+                style: {
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    colors: ['#fff']
+                }
+            },
             plotOptions: {
                 pie: {
                     donut: {
                         size: '65%',
+                        background: 'transparent',
                         labels: {
                             show: true,
+                            name: {
+                                show: true,
+                                fontSize: '16px',
+                                fontWeight: 600,
+                                offsetY: -10
+                            },
+                            value: {
+                                show: true,
+                                fontSize: '24px',
+                                fontWeight: 700,
+                                offsetY: 5,
+                                formatter: function(val) {
+                                    return '$' + parseFloat(val).toLocaleString('en-US', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    });
+                                }
+                            },
                             total: {
                                 show: true,
                                 label: 'Total Spent',
-                                formatter: w => `$${w.globals.seriesTotals.reduce((a, b) => a + b, 0).toFixed(2)}`
+                                fontSize: '14px',
+                                fontWeight: 600,
+                                formatter: function(w) {
+                                    const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                    return '$' + total.toLocaleString('en-US', {
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    });
+                                }
                             }
                         }
+                    },
+                    offsetY: 0
+                },
+                stroke: {
+                    colors: ['#fff'],
+                    width: 2
+                }
+            },
+            stroke: {
+                width: 2,
+                colors: ['#fff']
+            },
+            tooltip: {
+                enabled: true,
+                y: {
+                    formatter: function(val) {
+                        return '$' + parseFloat(val).toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        });
                     }
                 }
             },
-            tooltip: { y: { formatter: val => `$${val.toFixed(2)}` } }
+            theme: {
+                mode: 'light',
+                palette: 'palette1'
+            },
+            responsive: [{
+                breakpoint: 768,
+                options: {
+                    chart: {
+                        height: 300
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontSize: '11px'
+                    }
+                }
+            }]
         };
     }
 
@@ -239,6 +516,7 @@ document.addEventListener('DOMContentLoaded', function () {
         goalsTable.clear();
         goals.forEach(goal => addGoalToTable(goal));
         goalsTable.draw();
+        updateGoalsProgressSummary(goals);
     }
 
     function addGoalToTable(goal) {
@@ -270,29 +548,112 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function getGoalProgressOptions(percentage) {
+        const color = percentage >= 100 ? '#0070ba' : percentage >= 75 ? '#009cde' : percentage >= 50 ? '#003087' : '#00aaff';
+        
         return {
             series: [percentage],
-            chart: { type: 'radialBar', height: 80, sparkline: { enabled: true } },
+            chart: {
+                type: 'radialBar',
+                height: 80,
+                sparkline: {
+                    enabled: true
+                },
+                background: 'transparent'
+            },
             plotOptions: {
                 radialBar: {
-                    hollow: { size: '60%' },
-                    dataLabels: { name: { show: false }, value: { show: true, offsetY: 5, formatter: val => `${Math.round(val)}%` } }
+                    startAngle: -135,
+                    endAngle: 225,
+                    hollow: {
+                        size: '80%',
+                        background: 'transparent',
+                        margin: 5
+                    },
+                    track: {
+                        background: '#f2f2f2',
+                        strokeWidth: '100%',
+                        margin: 0,
+                        dropShadow: {
+                            enabled: true,
+                            top: 2,
+                            left: 0,
+                            color: '#999',
+                            opacity: 0.2,
+                            blur: 2
+                        }
+                    },
+                    dataLabels: {
+                        name: {
+                            show: false
+                        },
+                        value: {
+                            fontSize: '16px',
+                            offsetY: 5,
+                            fontWeight: 700,
+                            color: color,
+                            formatter: function(val) {
+                                return Math.round(val) + '%';
+                            }
+                        }
+                    }
                 }
             },
-            stroke: { lineCap: 'round' },
-            labels: ['Progress'],
+            stroke: {
+                lineCap: 'round',
+                width: 3
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shade: 'dark',
+                    type: 'horizontal',
+                    shadeIntensity: 0.3,
+                    gradientToColors: [color],
+                    inverseColors: false,
+                    opacityFrom: 0.5,
+                    opacityTo: 0.8,
+                    stops: [0, 100]
+                }
+            },
+            colors: [color],
+            theme: {
+                mode: 'light',
+                palette: 'palette1'
+            }
         };
     }
 
     // --- Event Handlers and UI ---
     function initializeSortByDropdown() {
-        document.querySelectorAll('.sort-by-dropdown .dropdown-item').forEach(item => {
+        console.log('[Debug] Initializing sort by dropdown...');
+        const dropdownItems = document.querySelectorAll('#dropdownMenuButton1 + .dropdown-menu .dropdown-item');
+        console.log('[Debug] Found dropdown items:', dropdownItems.length);
+        
+        dropdownItems.forEach(item => {
             item.addEventListener('click', function (event) {
                 event.preventDefault();
                 const period = this.getAttribute('data-period');
-                document.getElementById('sortByDropdown').textContent = this.textContent;
+                const text = this.textContent;
+                
+                console.log('[Debug] Sort by clicked:', { period, text });
+                
+                // Update the dropdown button text
+                const buttonText = document.getElementById('dropdownMenuButton1Text');
+                if (buttonText) {
+                    buttonText.innerHTML = text + ' <i class="fa fa-caret-down ms-1"></i>';
+                }
+                
+                // Fetch and render new data
                 fetchCategorizedSpending(period).then(data => {
-                    if (data) renderCategorizedSpendingChart(data);
+                    if (data) {
+                        console.log('[Debug] Rendering new spending data for period:', period);
+                        renderCategorizedSpendingChart(data);
+                        renderSpendingBreakdown(data);
+                    } else {
+                        console.error('[Debug] No data returned for period:', period);
+                    }
+                }).catch(error => {
+                    console.error('[Debug] Error fetching spending data:', error);
                 });
             });
         });
@@ -427,4 +788,66 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         initializeBudgetingPage();
     });
+
+    // --- Helper Functions for Intuitive Features ---
+    
+    // Global function for scrolling to sections
+    window.scrollToSection = function(sectionId) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
+
+    // Global function for refreshing data
+    window.refreshData = async function() {
+        try {
+            // Show loading state
+            const refreshBtn = document.querySelector('button[onclick="refreshData()"]');
+            const originalText = refreshBtn.innerHTML;
+            refreshBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Refreshing...';
+            refreshBtn.disabled = true;
+
+            // Refresh all data
+            await fetchDataAndInitializePage();
+            
+            // Show success message
+            Swal.fire({
+                icon: 'success',
+                title: 'Data Refreshed!',
+                text: 'Your financial data has been updated.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+
+        } catch (error) {
+            console.error('Error refreshing data:', error);
+            Swal.fire('Error', 'Failed to refresh data. Please try again.', 'error');
+        } finally {
+            // Reset button
+            const refreshBtn = document.querySelector('button[onclick="refreshData()"]');
+            refreshBtn.innerHTML = '<i class="fa fa-refresh"></i> Refresh Data';
+            refreshBtn.disabled = false;
+        }
+    };
+
+    // Update goals progress summary
+    function updateGoalsProgressSummary(goals) {
+        const summaryElement = document.getElementById('goalsProgressSummary');
+        if (!summaryElement || !goals) return;
+
+        const completedGoals = goals.filter(g => g.currentAmount >= g.targetAmount).length;
+        const totalGoals = goals.length;
+        
+        summaryElement.textContent = `${completedGoals}/${totalGoals} Complete`;
+        
+        // Add color coding
+        if (completedGoals === totalGoals && totalGoals > 0) {
+            summaryElement.className = 'fw-bold text-success';
+        } else if (completedGoals > 0) {
+            summaryElement.className = 'fw-bold text-warning';
+        } else {
+            summaryElement.className = 'fw-bold text-muted';
+        }
+    }
 });

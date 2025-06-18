@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log(`[Insights] Low spending categories (<10%):`, lowSpendingCategories.map(item => `${item.name}: ${((item.value / totalSpending) * 100).toFixed(1)}%`));
             
             if (highSpendingCategories.length > 0) {
-                insights.push(`<strong>High Concentration Areas:</strong> ${highSpendingCategories.length} category${highSpendingCategories.length > 1 ? 'ies' : 'y'} account${highSpendingCategories.length > 1 ? '' : 's'} for over 30% of your spending. Focus on these areas for maximum impact.`);
+                insights.push(`<strong>High Concentration Areas:</strong> ${highSpendingCategories.length} categor${highSpendingCategories.length > 1 ? 'ies' : 'y'} account${highSpendingCategories.length > 1 ? '' : 's'} for over 30% of your spending. Focus on these areas for maximum impact.`);
                 console.log(`[Insights] Added high concentration insight for ${highSpendingCategories.length} categories`);
             }
             
@@ -227,11 +227,11 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log(`[Insights] Low value categories (<0.5x average):`, lowValueCategories.map(item => item.name));
             
             if (highValueCategories.length > 0) {
-                insights.push(`<strong>High-Value Categories:</strong> ${highValueCategories.length} category${highValueCategories.length > 1 ? 'ies' : 'y'} are significantly above average spending. Review if these align with your priorities.`);
+                insights.push(`<strong>High-Value Categories:</strong> ${highValueCategories.length} categor${highValueCategories.length > 1 ? 'ies' : 'y'} are significantly above average spending. Review if these align with your priorities.`);
             }
             
             if (lowValueCategories.length > 0) {
-                insights.push(`<strong>Low-Value Categories:</strong> ${lowValueCategories.length} category${lowValueCategories.length > 1 ? 'ies' : 'y'} are well below average. These may be good areas for optimization.`);
+                insights.push(`<strong>Low-Value Categories:</strong> ${lowValueCategories.length} categor${lowValueCategories.length > 1 ? 'ies' : 'y'} are well below average. These may be good areas for optimization.`);
             }
             
         } else {
@@ -358,6 +358,9 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log(`[Insights] Insight deleted. ${window.currentInsights.length} insights remaining`);
         }
     }
+
+    // Make deleteInsight globally accessible
+    window.deleteInsight = deleteInsight;
 
     // --- Data Fetching ---
     async function checkForLinkedAccounts() {

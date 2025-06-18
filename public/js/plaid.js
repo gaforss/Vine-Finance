@@ -378,6 +378,11 @@ async function calculateAndDisplayBalances(allData) {
     setFormattedValue('miscellaneous', miscBalance);
     setFormattedValue('realEstate', realEstateValue);
 
+    // Set default values for fields not populated by Plaid
+    setFormattedValue('vehicles', 0);
+    setFormattedValue('personalProperty', 0);
+    setFormattedValue('otherAssets', 0);
+
     console.log('Final Balances Populated:', {
         cashBalance,
         investmentsBalance,

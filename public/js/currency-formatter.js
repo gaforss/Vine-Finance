@@ -42,37 +42,33 @@ function unformatCurrency(value) {
 function applyFormattingToInputs(container) {
     const inputs = container.querySelectorAll('input[type="text"][step="0.01"], input[type="number"][step="0.01"]');
     inputs.forEach(input => {
-        // Format on load/blur
-        input.addEventListener('blur', () => {
-             if (input.value) {
-                const numericValue = unformatCurrency(input.value);
-                input.value = parseFloat(numericValue).toLocaleString('en-US', { 
-                    style: 'currency',
-                    currency: 'USD',
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-             }
-        });
-        // Format as you type
-        input.addEventListener('input', () => formatCurrency(input));
-
-        // Un-format on focus
-        input.addEventListener('focus', () => {
-            if (input.value) {
-                input.value = unformatCurrency(input.value);
+        const formatValue = () => {
+            let numericValue = parseFloat(unformatCurrency(input.value));
+            // If value is not a number (e.g., empty or invalid), default to 0
+            if (isNaN(numericValue)) {
+                numericValue = 0;
             }
-        });
-
-        // Initial format if value exists
-        if (input.value) {
-            const numericValue = unformatCurrency(input.value);
-            input.value = parseFloat(numericValue).toLocaleString('en-US', { 
+            input.value = numericValue.toLocaleString('en-US', {
                 style: 'currency',
                 currency: 'USD',
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
-        }
+        };
+
+        const unformatValue = () => {
+            if (input.value) {
+                input.value = unformatCurrency(input.value);
+            }
+        };
+
+        // Format on load/blur
+        input.addEventListener('blur', formatValue);
+        // Format as you type
+        input.addEventListener('input', () => formatCurrency(input));
+        // Un-format on focus
+        input.addEventListener('focus', unformatValue);
+
+        // The initial format is now handled by the data population script (plaid.js).
     });
 } 

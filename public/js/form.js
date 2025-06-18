@@ -62,7 +62,22 @@ form.addEventListener('submit', async function(event) {
     
     const isDuplicate = await checkDuplicateMonth(data.date, entryId);
     if (isDuplicate && !entryId) {
-        alert('An entry for this month already exists. Please update the existing entry.');
+        showToast('An entry for this month already exists. Please update the existing entry.', 'warning');
+        return;
+    }
+
+    // Final validation before submitting
+    const requiredInputs = form.querySelectorAll('input[required]');
+    let allFieldsFilled = true;
+    for (const input of requiredInputs) {
+        if (!input.value.trim()) {
+            allFieldsFilled = false;
+            break; 
+        }
+    }
+
+    if (!allFieldsFilled) {
+        showToast('Please ensure all required fields are completed before saving.', 'danger');
         return;
     }
 
@@ -146,36 +161,49 @@ const editModal = new bootstrap.Modal(document.getElementById('editModal'));
 const editEntryForm = document.getElementById('editEntryForm');
 const modalEntryId = document.getElementById('modalEntryId');
 
-function editEntry(id) {
-    fetch(`/entries/${id}`, {
-        headers: {
-            'Authorization': `Bearer ${getToken()}`
+async function editEntry(id) {
+    try {
+        const response = await fetch(`/entries/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${getToken()}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch entry data.');
         }
-    })
-    .then(response => response.json())
-    .then(entry => {
-        console.log(`Editing entry date: ${entry.date}`);
-        const dateObj = new Date(entry.date);
-        const formattedDate = dateObj.toISOString().slice(0, 7);
-        document.getElementById('modalDate').value = formattedDate;
+        const entry = await response.json();
+
+        const formatCurrency = (value) => {
+            return (parseFloat(value) || 0).toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        };
+
+        // Populate the modal form
+        modalEntryId.value = entry._id;
+        document.getElementById('modalDate').value = entry.date.slice(0, 7); // Format as YYYY-MM
+        document.getElementById('modalCash').value = formatCurrency(entry.cash);
+        document.getElementById('modalInvestments').value = formatCurrency(entry.investments);
+        document.getElementById('modalRealEstate').value = formatCurrency(entry.realEstate);
+        document.getElementById('modalRetirementAccounts').value = formatCurrency(entry.retirementAccounts);
+        document.getElementById('modalVehicles').value = formatCurrency(entry.vehicles);
+        document.getElementById('modalPersonalProperty').value = formatCurrency(entry.personalProperty);
+        document.getElementById('modalOtherAssets').value = formatCurrency(entry.otherAssets);
+        document.getElementById('modalLiabilities').value = formatCurrency(entry.liabilities);
         
-        // Format values before populating
-        document.getElementById('modalCash').value = entry.cash;
-        document.getElementById('modalInvestments').value = entry.investments;
-        document.getElementById('modalRealEstate').value = entry.realEstate;
-        document.getElementById('modalRetirementAccounts').value = entry.retirementAccounts;
-        document.getElementById('modalVehicles').value = entry.vehicles;
-        document.getElementById('modalPersonalProperty').value = entry.personalProperty;
-        document.getElementById('modalOtherAssets').value = entry.otherAssets;
-        document.getElementById('modalLiabilities').value = entry.liabilities;
-        
-        // Apply formatting to all inputs in the modal
+        // This call ensures the input event listeners are attached for user interaction.
         applyFormattingToInputs(document.getElementById('editEntryForm'));
 
-        modalEntryId.value = id;
+        // Show the modal
         editModal.show();
-    })
-    .catch(error => console.error('Error fetching entry:', error));
+    } catch (error) {
+        console.error('Error fetching entry for editing:', error);
+        alert('Could not load entry for editing.');
+    }
 }
 
 editEntryForm.addEventListener('submit', async function(event) {
@@ -231,57 +259,7 @@ editEntryForm.addEventListener('submit', async function(event) {
     }
 });
 
-document.getElementById('modalAddCustomFieldBtn').addEventListener('click', () => {
-    const customFieldDiv = document.createElement('div');
-    customFieldDiv.classList.add('custom-field');
 
-    const label = document.createElement('label');
-    label.innerText = 'Custom Field Name:';
-    const inputName = document.createElement('input');
-    inputName.type = 'text';
-    inputName.classList.add('custom-field-name');
-    inputName.required = true;
-
-    const valueLabel = document.createElement('label');
-    valueLabel.innerText = 'Value:';
-    const inputValue = document.createElement('input');
-    inputValue.type = 'number';
-    inputValue.classList.add('custom-field-value');
-    inputValue.step = '0.01';
-    inputValue.required = true;
-
-    const typeLabel = document.createElement('label');
-    typeLabel.innerText = 'Type:';
-    const inputType = document.createElement('select');
-    inputType.classList.add('custom-field-type');
-    inputType.required = true;
-    inputType.innerHTML = `
-        <option value="asset">Asset</option>
-        <option value="liability">Liability</option>
-    `;
-
-    const removeButton = document.createElement('button');
-    removeButton.type = 'button';
-    removeButton.classList.add('removeCustomFieldBtn');
-    removeButton.innerText = 'Remove';
-    removeButton.addEventListener('click', () => {
-        document.getElementById('modalCustomFieldsContainer').removeChild(customFieldDiv);
-    });
-
-    customFieldDiv.appendChild(label);
-    customFieldDiv.appendChild(inputName);
-    customFieldDiv.appendChild(document.createElement('br'));
-    customFieldDiv.appendChild(valueLabel);
-    customFieldDiv.appendChild(inputValue);
-    customFieldDiv.appendChild(document.createElement('br'));
-    customFieldDiv.appendChild(typeLabel);
-    customFieldDiv.appendChild(inputType);
-    customFieldDiv.appendChild(document.createElement('br'));
-    customFieldDiv.appendChild(removeButton);
-    customFieldDiv.appendChild(document.createElement('br'));
-
-    document.getElementById('modalCustomFieldsContainer').appendChild(customFieldDiv);
-});
 
 document.getElementById('uploadForm').addEventListener('submit', async function(e) {
     e.preventDefault();

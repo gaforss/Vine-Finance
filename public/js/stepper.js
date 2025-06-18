@@ -30,8 +30,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    const validateStep = (stepNumber) => {
+        const currentStepElement = document.querySelector(`.form-step[data-step="${stepNumber}"]`);
+        if (!currentStepElement) return false;
+
+        const requiredInputs = currentStepElement.querySelectorAll('input[required]');
+        let allFieldsFilled = true;
+
+        requiredInputs.forEach(input => {
+            if (!input.value.trim()) {
+                allFieldsFilled = false;
+            }
+        });
+
+        return allFieldsFilled;
+    };
+
     nextButtons.forEach(button => {
         button.addEventListener('click', () => {
+            if (!validateStep(currentStep)) {
+                showToast('Please complete all required fields in this step before proceeding.', 'danger');
+                return;
+            }
+
             if (currentStep < maxSteps) {
                 currentStep++;
                 if (currentStep === 3) { // Assuming step 3 is the review step

@@ -48,7 +48,7 @@ router.post('/expenses', protect, async (req, res) => {
 });
 
 // Savings Goals Endpoints
-router.get('/savings-goals', protect, async (req, res) => {
+router.get('/goals', protect, async (req, res) => {
     try {
         const goals = await SavingsGoal.find({ user: req.user._id });
 
@@ -65,7 +65,7 @@ router.get('/savings-goals', protect, async (req, res) => {
     }
 });
 
-router.post('/savings-goals', protect, async (req, res) => {
+router.post('/goals', protect, async (req, res) => {
     try {
         const { name, targetAmount, currentAmount, endDate } = req.body;
         const goal = new SavingsGoal({ user: req.user._id, name, targetAmount, currentAmount, endDate });
@@ -86,54 +86,8 @@ router.post('/savings-goals', protect, async (req, res) => {
     }
 });
 
-// Transactions Endpoint for Cash Flow Analysis
-router.get('/transactions', protect, async (req, res) => {
-    try {
-        const userId = req.user._id;
-        const cacheKey = `transactions_cash_flow_${userId}`;
-        const cachedTransactions = cache.get(cacheKey);
-
-        if (cachedTransactions) {
-            console.log('Returning cached cash flow transactions');
-            return res.json(cachedTransactions);
-        }
-
-        const plaidToken = await PlaidToken.findOne({ userId });
-
-        if (!plaidToken) {
-            return res.status(400).json({ error: 'No Plaid token found for this user.' });
-        }
-
-        let allTransactions = [];
-        for (const item of plaidToken.items) {
-            try {
-                const response = await plaidClient.transactionsGet({
-                    access_token: item.accessToken,
-                    start_date: '2023-01-01',
-                    end_date: new Date().toISOString().split('T')[0],
-                });
-                allTransactions = allTransactions.concat(response.data.transactions);
-            } catch (error) {
-                console.error(`Error fetching transactions for item ${item.itemId}:`, error);
-            }
-        }
-
-        mixpanel.track('Transactions Retrieved for Cash Flow', {
-            distinct_id: req.user._id.toString(),
-            email: req.user.email,
-            timestamp: new Date().toISOString()
-        });
-
-        cache.set(cacheKey, allTransactions);
-        res.json(allTransactions);
-    } catch (error) {
-        console.error('Error fetching transactions:', error);
-        res.status(500).json({ error: 'Something went wrong fetching transactions' });
-    }
-});
-
 // Get a specific savings goal by ID
-router.get('/savings-goals/:id', protect, async (req, res) => {
+router.get('/goals/:id', protect, async (req, res) => {
     try {
         const goal = await SavingsGoal.findById(req.params.id);
         if (!goal) {
@@ -147,7 +101,7 @@ router.get('/savings-goals/:id', protect, async (req, res) => {
 });
 
 // Update a specific savings goal by ID
-router.put('/savings-goals/:id', protect, async (req, res) => {
+router.put('/goals/:id', protect, async (req, res) => {
     try {
         const goal = await SavingsGoal.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
         if (!goal) {
@@ -161,7 +115,7 @@ router.put('/savings-goals/:id', protect, async (req, res) => {
 });
 
 // Delete a specific savings goal by ID
-router.delete('/savings-goals/:id', protect, async (req, res) => {
+router.delete('/goals/:id', protect, async (req, res) => {
     try {
         const goal = await SavingsGoal.findByIdAndDelete(req.params.id);
         if (!goal) {

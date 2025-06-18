@@ -643,20 +643,24 @@ async function viewTransactions(event, accountId) {
         } else {
             transactions.forEach(transaction => {
                 const row = document.createElement('tr');
+                const dateCell = document.createElement('td');
                 const nameCell = document.createElement('td');
-                const quantityCell = document.createElement('td');
-                const priceCell = document.createElement('td');
-                const valueCell = document.createElement('td');
+                const amountCell = document.createElement('td');
 
+                dateCell.textContent = transaction.date;
                 nameCell.textContent = transaction.name;
-                quantityCell.textContent = transaction.quantity;
-                priceCell.textContent = transaction.price != null ? transaction.price.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : 'N/A';
-                valueCell.textContent = transaction.value != null ? transaction.value.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : 'N/A';
+                
+                const amount = transaction.amount;
+                amountCell.textContent = amount.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+                
+                // Highlight income in green
+                if (amount < 0) {
+                    amountCell.style.color = '#28a745'; // Green color for income
+                }
 
+                row.appendChild(dateCell);
                 row.appendChild(nameCell);
-                row.appendChild(quantityCell);
-                row.appendChild(priceCell);
-                row.appendChild(valueCell);
+                row.appendChild(amountCell);
                 transactionsList.appendChild(row);
             });
         }

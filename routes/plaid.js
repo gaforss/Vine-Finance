@@ -388,15 +388,15 @@ router.get('/categorized-spending', protect, async (req, res) => {
         const { year, month, quarter, start, end, date } = req.query;
         const userId = req.user._id;
 
-        if (!year && !start && !date) {
-            return res.status(400).json({ error: 'A time parameter (year, start, or date) is required.' });
+        if (!year && !month && !quarter && !start && !end && !date) {
+            return res.status(400).json({ error: 'At least one time parameter (year, month, quarter, start, end, date) is required.' });
         }
 
-        const cacheKey = `categorized-spending_${userId}_${year}_${month}_${quarter}_${start}_${end}_${date}`;
+        const cacheKey = `categorized-spending_${userId}_${year || ''}_${month || ''}_${quarter || ''}_${start || ''}_${end || ''}_${date || ''}`;
         const cachedData = cache.get(cacheKey);
 
         if (cachedData) {
-            console.log('Returning cached categorized spending data');
+            console.log(`Returning cached categorized spending data for key: ${cacheKey}`);
             return res.json(cachedData);
         }
 
@@ -408,21 +408,23 @@ router.get('/categorized-spending', protect, async (req, res) => {
 
         let startDate, endDate;
 
+        // Determine date range
         if (year && month) {
-            startDate = `${year}-${month}-01`;
-            endDate = new Date(year, parseInt(month, 10), 0).toISOString().split('T')[0];
-        } else if (start && end) {
-            startDate = start;
-            endDate = end;
-        } else if (date) {
-            startDate = endDate = date;
+            startDate = new Date(year, month - 1, 1).toISOString().split('T')[0];
+            endDate = new Date(year, month, 0).toISOString().split('T')[0];
         } else if (year && quarter) {
             const startMonth = (quarter - 1) * 3;
             startDate = new Date(year, startMonth, 1).toISOString().split('T')[0];
             endDate = new Date(year, startMonth + 3, 0).toISOString().split('T')[0];
-        } else {
+        } else if (year) {
             startDate = `${year}-01-01`;
             endDate = `${year}-12-31`;
+        } else if (start && end) {
+            startDate = start;
+            endDate = end;
+        } else if (date) {
+            startDate = date;
+            endDate = date;
         }
 
         let allTransactions = [];
@@ -444,15 +446,12 @@ router.get('/categorized-spending', protect, async (req, res) => {
         mixpanel.track('Categorized Spending Retrieved', {
             distinct_id: req.user._id.toString(),
             email: req.user.email,
-            year,
-            month,
-            quarter,
-            startDate,
-            endDate,
             timestamp: new Date().toISOString()
         });
 
-        cache.set(cacheKey, categorizedSpending);
+        if (categorizedSpending.length > 0) {
+            cache.set(cacheKey, categorizedSpending);
+        }
         res.json(categorizedSpending);
     } catch (error) {
         console.error('Error fetching categorized spending:', error);
@@ -781,6 +780,127 @@ router.get('/api/all-balances', protect, async (req, res) => {
     } catch (error) {
         console.error('Error fetching all balances:', error);
         res.status(500).json({ error: 'Something went wrong while fetching balances' });
+    }
+});
+
+// Route to get categorized spending
+router.get('/spending', protect, async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const period = req.query.period || 'monthly'; // default to monthly
+
+        const endDate = new Date();
+        const startDate = new Date();
+        if (period === 'monthly') {
+            startDate.setMonth(startDate.getMonth() - 1);
+        } else if (period === 'yearly') {
+            startDate.setFullYear(startDate.getFullYear() - 1);
+        } else {
+            startDate.setDate(startDate.getDate() - 30); // Default to last 30 days
+        }
+
+        const startDateString = startDate.toISOString().split('T')[0];
+        const endDateString = endDate.toISOString().split('T')[0];
+
+        const plaidToken = await PlaidToken.findOne({ userId });
+        if (!plaidToken) {
+            return res.status(400).json({ error: 'No Plaid token found for this user.' });
+        }
+
+        let allTransactions = [];
+        for (const item of plaidToken.items) {
+            try {
+                const response = await plaidClient.transactionsGet({
+                    access_token: item.accessToken,
+                    start_date: startDateString,
+                    end_date: endDateString,
+                });
+                allTransactions = allTransactions.concat(response.data.transactions);
+            } catch (error) {
+                console.error(`Error fetching transactions for item ${item.itemId}:`, error.response ? error.response.data : error.message);
+            }
+        }
+
+        const spendingByCategory = {};
+        allTransactions.forEach(t => {
+            if (t.amount > 0 && t.personal_finance_category && t.personal_finance_category.primary !== 'INTERNAL_ACCOUNT_TRANSFER') {
+                const category = t.personal_finance_category.primary || 'Uncategorized';
+                spendingByCategory[category] = (spendingByCategory[category] || 0) + t.amount;
+            }
+        });
+
+        const formattedSpending = Object.keys(spendingByCategory).map(category => ({
+            name: category.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+            value: spendingByCategory[category]
+        })).sort((a, b) => b.value - a.value);
+
+        res.json(formattedSpending);
+
+    } catch (error) {
+        console.error('Error fetching categorized spending:', error);
+        res.status(500).json({ error: 'Something went wrong while fetching spending data.' });
+    }
+});
+
+// Transactions Endpoint for Cash Flow Analysis
+router.get('/transactions/cashflow', protect, async (req, res) => {
+    try {
+        const userId = req.user._id;
+        const cacheKey = `transactions_cash_flow_${userId}`;
+        const cachedTransactions = cache.get(cacheKey);
+
+        if (cachedTransactions) {
+            console.log(`[Cash Flow] Returning cached data for key: ${cacheKey}`);
+            return res.json(cachedTransactions);
+        }
+
+        const plaidToken = await PlaidToken.findOne({ userId });
+
+        if (!plaidToken) {
+            return res.status(400).json({ error: 'No Plaid token found for this user.' });
+        }
+
+        console.log(`[Cash Flow] Found ${plaidToken.items.length} Plaid items for user ${userId}.`);
+        let allTransactions = [];
+        for (const item of plaidToken.items) {
+            try {
+                const endDate = new Date();
+                const startDate = new Date();
+                startDate.setDate(endDate.getDate() - 365);
+                const startDateString = startDate.toISOString().split('T')[0];
+                const endDateString = endDate.toISOString().split('T')[0];
+                console.log(`[Cash Flow] Fetching transactions for item ${item.itemId} from ${startDateString} to ${endDateString}`);
+
+                const response = await plaidClient.transactionsGet({
+                    access_token: item.accessToken,
+                    start_date: startDateString,
+                    end_date: endDateString,
+                });
+                console.log(`[Cash Flow] Received ${response.data.transactions.length} transactions for item ${item.itemId}.`);
+                allTransactions = allTransactions.concat(response.data.transactions);
+            } catch (error) {
+                console.error(`Error fetching transactions for item ${item.itemId}:`, error.response ? error.response.data : error.message);
+            }
+        }
+
+        mixpanel.track('Transactions Retrieved for Cash Flow', {
+            distinct_id: req.user._id.toString(),
+            email: req.user.email,
+            timestamp: new Date().toISOString()
+        });
+
+        console.log(`[Cash Flow] Total transactions fetched: ${allTransactions.length}. Sending to client.`);
+        // Only cache if there are transactions to avoid caching empty arrays
+        if (allTransactions.length > 0) {
+            cache.set(cacheKey, allTransactions);
+            console.log(`[Cash Flow] Cached transactions for key: ${cacheKey}. Cache set!`);
+        } else {
+            console.log(`[Cash Flow] No transactions to cache for key: ${cacheKey}.`);
+        }
+        res.json(allTransactions);
+    } catch (error) {
+        console.error('Error fetching transactions:', error);
+        res.status(500).json({ error: 'Something went wrong fetching transactions' });
     }
 });
 

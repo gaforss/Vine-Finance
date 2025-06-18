@@ -143,7 +143,7 @@ app.use('/password', passwordRouter);
 app.use('/plaid', protect, plaidRouter);
 app.use('/retirement', retirementRouter);
 app.use('/realestate', protect, realestateRouter);
-app.use('/budgeting', budgetingRouter);
+app.use('/api', budgetingRouter);
 app.use('/api', snapshotRouter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 

@@ -145,6 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
     async function fetchCashFlowData() {
         try {
             const transactions = await fetchApi('/plaid/transactions/cashflow');
+            console.log('[Debug] Transactions fetched for cash flow:', transactions);
             return analyzeCashFlow(transactions);
         } catch (error) {
             console.error('Error fetching cash flow data:', error);
@@ -168,6 +169,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 expenses += t.amount;
             }
         });
+        console.log('[Debug] Cash flow calculated:', { income, expenses, netIncome: income - expenses });
         return { income, expenses, netIncome: income - expenses };
     }
 
@@ -175,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderCashFlowChart(income, expenses, netIncome) {
         if (!document.getElementById('cashFlowChart')) return;
         if (cashFlowChart) cashFlowChart.destroy();
+        console.log('[Debug] Rendering cash flow chart with:', { income, expenses, netIncome });
         const options = {
             series: [{ name: 'Income', data: [income] }, { name: 'Expenses', data: [expenses] }],
             chart: { type: 'bar', height: 350, stacked: true, toolbar: { show: false } },

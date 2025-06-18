@@ -1,3 +1,4 @@
+console.log('LOADED plaid.js - check for this line on server start');
 const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
@@ -8,6 +9,11 @@ const PlaidToken = require('../models/plaidToken');
 const { protect } = require('../middleware/authMiddleware');
 const mixpanel = require('../mixpanel');
 const cache = require('../config/cache');
+
+router.use((req, res, next) => {
+  console.log('[Plaid Router][DEBUG] Incoming request:', req.method, req.originalUrl, 'path:', req.path, 'url:', req.url);
+  next();
+});
 
 // Create a Plaid link token
 router.post('/create_link_token', protect, async (req, res, next) => {
@@ -309,6 +315,70 @@ router.get('/insurance', protect, async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Something went wrong' });
+    }
+});
+
+// Transactions Endpoint for Cash Flow Analysis
+router.get('/transactions/cashflow', async (req, res) => {
+    console.log('[Cash Flow][DEBUG] Entered /transactions/cashflow route');
+    try {
+        const userId = req.user._id;
+        const cacheKey = `transactions_cash_flow_${userId}`;
+        const cachedTransactions = cache.get(cacheKey);
+
+        if (cachedTransactions) {
+            console.log(`[Cash Flow] Returning cached data for key: ${cacheKey}`);
+            return res.json(cachedTransactions);
+        }
+
+        const plaidToken = await PlaidToken.findOne({ userId });
+
+        if (!plaidToken) {
+            return res.status(400).json({ error: 'No Plaid token found for this user.' });
+        }
+
+        console.log(`[Cash Flow] Found ${plaidToken.items.length} Plaid items for user ${userId}.`);
+        let allTransactions = [];
+        for (const item of plaidToken.items) {
+            try {
+                const endDate = new Date();
+                const startDate = new Date();
+                // TEMP: Use last 30 days instead of last 365 days for debugging
+                startDate.setDate(endDate.getDate() - 30);
+                const startDateString = startDate.toISOString().split('T')[0];
+                const endDateString = endDate.toISOString().split('T')[0];
+                console.log(`[Cash Flow][DEBUG] Fetching transactions for item ${item.itemId} (${item.institutionName}) from ${startDateString} to ${endDateString}`);
+
+                const response = await plaidClient.transactionsGet({
+                    access_token: item.accessToken,
+                    start_date: startDateString,
+                    end_date: endDateString,
+                });
+                console.log(`[Cash Flow][DEBUG] Received ${response.data.transactions.length} transactions for item ${item.itemId} (${item.institutionName})`);
+                allTransactions = allTransactions.concat(response.data.transactions);
+            } catch (error) {
+                console.error(`[Cash Flow][DEBUG] Error fetching transactions for item ${item.itemId}:`, error.response ? error.response.data : error.message);
+            }
+        }
+
+        mixpanel.track('Transactions Retrieved for Cash Flow', {
+            distinct_id: req.user._id.toString(),
+            email: req.user.email,
+            timestamp: new Date().toISOString()
+        });
+
+        console.log(`[Cash Flow][DEBUG] Total transactions fetched: ${allTransactions.length}. Sending to client.`);
+        // Only cache if there are transactions to avoid caching empty arrays
+        if (allTransactions.length > 0) {
+            cache.set(cacheKey, allTransactions);
+            console.log(`[Cash Flow][DEBUG] Cached transactions for key: ${cacheKey}. Cache set!`);
+        } else {
+            console.log(`[Cash Flow][DEBUG] No transactions to cache for key: ${cacheKey}.`);
+        }
+        res.json(allTransactions);
+    } catch (error) {
+        console.error('[Cash Flow][DEBUG] Error fetching transactions:', error);
+        res.status(500).json({ error: 'Something went wrong fetching transactions' });
     }
 });
 
@@ -842,67 +912,9 @@ router.get('/spending', protect, async (req, res) => {
     }
 });
 
-// Transactions Endpoint for Cash Flow Analysis
-router.get('/transactions/cashflow', protect, async (req, res) => {
-    try {
-        const userId = req.user._id;
-        const cacheKey = `transactions_cash_flow_${userId}`;
-        const cachedTransactions = cache.get(cacheKey);
-
-        if (cachedTransactions) {
-            console.log(`[Cash Flow] Returning cached data for key: ${cacheKey}`);
-            return res.json(cachedTransactions);
-        }
-
-        const plaidToken = await PlaidToken.findOne({ userId });
-
-        if (!plaidToken) {
-            return res.status(400).json({ error: 'No Plaid token found for this user.' });
-        }
-
-        console.log(`[Cash Flow] Found ${plaidToken.items.length} Plaid items for user ${userId}.`);
-        let allTransactions = [];
-        for (const item of plaidToken.items) {
-            try {
-                const endDate = new Date();
-                const startDate = new Date();
-                startDate.setDate(endDate.getDate() - 365);
-                const startDateString = startDate.toISOString().split('T')[0];
-                const endDateString = endDate.toISOString().split('T')[0];
-                console.log(`[Cash Flow] Fetching transactions for item ${item.itemId} from ${startDateString} to ${endDateString}`);
-
-                const response = await plaidClient.transactionsGet({
-                    access_token: item.accessToken,
-                    start_date: startDateString,
-                    end_date: endDateString,
-                });
-                console.log(`[Cash Flow] Received ${response.data.transactions.length} transactions for item ${item.itemId}.`);
-                allTransactions = allTransactions.concat(response.data.transactions);
-            } catch (error) {
-                console.error(`Error fetching transactions for item ${item.itemId}:`, error.response ? error.response.data : error.message);
-            }
-
-        }
-
-        mixpanel.track('Transactions Retrieved for Cash Flow', {
-            distinct_id: req.user._id.toString(),
-            email: req.user.email,
-            timestamp: new Date().toISOString()
-        });
-
-        console.log(`[Cash Flow] Total transactions fetched: ${allTransactions.length}. Sending to client.`);
-        // Only cache if there are transactions to avoid caching empty arrays
-        if (allTransactions.length > 0) {
-            cache.set(cacheKey, allTransactions);
-            console.log(`[Cash Flow] Cached transactions for key: ${cacheKey}. Cache set!`);
-        } else {
-            console.log(`[Cash Flow] No transactions to cache for key: ${cacheKey}.`);
-        }
-        res.json(allTransactions);
-    } catch (error) {
-        console.error('Error fetching transactions:', error);
-        res.status(500).json({ error: 'Something went wrong fetching transactions' });
-    }
+router.all('*', (req, res, next) => {
+  console.log('[Plaid Router][DEBUG] Unmatched route:', req.method, req.originalUrl);
+  next();
 });
 
-module.exports = router;module.exports = router;
+module.exports = router;

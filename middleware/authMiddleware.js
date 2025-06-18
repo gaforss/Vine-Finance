@@ -18,18 +18,15 @@ const protect = async (req, res, next) => {
             req.user = await User.findById(decoded.id).select('-password');
 
             if (!req.user) {
-                console.log('[Middleware] - Auth failed: User not found for ID:', decoded.id);
                 return res.status(401).json({ status:false,message: 'User not found' });
             }
 
             console.log('[Middleware] - Auth successful, user attached to request:', req.user._id);
             next();
         } catch (error) {
-            console.log('[Middleware] - Auth failed: Token verification failed:', error.message);
             return res.status(401).json({status:false, message: 'Token verification failed' });
         }
     } else {
-        console.log('[Middleware] - Auth failed: No token provided');
         return res.status(401).json({ status:false,message: 'No token provided' });
     }
 };

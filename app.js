@@ -140,7 +140,10 @@ app.use('/import', templateRouter);
 app.use('/import', protect, importRouter);
 app.use('/auth', authRouter);
 app.use('/password', passwordRouter);
+
 app.use('/plaid', protect, plaidRouter);
+console.log('[App][DEBUG] /plaid router registered');
+
 app.use('/retirement', retirementRouter);
 app.use('/realestate', protect, realestateRouter);
 app.use('/api', budgetingRouter);

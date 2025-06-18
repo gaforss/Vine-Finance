@@ -22,25 +22,33 @@ document.addEventListener('DOMContentLoaded', function() {
     async function checkForLinkedAccounts() {
         const token = localStorage.getItem('token');
         try {
-            const response = await fetch('/plaid/balances', {
+            const response = await fetch('/plaid/accounts', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });
+
+            console.log('Response from /plaid/balances:', response);
+
             if (response.ok) {
                 const data = await response.json();
+                console.log('Data from /plaid/balances:', data);
                 // Check if there are any accounts in any of the categories
-                return (data.bankAccounts && data.bankAccounts.length > 0) ||
+                const hasAccounts = (data.bankAccounts && data.bankAccounts.length > 0) ||
                        (data.investments && data.investments.length > 0) ||
                        (data.digital && data.digital.length > 0) ||
                        (data.retirement && data.retirement.length > 0) ||
                        (data.liabilities && data.liabilities.length > 0) ||
                        (data.insurance && data.insurance.length > 0) ||
                        (data.misc && data.misc.length > 0);
+                console.log('Has linked accounts:', hasAccounts);
+                return hasAccounts;
+            } else {
+                console.error('Request to /plaid/balances was not ok. Status:', response.status);
             }
             return false;
         } catch (error) {
-            console.error('Error checking for linked accounts:', error);
+            console.error('Error fetching /plaid/balances:', error);
             return false;
         }
     }

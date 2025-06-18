@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function () {
             initializeSortByDropdown();
             fetchDataAndInitializePage();
             initializeGoalEventHandlers();
+            initializeInsightsRefresh();
 
         } else {
             console.log('[Init] No linked accounts found. Displaying CTA.');
@@ -31,18 +32,45 @@ document.addEventListener('DOMContentLoaded', function () {
                 fetchSavingsGoals()
             ]);
 
-            console.log('[Init] Data fetched. Rendering components...');
+            console.log('[Init] Data fetched successfully:', {
+                cashFlowData: cashFlowData ? 'present' : 'null',
+                spendingData: spendingData ? `${spendingData.length} items` : 'null',
+                goalsData: goalsData ? `${goalsData.length} items` : 'null'
+            });
+
+            console.log('[Init] Detailed spending data analysis:');
+            if (spendingData && Array.isArray(spendingData)) {
+                console.log(`[Init] Spending categories count: ${spendingData.length}`);
+                console.log(`[Init] Spending categories:`, spendingData.map(item => item.name));
+                console.log(`[Init] Spending values:`, spendingData.map(item => `$${item.value.toFixed(2)}`));
+            } else {
+                console.log('[Init] No spending data available or invalid format');
+            }
+
+            console.log('[Init] Rendering components...');
 
             if (cashFlowData) {
+                console.log('[Init] Rendering cash flow chart...');
                 renderCashFlowChart(cashFlowData.income, cashFlowData.expenses, cashFlowData.netIncome);
+            } else {
+                console.log('[Init] No cash flow data available for chart');
             }
+            
             if (spendingData) {
+                console.log('[Init] Rendering spending chart...');
                 renderCategorizedSpendingChart(spendingData);
+            } else {
+                console.log('[Init] No spending data available for chart');
             }
+            
             if (goalsData) {
+                console.log('[Init] Rendering goals table...');
                 populateGoalsTable(goalsData);
+            } else {
+                console.log('[Init] No goals data available for table');
             }
 
+            console.log('[Init] Generating financial insights...');
             generateFinancialInsights(cashFlowData, spendingData, goalsData);
 
         } catch (error) {
@@ -54,38 +82,173 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Financial Insights Generation ---
     function generateFinancialInsights(cashFlowData, spendingData, goalsData) {
         console.log('[Insights] Starting financial insights generation...');
+        console.log('[Insights] Input data:', { 
+            cashFlowData: cashFlowData ? 'present' : 'null', 
+            spendingData: spendingData ? `${spendingData.length} items` : 'null', 
+            goalsData: goalsData ? `${goalsData.length} items` : 'null' 
+        });
+        
         const insightsList = document.getElementById('insights-list');
-        insightsList.innerHTML = '<li class="list-group-item"><i class="fa fa-spinner fa-spin me-2"></i>Analyzing your financial data...</li>';
+        if (!insightsList) {
+            console.error('[Insights] Insights list element not found!');
+            return;
+        }
+        
+        // Show loading state
+        insightsList.innerHTML = `
+            <div class="insight-loading">
+                <div class="loading-spinner">
+                    <i class="fa fa-spinner fa-spin"></i>
+                </div>
+                <p>Analyzing your financial data...</p>
+            </div>`;
 
         const insights = [];
 
-        if (cashFlowData) {
+        // Cash Flow Insights
+        if (cashFlowData && typeof cashFlowData === 'object') {
             const { income, expenses, netIncome } = cashFlowData;
-            console.log(`[Insights] Cash Flow Data: Income=${income}, Expenses=${expenses}, Net=${netIncome}`);
+            console.log(`[Insights] Cash Flow Data: Income=$${income}, Expenses=$${expenses}, Net=$${netIncome}`);
             
-            if (netIncome > 0) {
-                const savingsRate = ((netIncome / income) * 100).toFixed(1);
-                insights.push(`<strong>Positive Cash Flow:</strong> You're saving $${netIncome.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})} monthly (${savingsRate}% savings rate). Excellent work!`);
+            if (income > 0 || expenses > 0) {
+                if (netIncome > 0) {
+                    const savingsRate = income > 0 ? ((netIncome / income) * 100).toFixed(1) : 0;
+                    insights.push(`<strong>Positive Cash Flow:</strong> You're saving $${netIncome.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})} monthly (${savingsRate}% savings rate). Excellent work!`);
+                    console.log(`[Insights] Added positive cash flow insight with ${savingsRate}% savings rate`);
+                } else if (netIncome < 0) {
+                    insights.push(`<strong>Negative Cash Flow:</strong> You're spending $${Math.abs(netIncome).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})} more than you earn. Consider reviewing your expenses.`);
+                    console.log(`[Insights] Added negative cash flow insight`);
+                } else {
+                    insights.push(`<strong>Balanced Budget:</strong> Your income and expenses are perfectly balanced. Great job maintaining financial equilibrium!`);
+                    console.log(`[Insights] Added balanced budget insight`);
+                }
+                
+                // Add spending efficiency insight
+                if (income > 0) {
+                    const expenseRatio = ((expenses / income) * 100).toFixed(1);
+                    if (expenseRatio > 90) {
+                        insights.push(`<strong>High Expense Ratio:</strong> You're spending ${expenseRatio}% of your income. Consider ways to reduce expenses or increase income.`);
+                    } else if (expenseRatio < 70) {
+                        insights.push(`<strong>Excellent Expense Management:</strong> You're only spending ${expenseRatio}% of your income. Great job keeping expenses low!`);
+                    }
+                    console.log(`[Insights] Expense ratio: ${expenseRatio}%`);
+                }
             } else {
-                insights.push(`<strong>Negative Cash Flow:</strong> You're spending $${Math.abs(netIncome).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})} more than you earn. Consider reviewing your expenses.`);
+                console.log('[Insights] No cash flow data available for insights');
             }
+        } else {
+            console.log('[Insights] Cash flow data is null or invalid');
         }
 
-        if (spendingData && spendingData.length > 0) {
+        // Spending Category Insights
+        if (spendingData && Array.isArray(spendingData) && spendingData.length > 0) {
+            console.log(`[Insights] Processing ${spendingData.length} spending categories`);
+            console.log('[Insights] Raw spending data:', JSON.stringify(spendingData, null, 2));
+            
             const topCategory = spendingData.reduce((prev, current) => (prev.value > current.value) ? prev : current);
             const totalSpending = spendingData.reduce((sum, item) => sum + item.value, 0);
-            const topCategoryPercentage = ((topCategory.value / totalSpending) * 100).toFixed(1);
+            const topCategoryPercentage = totalSpending > 0 ? ((topCategory.value / totalSpending) * 100).toFixed(1) : 0;
             
-            console.log(`[Insights] Top Spending Category: ${topCategory.name} at $${topCategory.value.toFixed(2)}`);
-            insights.push(`<strong>Top Spending Category:</strong> "${topCategory.name}" represents ${topCategoryPercentage}% of your total spending ($${topCategory.value.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}).`);
+            console.log(`[Insights] Top Spending Category: ${topCategory.name} at $${topCategory.value.toFixed(2)} (${topCategoryPercentage}%)`);
+            console.log(`[Insights] Total spending across all categories: $${totalSpending.toFixed(2)}`);
+            console.log('[Insights] All spending categories:', spendingData.map(item => `${item.name}: $${item.value.toFixed(2)}`));
+            
+            // Enhanced top category analysis
+            if (topCategoryPercentage > 50) {
+                insights.push(`<strong>High Concentration:</strong> "${topCategory.name}" dominates your spending at ${topCategoryPercentage}% ($${topCategory.value.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}). Consider diversifying your expenses.`);
+            } else if (topCategoryPercentage > 30) {
+                insights.push(`<strong>Top Spending Category:</strong> "${topCategory.name}" represents ${topCategoryPercentage}% of your total spending ($${topCategory.value.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}).`);
+            } else {
+                insights.push(`<strong>Well-Balanced Spending:</strong> Your top category "${topCategory.name}" is only ${topCategoryPercentage}% of total spending, showing excellent diversification.`);
+            }
+            
+            // Add spending diversity insight with more detail
+            console.log(`[Insights] Category count analysis: ${spendingData.length} categories found`);
+            console.log(`[Insights] Category names:`, spendingData.map(item => item.name));
+            
+            if (spendingData.length >= 8) {
+                insights.push(`<strong>Excellent Spending Diversity:</strong> You have ${spendingData.length} different spending categories, showing exceptional financial diversification and detailed tracking.`);
+                console.log(`[Insights] Added excellent diverse spending insight for ${spendingData.length} categories`);
+            } else if (spendingData.length >= 5) {
+                insights.push(`<strong>Diverse Spending:</strong> You have ${spendingData.length} different spending categories, showing good financial diversification.`);
+                console.log(`[Insights] Added diverse spending insight for ${spendingData.length} categories`);
+            } else if (spendingData.length <= 2) {
+                insights.push(`<strong>Concentrated Spending:</strong> You have only ${spendingData.length} spending categories. Consider tracking more detailed categories for better insights.`);
+                console.log(`[Insights] Added concentrated spending insight for ${spendingData.length} categories`);
+            }
+            
+            // Enhanced spending pattern analysis
+            const highSpendingCategories = spendingData.filter(item => (item.value / totalSpending) > 0.3);
+            const mediumSpendingCategories = spendingData.filter(item => (item.value / totalSpending) > 0.1 && (item.value / totalSpending) <= 0.3);
+            const lowSpendingCategories = spendingData.filter(item => (item.value / totalSpending) <= 0.1);
+            
+            console.log(`[Insights] High spending categories (>30%):`, highSpendingCategories.map(item => `${item.name}: ${((item.value / totalSpending) * 100).toFixed(1)}%`));
+            console.log(`[Insights] Medium spending categories (10-30%):`, mediumSpendingCategories.map(item => `${item.name}: ${((item.value / totalSpending) * 100).toFixed(1)}%`));
+            console.log(`[Insights] Low spending categories (<10%):`, lowSpendingCategories.map(item => `${item.name}: ${((item.value / totalSpending) * 100).toFixed(1)}%`));
+            
+            if (highSpendingCategories.length > 0) {
+                insights.push(`<strong>High Concentration Areas:</strong> ${highSpendingCategories.length} category${highSpendingCategories.length > 1 ? 'ies' : 'y'} account${highSpendingCategories.length > 1 ? '' : 's'} for over 30% of your spending. Focus on these areas for maximum impact.`);
+                console.log(`[Insights] Added high concentration insight for ${highSpendingCategories.length} categories`);
+            }
+            
+            // Spending health analysis
+            const essentialCategories = ['FOOD AND DRINK', 'TRANSPORTATION', 'PERSONAL CARE', 'LOAN PAYMENTS'];
+            const discretionaryCategories = ['ENTERTAINMENT', 'TRAVEL', 'GENERAL MERCHANDISE'];
+            
+            const essentialSpending = spendingData
+                .filter(item => essentialCategories.some(cat => item.name.includes(cat)))
+                .reduce((sum, item) => sum + item.value, 0);
+            
+            const discretionarySpending = spendingData
+                .filter(item => discretionaryCategories.some(cat => item.name.includes(cat)))
+                .reduce((sum, item) => sum + item.value, 0);
+            
+            const essentialPercentage = totalSpending > 0 ? ((essentialSpending / totalSpending) * 100).toFixed(1) : 0;
+            const discretionaryPercentage = totalSpending > 0 ? ((discretionarySpending / totalSpending) * 100).toFixed(1) : 0;
+            
+            console.log(`[Insights] Essential spending: $${essentialSpending.toFixed(2)} (${essentialPercentage}%)`);
+            console.log(`[Insights] Discretionary spending: $${discretionarySpending.toFixed(2)} (${discretionaryPercentage}%)`);
+            
+            if (essentialPercentage > 80) {
+                insights.push(`<strong>High Essential Spending:</strong> ${essentialPercentage}% of your spending is on essential items. Consider if there are ways to reduce these costs.`);
+            } else if (discretionaryPercentage > 50) {
+                insights.push(`<strong>High Discretionary Spending:</strong> ${discretionaryPercentage}% of your spending is discretionary. This gives you flexibility to adjust spending as needed.`);
+            } else {
+                insights.push(`<strong>Balanced Spending Mix:</strong> You have a healthy balance of essential (${essentialPercentage}%) and discretionary (${discretionaryPercentage}%) spending.`);
+            }
+            
+            // Spending efficiency analysis
+            const averageSpendingPerCategory = totalSpending / spendingData.length;
+            const highValueCategories = spendingData.filter(item => item.value > averageSpendingPerCategory * 2);
+            const lowValueCategories = spendingData.filter(item => item.value < averageSpendingPerCategory * 0.5);
+            
+            console.log(`[Insights] Average spending per category: $${averageSpendingPerCategory.toFixed(2)}`);
+            console.log(`[Insights] High value categories (>2x average):`, highValueCategories.map(item => item.name));
+            console.log(`[Insights] Low value categories (<0.5x average):`, lowValueCategories.map(item => item.name));
+            
+            if (highValueCategories.length > 0) {
+                insights.push(`<strong>High-Value Categories:</strong> ${highValueCategories.length} category${highValueCategories.length > 1 ? 'ies' : 'y'} are significantly above average spending. Review if these align with your priorities.`);
+            }
+            
+            if (lowValueCategories.length > 0) {
+                insights.push(`<strong>Low-Value Categories:</strong> ${lowValueCategories.length} category${lowValueCategories.length > 1 ? 'ies' : 'y'} are well below average. These may be good areas for optimization.`);
+            }
+            
+        } else {
+            console.log('[Insights] No spending data available for insights');
+            console.log('[Insights] Spending data type:', typeof spendingData);
+            console.log('[Insights] Spending data value:', spendingData);
         }
 
-        if (goalsData && goalsData.length > 0) {
+        // Goals Insights
+        if (goalsData && Array.isArray(goalsData) && goalsData.length > 0) {
+            console.log(`[Insights] Processing ${goalsData.length} savings goals`);
+            
             const completedGoals = goalsData.filter(g => g.currentAmount >= g.targetAmount);
             const onTrackGoals = goalsData.filter(g => g.currentAmount < g.targetAmount && (g.currentAmount / g.targetAmount) >= 0.5);
             const behindGoals = goalsData.filter(g => g.currentAmount < g.targetAmount && (g.currentAmount / g.targetAmount) < 0.5);
             
-            console.log(`[Insights] Goals: ${completedGoals.length} completed, ${onTrackGoals.length} on track, ${behindGoals.length} behind.`);
+            console.log(`[Insights] Goals breakdown: ${completedGoals.length} completed, ${onTrackGoals.length} on track, ${behindGoals.length} behind`);
             
             if (completedGoals.length > 0) {
                 insights.push(`<strong>Goal Achievement:</strong> Congratulations! You've completed ${completedGoals.length} savings goal${completedGoals.length > 1 ? 's' : ''}.`);
@@ -98,36 +261,102 @@ document.addEventListener('DOMContentLoaded', function () {
             if (behindGoals.length > 0) {
                 insights.push(`<strong>Needs Attention:</strong> ${behindGoals.length} goal${behindGoals.length > 1 ? 's are' : ' is'} behind schedule. Consider increasing your savings rate.`);
             }
+            
+            // Add overall progress insight
+            const totalProgress = goalsData.reduce((sum, goal) => sum + (goal.currentAmount / goal.targetAmount), 0) / goalsData.length * 100;
+            if (totalProgress > 75) {
+                insights.push(`<strong>Excellent Progress:</strong> You're ${totalProgress.toFixed(1)}% of the way to achieving all your goals!`);
+            } else if (totalProgress < 25) {
+                insights.push(`<strong>Early Stage:</strong> You're ${totalProgress.toFixed(1)}% of the way to your goals. Keep building momentum!`);
+            }
+            
+            console.log(`[Insights] Overall goals progress: ${totalProgress.toFixed(1)}%`);
+        } else {
+            console.log('[Insights] No goals data available for insights');
         }
 
-        console.log(`[Insights] Generated ${insights.length} insights.`);
+        // Add general financial health insight
+        if (insights.length === 0) {
+            insights.push(`<strong>Getting Started:</strong> Link your accounts to get personalized financial insights and track your progress!`);
+        }
+
+        console.log(`[Insights] Generated ${insights.length} insights total`);
         displayInsights(insights);
     }
 
     function displayInsights(insights) {
+        console.log('[Insights] Displaying insights:', insights.length);
+        
+        // Store insights globally for deletion functionality
+        window.currentInsights = insights;
+        
         const insightsList = document.getElementById('insights-list');
-        if (insights.length === 0) {
-            insightsList.innerHTML = `
-                <li class="list-group-item">
-                    <div class="d-flex align-items-center">
-                        <i class="fa fa-info-circle text-info me-3"></i>
-                        <div>
-                            <strong>No specific insights to show right now.</strong><br>
-                            <small class="text-muted">Link an account to get started!</small>
-                        </div>
-                    </div>
-                </li>`;
+        if (!insightsList) {
+            console.error('[Insights] Insights list element not found in displayInsights!');
             return;
         }
         
-        insightsList.innerHTML = insights.map(insight => `
-            <li class="list-group-item">
-                <div class="d-flex align-items-start">
-                    <i class="fa fa-check-circle text-success me-3 mt-1"></i>
-                    <div>${insight}</div>
+        if (insights.length === 0) {
+            console.log('[Insights] No insights to display, showing empty state');
+            insightsList.innerHTML = `
+                <div class="insight-empty">
+                    <div class="insight-empty-icon">
+                        <i class="fa fa-chart-line"></i>
+                    </div>
+                    <h5>No insights available yet</h5>
+                    <p class="text-muted">Link your accounts to get personalized financial insights and track your progress!</p>
+                </div>`;
+            return;
+        }
+        
+        console.log('[Insights] Rendering insights to DOM');
+        insightsList.innerHTML = insights.map((insight, index) => {
+            // Determine insight type and icon based on content
+            let iconClass = 'info';
+            let icon = 'fa-info-circle';
+            
+            if (insight.includes('Positive') || insight.includes('Excellent') || insight.includes('Congratulations') || insight.includes('Great')) {
+                iconClass = 'success';
+                icon = 'fa-check-circle';
+            } else if (insight.includes('Negative') || insight.includes('behind') || insight.includes('High') || insight.includes('Needs Attention')) {
+                iconClass = 'danger';
+                icon = 'fa-exclamation-triangle';
+            } else if (insight.includes('Consider') || insight.includes('Concentrated') || insight.includes('High Concentration')) {
+                iconClass = 'warning';
+                icon = 'fa-lightbulb-o';
+            }
+            
+            return `
+                <div class="insight-card" data-insight-index="${index}">
+                    <button class="delete-btn" onclick="deleteInsight(${index})" title="Delete insight">×</button>
+                    <div class="insight-header">
+                        <div class="insight-icon ${iconClass}">
+                            <i class="fa ${icon}"></i>
+                        </div>
+                        <div>
+                            <h6 class="insight-title">Insight ${index + 1}</h6>
+                        </div>
+                    </div>
+                    <p class="insight-content">${insight}</p>
                 </div>
-            </li>
-        `).join('');
+            `;
+        }).join('');
+        
+        console.log('[Insights] Successfully rendered insights to DOM');
+    }
+
+    function deleteInsight(index) {
+        console.log(`[Insights] Deleting insight at index ${index}`);
+        
+        // Remove the insight from the current insights array
+        if (window.currentInsights && window.currentInsights[index]) {
+            window.currentInsights.splice(index, 1);
+            
+            // Re-display the insights with updated indices
+            displayInsights(window.currentInsights);
+            
+            console.log(`[Insights] Insight deleted. ${window.currentInsights.length} insights remaining`);
+        }
     }
 
     // --- Data Fetching ---
@@ -157,9 +386,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
     async function fetchCategorizedSpending(period = 'monthly') {
         try {
-            return await fetchApi(`/plaid/spending?period=${period}`);
+            console.log(`[Spending] Fetching categorized spending data for period: ${period}`);
+            const data = await fetchApi(`/plaid/spending?period=${period}`);
+            console.log(`[Spending] Received data from backend:`, data);
+            console.log(`[Spending] Data type:`, typeof data);
+            console.log(`[Spending] Is array:`, Array.isArray(data));
+            console.log(`[Spending] Data length:`, data ? data.length : 'null');
+            
+            if (data && Array.isArray(data)) {
+                console.log(`[Spending] Categories found:`, data.length);
+                console.log(`[Spending] Category breakdown:`, data.map(item => `${item.name}: $${item.value}`));
+            }
+            
+            return data;
         } catch (error) {
-            console.error(`Error fetching spending data for period ${period}:`, error);
+            console.error(`[Spending] Error fetching spending data for period ${period}:`, error);
             return null;
         }
     }
@@ -334,11 +575,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 intersect: false,
                 y: {
                     formatter: function(val, opts) {
-                        const seriesName = opts.seriesNames[opts.seriesIndex];
-                        return seriesName + ': $' + parseFloat(val).toLocaleString('en-US', {
-                            minimumFractionDigits: 0,
-                            maximumFractionDigits: 0
-                        });
+                        try {
+                            const seriesName = opts.seriesNames && opts.seriesNames[opts.seriesIndex] ? opts.seriesNames[opts.seriesIndex] : 'Series';
+                            return seriesName + ': $' + parseFloat(val || 0).toLocaleString('en-US', {
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 0
+                            });
+                        } catch (error) {
+                            console.error('[Chart] Error in tooltip formatter:', error);
+                            return '$0';
+                        }
                     }
                 }
             },
@@ -414,7 +660,21 @@ document.addEventListener('DOMContentLoaded', function () {
             dataLabels: {
                 enabled: true,
                 formatter: function(val, opts) {
-                    return opts.w.globals.seriesPercent[opts.seriesIndex][0].toFixed(1) + '%';
+                    try {
+                        if (opts.w && opts.w.globals && opts.w.globals.seriesPercent && 
+                            opts.w.globals.seriesPercent[opts.seriesIndex] && 
+                            opts.w.globals.seriesPercent[opts.seriesIndex][0] !== undefined) {
+                            return opts.w.globals.seriesPercent[opts.seriesIndex][0].toFixed(1) + '%';
+                        } else {
+                            // Fallback to calculating percentage manually
+                            const total = opts.w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                            const percentage = total > 0 ? (val / total * 100) : 0;
+                            return percentage.toFixed(1) + '%';
+                        }
+                    } catch (error) {
+                        console.error('[Chart] Error in dataLabels formatter:', error);
+                        return '0%';
+                    }
                 },
                 style: {
                     fontSize: '11px',
@@ -441,10 +701,15 @@ document.addEventListener('DOMContentLoaded', function () {
                                 fontWeight: 700,
                                 offsetY: 5,
                                 formatter: function(val) {
-                                    return '$' + parseFloat(val).toLocaleString('en-US', {
-                                        minimumFractionDigits: 0,
-                                        maximumFractionDigits: 0
-                                    });
+                                    try {
+                                        return '$' + parseFloat(val || 0).toLocaleString('en-US', {
+                                            minimumFractionDigits: 0,
+                                            maximumFractionDigits: 0
+                                        });
+                                    } catch (error) {
+                                        console.error('[Chart] Error in value formatter:', error);
+                                        return '$0';
+                                    }
                                 }
                             },
                             total: {
@@ -453,11 +718,20 @@ document.addEventListener('DOMContentLoaded', function () {
                                 fontSize: '14px',
                                 fontWeight: 600,
                                 formatter: function(w) {
-                                    const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
-                                    return '$' + total.toLocaleString('en-US', {
-                                        minimumFractionDigits: 0,
-                                        maximumFractionDigits: 0
-                                    });
+                                    try {
+                                        if (w.globals && w.globals.seriesTotals && w.globals.seriesTotals.length > 0) {
+                                            const total = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                            return '$' + total.toLocaleString('en-US', {
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0
+                                            });
+                                        } else {
+                                            return '$0';
+                                        }
+                                    } catch (error) {
+                                        console.error('[Chart] Error in total formatter:', error);
+                                        return '$0';
+                                    }
                                 }
                             }
                         }
@@ -477,10 +751,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 enabled: true,
                 y: {
                     formatter: function(val) {
-                        return '$' + parseFloat(val).toLocaleString('en-US', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        });
+                        try {
+                            return '$' + parseFloat(val || 0).toLocaleString('en-US', {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2
+                            });
+                        } catch (error) {
+                            console.error('[Chart] Error in spending tooltip formatter:', error);
+                            return '$0.00';
+                        }
                     }
                 }
             },
@@ -507,7 +786,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const breakdownElement = document.getElementById('categorizedSpendingBreakdown');
         if (!breakdownElement) return;
         breakdownElement.innerHTML = '<ul class="list-group list-group-flush">' + 
-            data.map(item => `<li class="list-group-item d-flex justify-content-between align-items-center">${item.name}<span class="badge bg-primary rounded-pill">$${item.value.toFixed(2)}</span></li>`).join('') + 
+            data.map(item => `<li class="list-group-item d-flex justify-content-between align-items-center">${item.name}<span class="badge bg-primary rounded-pill">$${parseFloat(item.value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></li>`).join('') + 
             '</ul>';
     }
 
@@ -523,8 +802,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!goalsTable) return;
         const rowNode = goalsTable.row.add([
             goal.name,
-            `$${goal.targetAmount.toFixed(2)}`,
-            `$${goal.currentAmount.toFixed(2)}`,
+            `$${parseFloat(goal.targetAmount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
+            `$${parseFloat(goal.currentAmount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
             new Date(goal.endDate).toLocaleDateString(),
             `<div id="goal-progress-${goal._id}" class="goal-progress-chart"></div>`,
             `<button class="btn btn-sm btn-primary edit-goal-btn" data-id="${goal._id}" data-bs-toggle="modal" data-bs-target="#editGoalModal">Edit</button> <button class="btn btn-sm btn-danger delete-goal-btn" data-id="${goal._id}">Delete</button>`
@@ -734,8 +1013,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (row.length) {
             goalsTable.row(row).data([
                 goal.name,
-                `$${goal.targetAmount.toFixed(2)}`,
-                `$${goal.currentAmount.toFixed(2)}`,
+                `$${parseFloat(goal.targetAmount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
+                `$${parseFloat(goal.currentAmount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
                 new Date(goal.endDate).toLocaleDateString(),
                 `<div id="goal-progress-${goal._id}" class="goal-progress-chart"></div>`,
                 `<button class="btn btn-sm btn-primary edit-goal-btn" data-id="${goal._id}" data-bs-toggle="modal" data-bs-target="#editGoalModal">Edit</button> <button class="btn btn-sm btn-danger delete-goal-btn" data-id="${goal._id}">Delete</button>`
@@ -768,6 +1047,42 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (error) {
             console.error('Error deleting goal:', error);
             Swal.fire('Error', 'Could not delete savings goal.', 'error');
+        }
+    }
+
+    function initializeInsightsRefresh() {
+        console.log('[Insights] Initializing refresh functionality...');
+        const refreshButton = document.getElementById('refresh-insights');
+        if (refreshButton) {
+            refreshButton.addEventListener('click', async function() {
+                console.log('[Insights] Refresh button clicked');
+                this.disabled = true;
+                this.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+                
+                try {
+                    // Fetch fresh data
+                    const [cashFlowData, spendingData, goalsData] = await Promise.all([
+                        fetchCashFlowData(),
+                        fetchCategorizedSpending('monthly'),
+                        fetchSavingsGoals()
+                    ]);
+                    
+                    // Regenerate insights
+                    generateFinancialInsights(cashFlowData, spendingData, goalsData);
+                    
+                    console.log('[Insights] Insights refreshed successfully');
+                } catch (error) {
+                    console.error('[Insights] Error refreshing insights:', error);
+                    Swal.fire('Error', 'Could not refresh insights. Please try again.', 'error');
+                } finally {
+                    // Reset button
+                    this.disabled = false;
+                    this.innerHTML = '<i class="fa fa-refresh"></i>';
+                }
+            });
+            console.log('[Insights] Refresh button event listener added');
+        } else {
+            console.error('[Insights] Refresh button not found');
         }
     }
 

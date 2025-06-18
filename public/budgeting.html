@@ -130,6 +130,424 @@
                 font-size: 1.1rem;
             }
         }
+
+        /* Enhanced Insights UI Styles */
+        .insights-card {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .insights-icon-wrapper {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0070ba 0%, #009cde 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 112, 186, 0.3);
+        }
+
+        .insights-icon {
+            font-size: 24px;
+            color: white;
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #0070ba 0%, #009cde 100%) !important;
+            border: none;
+            padding: 8px 16px;
+            font-weight: 500;
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+            max-height: 120px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .insights-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .insights-grid::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .insights-grid::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        .insights-grid::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .insight-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .insight-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .insight-card .delete-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255, 59, 48, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .insight-card:hover .delete-btn {
+            opacity: 1;
+        }
+
+        .insight-card .delete-btn:hover {
+            background: rgba(255, 59, 48, 1);
+            transform: scale(1.1);
+        }
+
+        .insight-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .insight-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 18px;
+        }
+
+        .insight-icon.success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .insight-icon.warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            color: white;
+        }
+
+        .insight-icon.info {
+            background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+            color: white;
+        }
+
+        .insight-icon.danger {
+            background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+            color: white;
+        }
+
+        .insight-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0;
+            color: white;
+        }
+
+        .insight-content {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .insight-loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .loading-spinner {
+            font-size: 2rem;
+            color: #0070ba;
+            margin-bottom: 1rem;
+        }
+
+        .insight-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 2px dashed rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .insight-empty-icon {
+            font-size: 3rem;
+            color: #adb5bd;
+            margin-bottom: 1rem;
+        }
+
+        .insight-empty h5 {
+            color: white;
+        }
+
+        .insight-empty p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Responsive adjustments for insights */
+        @media (max-width: 768px) {
+            .insights-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .insight-card {
+                padding: 1rem;
+            }
+
+            .insights-icon-wrapper {
+                width: 40px;
+                height: 40px;
+            }
+
+            .insights-icon {
+                font-size: 20px;
+            }
+        }
+
+        /* Animation for insight cards */
+        .insight-card {
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Refresh button styling */
+        #refresh-insights {
+            border-radius: 8px;
+            padding: 8px 12px;
+            transition: all 0.3s ease;
+        }
+
+        #refresh-insights:hover {
+            background-color: #0070ba;
+            color: white;
+            transform: rotate(180deg);
+        }
+
+        #refresh-insights:active {
+            transform: rotate(360deg);
+        }
+
+        /* Section Titles */
+        .section-title {
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Insights Section */
+        .insights-section {
+            margin-bottom: 2rem;
+        }
+
+        /* Recommendations Section */
+        .recommendations-section {
+            margin-top: 2rem;
+        }
+
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1rem;
+        }
+
+        .recommendation-card {
+            background: transparent;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            animation: slideInUp 0.5s ease-out 0.2s both;
+        }
+
+        .recommendation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .recommendation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+
+        .recommendation-card.warning::before {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        }
+
+        .recommendation-card.success::before {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .recommendation-card.info::before {
+            background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+        }
+
+        .recommendation-card.improvement::before {
+            background: linear-gradient(135deg, #0070ba 0%, #009cde 100%);
+        }
+
+        .recommendation-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .recommendation-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 18px;
+        }
+
+        .recommendation-icon.warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            color: white;
+        }
+
+        .recommendation-icon.success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .recommendation-icon.info {
+            background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+            color: white;
+        }
+
+        .recommendation-icon.improvement {
+            background: linear-gradient(135deg, #0070ba 0%, #009cde 100%);
+            color: white;
+        }
+
+        .recommendation-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin: 0;
+            color: white;
+        }
+
+        .recommendation-description {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin: 0 0 1rem 0;
+        }
+
+        .recommendation-action {
+            margin-top: 1rem;
+        }
+
+        .action-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .action-badge:hover {
+            transform: translateX(5px);
+        }
+
+        .action-primary {
+            background: linear-gradient(135deg, #0070ba 0%, #009cde 100%);
+            color: white;
+        }
+
+        .action-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            color: white;
+        }
+
+        .action-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .action-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+            color: white;
+        }
+
+        /* Responsive adjustments for recommendations */
+        @media (max-width: 768px) {
+            .recommendations-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .recommendation-card {
+                padding: 1rem;
+            }
+
+            .section-title {
+                font-size: 1rem;
+            }
+        }
     </style>
 </head>
 <body data-sidebar="dark" data-topbar="dark" data-bs-theme="dark">
@@ -240,16 +658,38 @@
                         <!-- Insights Card -->
                         <div class="row">
                             <div class="col-lg-12">
-                                <div class="card">
+                                <div class="card insights-card">
                                     <div class="card-body">
-                                        <div class="d-flex justify-content-between align-items-center mb-3">
-                                            <h4 class="card-title mb-0">Key Financial Insights</h4>
-                                            <span class="badge bg-primary">AI-Powered</span>
+                                        <div class="d-flex justify-content-between align-items-center mb-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="insights-icon-wrapper me-3">
+                                                    <i class="fa fa-lightbulb-o insights-icon"></i>
+                                                </div>
+                                                <div>
+                                                    <h4 class="card-title mb-1">Key Financial Insights</h4>
+                                                    <p class="text-muted mb-0">AI-powered analysis of your financial health</p>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge bg-gradient-primary me-2">
+                                                    <i class="fa fa-robot me-1"></i>AI-Powered
+                                                </span>
+                                                <button class="btn btn-outline-secondary btn-sm" id="refresh-insights" title="Refresh Insights">
+                                                    <i class="fa fa-refresh"></i>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <ul id="insights-list" class="list-group list-group-flush">
-                                            <!-- Insights will be dynamically inserted here -->
-                                            <li class="list-group-item">Loading insights...</li>
-                                        </ul>
+                                        <div id="insights-container">
+                                            <div id="insights-list" class="insights-grid">
+                                                <!-- Insights will be dynamically inserted here -->
+                                                <div class="insight-loading">
+                                                    <div class="loading-spinner">
+                                                        <i class="fa fa-spinner fa-spin"></i>
+                                                    </div>
+                                                    <p>Analyzing your financial data...</p>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -942,8 +942,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function initializeGoalEventHandlers() {
-        $('#addGoalForm').on('submit', handleAddGoal);
-        $('#editGoalForm').on('submit', handleUpdateGoal);
+        $('#add-goal-form').on('submit', handleAddGoal);
+        $('#edit-goal-form').on('submit', handleUpdateGoal);
         $('#goalsTable tbody').on('click', '.edit-goal-btn', function () {
             const goalId = $(this).data('id');
             populateEditGoalModal(goalId);
@@ -957,17 +957,18 @@ document.addEventListener('DOMContentLoaded', function () {
     async function handleAddGoal(event) {
         event.preventDefault();
         const goalData = {
-            name: $('#goal-name').val(),
-            targetAmount: parseFloat($('#goal-target-amount').val()),
-            currentAmount: parseFloat($('#goal-current-amount').val()) || 0,
-            endDate: $('#goal-end-date').val()
+            name: $('#name').val(),
+            targetAmount: parseFloat($('#targetAmount').val()),
+            currentAmount: parseFloat($('#currentAmount').val()) || 0,
+            endDate: $('#endDate').val()
         };
 
         try {
             const newGoal = await fetchApi('/api/goals', { method: 'POST', body: JSON.stringify(goalData) });
             addGoalToTable(newGoal);
-            bootstrap.Modal.getInstance(document.getElementById('addGoalModal')).hide();
-            $('#addGoalForm')[0].reset();
+            // Reset form and collapse accordion instead of hiding modal
+            $('#add-goal-form')[0].reset();
+            $('#collapseOne-1').collapse('hide');
             Swal.fire('Success', 'Savings goal added!', 'success');
         } catch (error) {
             console.error('Error adding goal:', error);

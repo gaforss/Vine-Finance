@@ -196,6 +196,16 @@
         <div class="main-content">
             <div class="page-content">
                 <div class="container-fluid">
+                    <div id="demoDataWelcome" class="demo-data-panel" style="display: none;">
+                        <div class="icon-rocket">
+                            <i class="fa fa-rocket"></i>
+                        </div>
+                        <h4>Welcome to Your Financial Dashboard!</h4>
+                        <p>We've loaded some demo data to show you how things work. When you're ready, clear the samples to start with your own numbers.</p>
+                        <button type="button" id="deleteDummyDataBtn" class="btn btn-danger waves-effect waves-light">
+                            <i class="fa fa-trash-alt me-2"></i>Clear Demo Data & Get Started
+                        </button>
+                    </div>
                     <div class="row">
                         <div class="col-md-12">
                             <div class="card">
@@ -329,17 +339,6 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="card">
-                                <div id="demoDataWelcome" class="demo-data-panel" style="display: none;">
-                                    <div class="icon-rocket">
-                                        <i class="fa fa-rocket"></i>
-                                    </div>
-                                    <h4>Welcome to Your Financial Dashboard!</h4>
-                                    <p>We've loaded some demo data to show you how things work. When you're ready, clear the samples to start with your own numbers.</p>
-                                    <button type="button" id="deleteDummyDataBtn" class="btn btn-danger waves-effect waves-light">
-                                        <i class="fa fa-trash-alt me-2"></i>Clear Demo Data & Get Started
-                                    </button>
-                                </div>
-
                                 <div class="card-body">
                                     <h4 class="card-title mb-4">Latest Transactions 
                                         <button type="button" onclick="exportTableData()" class="btn btn-primary btn-sm float-end">

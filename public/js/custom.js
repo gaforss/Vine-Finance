@@ -79,9 +79,9 @@ async function deleteDummyData() {
 
         if (response.ok) {
             alert('Dummy data deleted successfully');
-            const deleteDummyDataBtn = document.getElementById('deleteDummyDataBtn');
-            if (deleteDummyDataBtn) {
-                deleteDummyDataBtn.style.display = 'none';
+            const demoDataWelcome = document.getElementById('demoDataWelcome');
+            if (demoDataWelcome) {
+                demoDataWelcome.style.display = 'none';
             }
             await fetchEntries();
         } else {
@@ -96,10 +96,12 @@ async function deleteDummyData() {
 async function checkAndHideDummyDataButton() {
     try {
         const userData = await fetchUserData();
-        if (userData.hasDeletedDummyData) {
-            const deleteDummyDataBtn = document.getElementById('deleteDummyDataBtn');
-            if (deleteDummyDataBtn) {
-                deleteDummyDataBtn.style.display = 'none';
+        const demoDataWelcome = document.getElementById('demoDataWelcome');
+        if (demoDataWelcome) {
+            if (userData.hasDeletedDummyData) {
+                demoDataWelcome.style.display = 'none';
+            } else {
+                demoDataWelcome.style.display = 'block';
             }
         }
     } catch (error) {

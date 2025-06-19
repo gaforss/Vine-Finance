@@ -94,12 +94,40 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                                <h4 class="mb-sm-0 font-size-18">Financial Health Learning Center</h4>
+                                <h4 class="mb-sm-0 font-size-18 text-light">Financial Health Learning Center</h4>
                                 <div class="page-title-right">
                                     <ol class="breadcrumb m-0">
-                                        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
-                                        <li class="breadcrumb-item active">Learning Center</li>
+                                        <li class="breadcrumb-item"><a href="/dashboard" class="text-light">Dashboard</a></li>
+                                        <li class="breadcrumb-item active text-light">Learning Center</li>
                                     </ol>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Learning Progress Dashboard -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card bg-gradient-primary border-0 shadow-lg">
+                                <div class="card-body p-4">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <h4 class="text-white mb-2">Your Learning Journey</h4>
+                                            <p class="text-white-50 mb-3">Track your progress and unlock new financial knowledge</p>
+                                            <div class="d-flex align-items-center">
+                                                <div class="progress flex-grow-1 me-3" style="height: 8px;">
+                                                    <div class="progress-bar bg-white" role="progressbar" style="width: 35%;" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                                <span class="text-white fw-bold">35% Complete</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 text-center">
+                                            <div class="bg-white bg-opacity-20 rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
+                                                <i class="fa fa-trophy fa-2x text-white"></i>
+                                            </div>
+                                            <p class="text-white mt-2 mb-0">Level 3 Achiever</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -107,35 +135,318 @@
 
                     <div class="row">
                         <div class="col-12">
-                            <div class="card">
+                            <div class="card border-0 shadow-lg">
                                 <div class="card-body">
-                                    <h4 class="card-title">Your Financial Health Snapshot</h4>
-                                    <p class="card-title-desc">A real-time look at your key financial metrics. The first step to improving your finances is knowing where you stand.</p>
+                                    <h4 class="card-title text-light">Your Financial Health Snapshot</h4>
+                                    <p class="card-title-desc text-light">A real-time look at your key financial metrics. The first step to improving your finances is knowing where you stand.</p>
                                     <div class="row text-center">
                                         <div class="col-md-4">
-                                            <div class="card bg-soft-primary">
+                                            <div class="card bg-soft-primary border-0">
                                                 <div class="card-body">
-                                                    <h5 class="card-title">Net Worth</h5>
-                                                    <p class="card-text fs-4" id="snapshot-net-worth">$0</p>
+                                                    <h5 class="card-title text-light">Net Worth</h5>
+                                                    <p class="card-text fs-4 text-primary" id="snapshot-net-worth">$0</p>
                                                     <a href="/input.html" class="btn btn-primary" data-track-click="Update Snapshot" data-track-prop-metric="Net Worth">Update Manually</a>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
-                                            <div class="card bg-soft-success">
+                                            <div class="card bg-soft-success border-0">
                                                 <div class="card-body">
-                                                    <h5 class="card-title">Total Assets</h5>
-                                                    <p class="card-text fs-4" id="snapshot-assets">$0</p>
+                                                    <h5 class="card-title text-light">Total Assets</h5>
+                                                    <p class="card-text fs-4 text-success" id="snapshot-assets">$0</p>
                                                      <a href="/accounts.html" class="btn btn-success" data-track-click="Update Snapshot" data-track-prop-metric="Total Assets">Link Accounts</a>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
-                                            <div class="card bg-soft-danger">
+                                            <div class="card bg-soft-danger border-0">
                                                 <div class="card-body">
-                                                    <h5 class="card-title">Total Liabilities</h5>
-                                                    <p class="card-text fs-4" id="snapshot-liabilities">$0</p>
+                                                    <h5 class="card-title text-light">Total Liabilities</h5>
+                                                    <p class="card-text fs-4 text-danger" id="snapshot-liabilities">$0</p>
                                                     <a href="/accounts.html" class="btn btn-danger" data-track-click="Update Snapshot" data-track-prop-metric="Total Liabilities">Review Debts</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Educational Articles Section -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card border-0 shadow-lg">
+                                <div class="card-header bg-transparent border-bottom border-light">
+                                    <h4 class="card-title mb-0 text-light">
+                                        <i class="fa fa-book me-2 text-primary"></i>
+                                        Featured Articles & Resources
+                                    </h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-4">
+                                        <!-- Beginner Articles -->
+                                        <div class="col-lg-4">
+                                            <div class="card bg-gradient-light border-0 h-100">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center mb-3">
+                                                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                            <i class="fa fa-star text-white"></i>
+                                                        </div>
+                                                        <h6 class="mb-0 text-light">Beginner</h6>
+                                                    </div>
+                                                    <ul class="list-unstyled">
+                                                        <li class="mb-2">
+                                                            <a href="#" class="text-light text-decoration-none" data-article="budgeting-basics">
+                                                                <i class="fa fa-check-circle text-success me-2"></i>
+                                                                Budgeting Basics: Your First Steps
+                                                            </a>
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <a href="#" class="text-light text-decoration-none" data-article="emergency-fund">
+                                                                <i class="fa fa-check-circle text-success me-2"></i>
+                                                                Building Your Emergency Fund
+                                                            </a>
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <a href="#" class="text-light text-decoration-none" data-article="debt-management">
+                                                                <i class="fa fa-check-circle text-success me-2"></i>
+                                                                Understanding and Managing Debt
+                                                            </a>
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <a href="#" class="text-light text-decoration-none" data-article="credit-score">
+                                                                <i class="fa fa-check-circle text-success me-2"></i>
+                                                                Credit Score Fundamentals
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Intermediate Articles -->
+                                        <div class="col-lg-4">
+                                            <div class="card bg-gradient-light border-0 h-100">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center mb-3">
+                                                        <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                            <i class="fa fa-rocket text-white"></i>
+                                                        </div>
+                                                        <h6 class="mb-0 text-light">Intermediate</h6>
+                                                    </div>
+                                                    <ul class="list-unstyled">
+                                                        <li class="mb-2">
+                                                            <a href="#" class="text-light text-decoration-none" data-article="investing-101">
+                                                                <i class="fa fa-circle text-warning me-2"></i>
+                                                                Investing 101: Getting Started
+                                                            </a>
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <a href="#" class="text-light text-decoration-none" data-article="retirement-planning">
+                                                                <i class="fa fa-circle text-warning me-2"></i>
+                                                                Retirement Planning Strategies
+                                                            </a>
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <a href="#" class="text-light text-decoration-none" data-article="tax-optimization">
+                                                                <i class="fa fa-circle text-warning me-2"></i>
+                                                                Tax Optimization Basics
+                                                            </a>
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <a href="#" class="text-light text-decoration-none" data-article="real-estate">
+                                                                <i class="fa fa-circle text-warning me-2"></i>
+                                                                Real Estate Investment Guide
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Advanced Articles -->
+                                        <div class="col-lg-4">
+                                            <div class="card bg-gradient-light border-0 h-100">
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center mb-3">
+                                                        <div class="bg-danger rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                                            <i class="fa fa-crown text-white"></i>
+                                                        </div>
+                                                        <h6 class="mb-0 text-light">Advanced</h6>
+                                                    </div>
+                                                    <ul class="list-unstyled">
+                                                        <li class="mb-2">
+                                                            <a href="#" class="text-light text-decoration-none" data-article="portfolio-optimization">
+                                                                <i class="fa fa-circle text-danger me-2"></i>
+                                                                Portfolio Optimization
+                                                            </a>
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <a href="#" class="text-light text-decoration-none" data-article="estate-planning">
+                                                                <i class="fa fa-circle text-danger me-2"></i>
+                                                                Estate Planning Essentials
+                                                            </a>
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <a href="#" class="text-light text-decoration-none" data-article="alternative-investments">
+                                                                <i class="fa fa-circle text-danger me-2"></i>
+                                                                Alternative Investments
+                                                            </a>
+                                                        </li>
+                                                        <li class="mb-2">
+                                                            <a href="#" class="text-light text-decoration-none" data-article="tax-advanced">
+                                                                <i class="fa fa-circle text-danger me-2"></i>
+                                                                Advanced Tax Strategies
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Tools Section -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card border-0 shadow-lg">
+                                <div class="card-header bg-transparent border-bottom border-light">
+                                    <h4 class="card-title mb-0 text-light">
+                                        <i class="fa fa-calculator me-2 text-primary"></i>
+                                        Interactive Financial Tools
+                                    </h4>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row g-4">
+                                        <!-- Debt Payoff Calculator -->
+                                        <div class="col-lg-6">
+                                            <div class="card bg-gradient-light border-0 h-100">
+                                                <div class="card-body">
+                                                    <h5 class="card-title text-light mb-3">
+                                                        <i class="fa fa-credit-card text-primary me-2"></i>
+                                                        Debt Payoff Calculator
+                                                    </h5>
+                                                    <p class="text-light-50 small mb-3">Compare snowball vs. avalanche debt payoff strategies</p>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label text-light">Monthly Payment Available</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text bg-primary text-white">$</span>
+                                                            <input type="number" id="debt-monthly-payment" class="form-control" value="500" placeholder="500">
+                                                        </div>
+                                                    </div>
+
+                                                    <div id="debt-accounts-container">
+                                                        <div class="debt-account mb-3 p-3 bg-dark rounded">
+                                                            <div class="row">
+                                                                <div class="col-6">
+                                                                    <input type="text" class="form-control form-control-sm mb-2" placeholder="Debt Name" value="Credit Card">
+                                                                    <input type="number" class="form-control form-control-sm" placeholder="Balance" value="5000">
+                                                                </div>
+                                                                <div class="col-6">
+                                                                    <input type="number" class="form-control form-control-sm mb-2" placeholder="Interest %" value="18">
+                                                                    <input type="number" class="form-control form-control-sm" placeholder="Min Payment" value="150">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <button class="btn btn-outline-primary btn-sm mb-3" id="add-debt-account">
+                                                        <i class="fa fa-plus me-1"></i>Add Another Debt
+                                                    </button>
+
+                                                    <div class="d-grid gap-2">
+                                                        <button class="btn btn-primary" id="calculate-debt-payoff">
+                                                            <i class="fa fa-calculator me-2"></i>Calculate Payoff Strategy
+                                                        </button>
+                                                    </div>
+
+                                                    <div id="debt-results" class="mt-3" style="display: none;">
+                                                        <div class="row">
+                                                            <div class="col-6">
+                                                                <div class="card bg-success bg-opacity-20 border-success">
+                                                                    <div class="card-body p-2 text-center">
+                                                                        <h6 class="text-success mb-1">Snowball Method</h6>
+                                                                        <p class="text-success mb-0" id="snowball-time">0 months</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <div class="card bg-info bg-opacity-20 border-info">
+                                                                    <div class="card-body p-2 text-center">
+                                                                        <h6 class="text-info mb-1">Avalanche Method</h6>
+                                                                        <p class="text-info mb-0" id="avalanche-time">0 months</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Investment Portfolio Analyzer -->
+                                        <div class="col-lg-6">
+                                            <div class="card bg-gradient-light border-0 h-100">
+                                                <div class="card-body">
+                                                    <h5 class="card-title text-light mb-3">
+                                                        <i class="fa fa-chart-pie text-primary me-2"></i>
+                                                        Portfolio Analyzer
+                                                    </h5>
+                                                    <p class="text-light-50 small mb-3">Analyze your investment allocation and risk profile</p>
+                                                    
+                                                    <div class="mb-3">
+                                                        <label class="form-label text-light">Your Age</label>
+                                                        <input type="number" id="portfolio-age" class="form-control" value="30" placeholder="30">
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label text-light">Risk Tolerance</label>
+                                                        <select id="portfolio-risk" class="form-select">
+                                                            <option value="conservative">Conservative</option>
+                                                            <option value="moderate" selected>Moderate</option>
+                                                            <option value="aggressive">Aggressive</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div id="portfolio-allocation">
+                                                        <h6 class="text-light mb-2">Current Allocation</h6>
+                                                        <div class="row g-2">
+                                                            <div class="col-6">
+                                                                <label class="form-label text-light small">Stocks (%)</label>
+                                                                <input type="number" id="allocation-stocks" class="form-control form-control-sm" value="60">
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <label class="form-label text-light small">Bonds (%)</label>
+                                                                <input type="number" id="allocation-bonds" class="form-control form-control-sm" value="30">
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <label class="form-label text-light small">Cash (%)</label>
+                                                                <input type="number" id="allocation-cash" class="form-control form-control-sm" value="10">
+                                                            </div>
+                                                            <div class="col-6">
+                                                                <label class="form-label text-light small">Real Estate (%)</label>
+                                                                <input type="number" id="allocation-realestate" class="form-control form-control-sm" value="0">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="d-grid gap-2 mt-3">
+                                                        <button class="btn btn-primary" id="analyze-portfolio">
+                                                            <i class="fa fa-chart-line me-2"></i>Analyze Portfolio
+                                                        </button>
+                                                    </div>
+
+                                                    <div id="portfolio-results" class="mt-3" style="display: none;">
+                                                        <div class="alert alert-info">
+                                                            <h6 class="mb-2">Portfolio Analysis</h6>
+                                                            <div id="portfolio-recommendations"></div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -147,22 +458,22 @@
 
                     <div class="row">
                         <div class="col-lg-12">
-                            <div class="card">
+                            <div class="card border-0 shadow-lg">
                                 <div class="card-body">
-                                    <h4 class="card-title mb-4">Interactive Learning Curriculum</h4>
-                                    <p class="card-title-desc">A hands-on approach to financial mastery. Use these tools to simulate financial scenarios and get actionable insights tailored to your journey.</p>
+                                    <h4 class="card-title mb-4 text-light">Interactive Learning Curriculum</h4>
+                                    <p class="card-title-desc text-light">A hands-on approach to financial mastery. Use these tools to simulate financial scenarios and get actionable insights tailored to your journey.</p>
 
                                     <!-- General Inputs -->
                                     <div class="row mb-4">
                                         <div class="col-lg-6">
                                             <div class="input-group">
-                                                <span class="input-group-text">$</span>
+                                                <span class="input-group-text bg-primary text-white">$</span>
                                                 <input type="text" id="annual-income" class="form-control" placeholder="Annual Pre-Tax Income (e.g., 75,000)">
                                             </div>
                                         </div>
                                         <div class="col-lg-6">
                                             <div class="input-group">
-                                                 <span class="input-group-text">Optional: $</span>
+                                                 <span class="input-group-text bg-primary text-white">$</span>
                                                 <input type="text" id="monthly-housing-cost" class="form-control" placeholder="Monthly Housing Cost (e.g., 1,800)">
                                             </div>
                                         </div>
@@ -171,7 +482,7 @@
                                     <!-- Income Analysis Section -->
                                     <div id="income-analysis-section" class="row mb-4" style="display: none;">
                                         <div class="col-lg-12">
-                                            <div class="card bg-soft-info">
+                                            <div class="card bg-soft-info border-0">
                                                 <div class="card-body">
                                                     <h5 class="card-title text-info"><i class="fa fa-lightbulb-o"></i> Your Financial Vitals</h5>
                                                     <div class="row mt-3 gy-4">
@@ -179,10 +490,10 @@
                                                         <!-- Emergency Fund Insight -->
                                                         <div class="col-md-6 col-lg-6">
                                                             <h6><i class="fa fa-shield text-primary"></i> Emergency Fund</h6>
-                                                            <p class="mb-2">Your cash reserves for unexpected events.</p>
+                                                            <p class="mb-2 text-light">Your cash reserves for unexpected events.</p>
                                                             <div class="d-flex justify-content-between">
-                                                                <span>Actual: <span id="insight-emergency-fund-actual">$0</span></span>
-                                                                <span>Goal: <span id="insight-emergency-fund-goal">$0</span></span>
+                                                                <span class="text-light">Actual: <span id="insight-emergency-fund-actual">$0</span></span>
+                                                                <span class="text-light">Goal: <span id="insight-emergency-fund-goal">$0</span></span>
                                                             </div>
                                                             <div class="progress mt-1" style="height: 10px;">
                                                                 <div id="insight-emergency-fund-progress" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
@@ -193,9 +504,9 @@
                                                         <!-- Housing Guideline Insight -->
                                                         <div class="col-md-6 col-lg-6">
                                                             <h6><i class="fa fa-home text-success"></i> Housing Affordability</h6>
-                                                            <p class="mb-2">Your housing cost vs. the 28% guideline.</p>
-                                                            <p class="mb-1"><strong>Guideline:</strong> <span id="insight-housing-guideline">$0/mo</span></p>
-                                                            <p class="mb-1"><strong>Actual:</strong> <span id="insight-housing-actual" class="text-muted">(Enter cost above)</span></p>
+                                                            <p class="mb-2 text-light">Your housing cost vs. the 28% guideline.</p>
+                                                            <p class="mb-1 text-light"><strong>Guideline:</strong> <span id="insight-housing-guideline">$0/mo</span></p>
+                                                            <p class="mb-1 text-light"><strong>Actual:</strong> <span id="insight-housing-actual" class="text-muted">(Enter cost above)</span></p>
                                                             <div id="insight-housing-status" class="mt-2"></div>
                                                         </div>
                                                     </div>
@@ -205,30 +516,30 @@
                                     </div>
 
                                     <!-- Module 1: Foundations of Net Worth -->
-                                    <div class="card border">
-                                        <div class="card-header bg-transparent border-bottom">
-                                            <h5 class="card-title mb-0">Module 1: Foundations of Your Net Worth</h5>
+                                    <div class="card border-0 shadow-lg mt-4">
+                                        <div class="card-header bg-transparent border-bottom border-light">
+                                            <h5 class="card-title mb-0 text-light">Module 1: Foundations of Your Net Worth</h5>
                                         </div>
                                         <div class="card-body">
-                                            <p>Your net worth is the cornerstone of your financial health. Use this simulator to understand how different components impact your overall value.</p>
+                                            <p class="text-light">Your net worth is the cornerstone of your financial health. Use this simulator to understand how different components impact your overall value.</p>
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <h6>Net Worth Simulator</h6>
+                                                    <h6 class="text-light">Net Worth Simulator</h6>
                                                     <div class="mb-2">
-                                                        <label>Current Assets: $<span id="sim-assets-val">0</span></label>
+                                                        <label class="text-light">Current Assets: $<span id="sim-assets-val">0</span></label>
                                                         <input type="range" class="form-range" id="sim-assets" min="0" max="5000000" step="10000">
                                                     </div>
                                                     <div class="mb-3">
-                                                        <label>Current Liabilities: $<span id="sim-liabilities-val">0</span></label>
+                                                        <label class="text-light">Current Liabilities: $<span id="sim-liabilities-val">0</span></label>
                                                         <input type="range" class="form-range" id="sim-liabilities" min="0" max="2000000" step="5000">
                                                     </div>
                                                     <button class="btn btn-secondary btn-sm" id="load-my-data" data-track-click="Load Financial Data" data-track-prop-module="Net Worth">Use My Financial Data</button>
                                                 </div>
                                                 <div class="col-md-6 text-center">
-                                                    <h6>Simulated Net Worth</h6>
-                                                    <h3 class="display-5" id="sim-networth-result">$0</h3>
+                                                    <h6 class="text-light">Simulated Net Worth</h6>
+                                                    <h3 class="display-5 text-primary" id="sim-networth-result">$0</h3>
                                                     <div id="net-worth-benchmark-chart" class="mt-2"></div>
-                                                    <p id="sim-networth-benchmark" class="fw-bold"></p>
+                                                    <p id="sim-networth-benchmark" class="fw-bold text-light"></p>
                                                     <p id="sim-networth-insight" class="text-muted"></p>
                                                     <a href="/input.html" class="btn btn-primary" data-track-click="Navigate from Learning" data-track-prop-destination="Log Net Worth" data-track-prop-module="Net Worth">Log Your Official Net Worth <i class="fa fa-arrow-right"></i></a>
                                                 </div>
@@ -237,29 +548,29 @@
                                     </div>
 
                                     <!-- Module 2: Mastering Your Cash Flow -->
-                                    <div class="card border mt-4">
-                                        <div class="card-header bg-transparent border-bottom">
-                                            <h5 class="card-title mb-0">Module 2: Mastering Your Cash Flow</h5>
+                                    <div class="card border-0 shadow-lg mt-4">
+                                        <div class="card-header bg-transparent border-bottom border-light">
+                                            <h5 class="card-title mb-0 text-light">Module 2: Mastering Your Cash Flow</h5>
                                         </div>
                                         <div class="card-body">
-                                            <p>Small changes in your daily spending can have a massive impact on your long-term wealth. See for yourself.</p>
+                                            <p class="text-light">Small changes in your daily spending can have a massive impact on your long-term wealth. See for yourself.</p>
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <h6>Savings Simulator</h6>
+                                                    <h6 class="text-light">Savings Simulator</h6>
                                                     <div class="input-group mb-3">
-                                                        <span class="input-group-text">$</span>
+                                                        <span class="input-group-text bg-primary text-white">$</span>
                                                         <input type="number" id="savings-amount" class="form-control" value="50">
-                                                        <span class="input-group-text">per week</span>
+                                                        <span class="input-group-text bg-primary text-white">per week</span>
                                                     </div>
                                                     <div class="input-group mb-3">
-                                                        <span class="input-group-text">and invest it at</span>
+                                                        <span class="input-group-text bg-primary text-white">and invest it at</span>
                                                         <input type="number" id="savings-rate" class="form-control" value="7">
-                                                        <span class="input-group-text">% annually...</span>
+                                                        <span class="input-group-text bg-primary text-white">% annually...</span>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6 text-center">
-                                                    <h6>Potential Growth in 10 Years</h6>
-                                                    <h3 class="display-5" id="savings-result">$0</h3>
+                                                    <h6 class="text-light">Potential Growth in 10 Years</h6>
+                                                    <h3 class="display-5 text-success" id="savings-result">$0</h3>
                                                     <p id="savings-insight" class="text-muted"></p>
                                                     <a href="/budgeting.html" class="btn btn-primary" data-track-click="Navigate from Learning" data-track-prop-destination="Analyze Spending" data-track-prop-module="Cash Flow">Analyze Your Spending <i class="fa fa-arrow-right"></i></a>
                                                 </div>
@@ -268,15 +579,15 @@
                                     </div>
 
                                     <!-- Module 3: Investing for the Future -->
-                                    <div class="card border mt-4">
-                                        <div class="card-header bg-transparent border-bottom">
-                                            <h5 class="card-title mb-0">Module 3: Investing for the Future</h5>
+                                    <div class="card border-0 shadow-lg mt-4">
+                                        <div class="card-header bg-transparent border-bottom border-light">
+                                            <h5 class="card-title mb-0 text-light">Module 3: Investing for the Future</h5>
                                         </div>
                                         <div class="card-body">
-                                            <p>Are you on track to meet your retirement goals? This calculator can help you find out.</p>
+                                            <p class="text-light">Are you on track to meet your retirement goals? This calculator can help you find out.</p>
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <h6>Retirement Goal Calculator</h6>
+                                                    <h6 class="text-light">Retirement Goal Calculator</h6>
                                                     <div class="row">
                                                         <div class="col-6 mb-2"><input type="number" id="ret-current-age" class="form-control" placeholder="Current Age"></div>
                                                         <div class="col-6 mb-2"><input type="number" id="ret-retire-age" class="form-control" placeholder="Retirement Age"></div>
@@ -286,10 +597,10 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6 text-center">
-                                                    <h6>Projected Retirement Savings</h6>
-                                                    <h3 class="display-5" id="ret-result">$0</h3>
+                                                    <h6 class="text-light">Projected Retirement Savings</h6>
+                                                    <h3 class="display-5 text-warning" id="ret-result">$0</h3>
                                                     <div id="retirement-benchmark-chart" class="mt-2"></div>
-                                                    <p id="ret-benchmark" class="fw-bold"></p>
+                                                    <p id="ret-benchmark" class="fw-bold text-light"></p>
                                                     <p id="ret-insight" class="text-muted"></p>
                                                     <a href="/retirement.html" class="btn btn-primary" data-track-click="Navigate from Learning" data-track-prop-destination="Set Retirement Goals" data-track-prop-module="Investing">Set Your Retirement Goals <i class="fa fa-arrow-right"></i></a>
                                                 </div>
@@ -298,15 +609,15 @@
                                     </div>
 
                                      <!-- Module 4: Advanced Strategies -->
-                                    <div class="card border mt-4">
-                                        <div class="card-header bg-transparent border-bottom">
-                                            <h5 class="card-title mb-0">Module 4: Advanced Strategies - Real Estate</h5>
+                                    <div class="card border-0 shadow-lg mt-4">
+                                        <div class="card-header bg-transparent border-bottom border-light">
+                                            <h5 class="card-title mb-0 text-light">Module 4: Advanced Strategies - Real Estate</h5>
                                         </div>
                                         <div class="card-body">
-                                            <p>Calculate the potential return on a rental property investment.</p>
+                                            <p class="text-light">Calculate the potential return on a rental property investment.</p>
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <h6>Simple ROI Calculator</h6>
+                                                    <h6 class="text-light">Simple ROI Calculator</h6>
                                                     <div class="row">
                                                          <div class="col-6 mb-2"><input type="number" id="re-purchase-price" class="form-control" placeholder="Purchase Price ($)"></div>
                                                          <div class="col-6 mb-2"><input type="number" id="re-down-payment" class="form-control" placeholder="Down Payment ($)"></div>
@@ -315,8 +626,8 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6 text-center">
-                                                    <h6>Estimated Cash-on-Cash ROI</h6>
-                                                    <h3 class="display-5" id="re-result">0%</h3>
+                                                    <h6 class="text-light">Estimated Cash-on-Cash ROI</h6>
+                                                    <h3 class="display-5 text-info" id="re-result">0%</h3>
                                                     <p id="re-insight" class="text-muted"></p>
                                                     <a href="/realestate.html" class="btn btn-primary" data-track-click="Navigate from Learning" data-track-prop-destination="Track Properties" data-track-prop-module="Real Estate">Track Your Properties <i class="fa fa-arrow-right"></i></a>
                                                 </div>
@@ -325,46 +636,46 @@
                                     </div>
                                     
                                     <!-- Module 5: Advanced Tax Strategies -->
-                                    <div class="card border mt-4">
-                                        <div class="card-header bg-transparent border-bottom">
-                                            <h5 class="card-title mb-0">Module 5: Interactive Tax Planning</h5>
+                                    <div class="card border-0 shadow-lg mt-4">
+                                        <div class="card-header bg-transparent border-bottom border-light">
+                                            <h5 class="card-title mb-0 text-light">Module 5: Interactive Tax Planning</h5>
                                         </div>
                                         <div class="card-body">
-                                            <p class="card-title-desc">Optimize your tax strategy to keep more of your hard-earned money. Fill out your profile below to get personalized insights and see your potential savings.</p>
+                                            <p class="card-title-desc text-light">Optimize your tax strategy to keep more of your hard-earned money. Fill out your profile below to get personalized insights and see your potential savings.</p>
 
                                             <!-- Tax Profile Inputs -->
-                                            <div class="row bg-light p-3 rounded mb-4 gy-3">
-                                                <h6 class="mb-0">Your Tax Profile</h6>
+                                            <div class="row bg-dark p-3 rounded mb-4 gy-3">
+                                                <h6 class="mb-0 text-light">Your Tax Profile</h6>
                                                 <div class="col-md-6 col-lg-3">
-                                                    <label for="tax-filing-status" class="form-label">Filing Status</label>
+                                                    <label for="tax-filing-status" class="form-label text-light">Filing Status</label>
                                                     <select id="tax-filing-status" class="form-select">
                                                         <option value="single" selected>Single</option>
                                                         <option value="mfj">Married Filing Jointly</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-6 col-lg-3">
-                                                    <label for="tax-401k-contrib" class="form-label">Annual 401(k)/403(b) Contribution</label>
+                                                    <label for="tax-401k-contrib" class="form-label text-light">Annual 401(k)/403(b) Contribution</label>
                                                     <div class="input-group">
-                                                        <span class="input-group-text">$</span>
+                                                        <span class="input-group-text bg-primary text-white">$</span>
                                                         <input type="text" id="tax-401k-contrib" class="form-control" placeholder="e.g., 5,000">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6 col-lg-3">
-                                                    <label for="tax-hsa-eligible" class="form-label">HSA Eligible?</label>
+                                                    <label for="tax-hsa-eligible" class="form-label text-light">HSA Eligible?</label>
                                                     <select id="tax-hsa-eligible" class="form-select">
                                                         <option value="no" selected>No</option>
                                                         <option value="yes">Yes</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-6 col-lg-3">
-                                                    <label for="tax-ira-contrib" class="form-label">Annual IRA/Roth Contribution</label>
+                                                    <label for="tax-ira-contrib" class="form-label text-light">Annual IRA/Roth Contribution</label>
                                                     <div class="input-group">
-                                                        <span class="input-group-text">$</span>
+                                                        <span class="input-group-text bg-primary text-white">$</span>
                                                         <input type="text" id="tax-ira-contrib" class="form-control" placeholder="e.g., 7,000">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6 col-lg-3">
-                                                    <label for="tax-capital-gains" class="form-label">Capital Gains/Losses?</label>
+                                                    <label for="tax-capital-gains" class="form-label text-light">Capital Gains/Losses?</label>
                                                     <select id="tax-capital-gains" class="form-select">
                                                         <option value="none" selected>None</option>
                                                         <option value="gain">Net Gain</option>
@@ -372,9 +683,9 @@
                                                     </select>
                                                 </div>
                                                 <div class="col-md-6 col-lg-3">
-                                                    <label for="tax-charitable-donations" class="form-label">Annual Charitable Donations</label>
+                                                    <label for="tax-charitable-donations" class="form-label text-light">Annual Charitable Donations</label>
                                                     <div class="input-group">
-                                                        <span class="input-group-text">$</span>
+                                                        <span class="input-group-text bg-primary text-white">$</span>
                                                         <input type="text" id="tax-charitable-donations" class="form-control" placeholder="e.g., 1,000">
                                                     </div>
                                                 </div>
@@ -382,19 +693,191 @@
 
                                             <!-- Tax Score & Recommendations -->
                                             <div class="row">
-                                                <div class="col-lg-4 text-center border-end">
-                                                    <h6>Tax Efficiency Score</h6>
+                                                <div class="col-lg-4 text-center border-end border-light">
+                                                    <h6 class="text-light">Tax Efficiency Score</h6>
                                                     <div id="tax-score-chart"></div>
-                                                    <p id="tax-score-text" class="fw-bold fs-5"></p>
+                                                    <p id="tax-score-text" class="fw-bold fs-5 text-light"></p>
                                                 </div>
                                                 <div class="col-lg-8">
-                                                    <h6>Personalized Recommendations</h6>
+                                                    <h6 class="text-light">Personalized Recommendations</h6>
                                                     <div id="tax-recommendations-list">
                                                         <p class="text-muted">Fill out your profile to see your top strategies.</p>
                                                     </div>
                                                 </div>
                                             </div>
 
+                                        </div>
+                                    </div>
+
+                                    <!-- Module 6: Behavioral Finance -->
+                                    <div class="card border-0 shadow-lg mt-4">
+                                        <div class="card-header bg-transparent border-bottom border-light">
+                                            <h5 class="card-title mb-0 text-light">Module 6: Psychology of Money</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="text-light">Understand the psychological factors that influence financial decisions and learn strategies to overcome common biases.</p>
+                                            
+                                            <div class="row g-4">
+                                                <div class="col-md-6">
+                                                    <div class="card bg-gradient-light border-0 h-100">
+                                                        <div class="card-body">
+                                                            <h6 class="text-light mb-3">
+                                                                <i class="fa fa-brain text-primary me-2"></i>
+                                                                Common Financial Biases
+                                                            </h6>
+                                                            <ul class="list-unstyled">
+                                                                <li class="mb-2 text-light">
+                                                                    <i class="fa fa-exclamation-triangle text-warning me-2"></i>
+                                                                    <strong>Loss Aversion:</strong> Fear of losing money often outweighs potential gains
+                                                                </li>
+                                                                <li class="mb-2 text-light">
+                                                                    <i class="fa fa-exclamation-triangle text-warning me-2"></i>
+                                                                    <strong>Anchoring:</strong> Relying too heavily on the first piece of information
+                                                                </li>
+                                                                <li class="mb-2 text-light">
+                                                                    <i class="fa fa-exclamation-triangle text-warning me-2"></i>
+                                                                    <strong>Confirmation Bias:</strong> Seeking information that confirms existing beliefs
+                                                                </li>
+                                                                <li class="mb-2 text-light">
+                                                                    <i class="fa fa-exclamation-triangle text-warning me-2"></i>
+                                                                    <strong>Herd Mentality:</strong> Following the crowd without independent analysis
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-md-6">
+                                                    <div class="card bg-gradient-light border-0 h-100">
+                                                        <div class="card-body">
+                                                            <h6 class="text-light mb-3">
+                                                                <i class="fa fa-lightbulb-o text-success me-2"></i>
+                                                                Overcoming Strategies
+                                                            </h6>
+                                                            <ul class="list-unstyled">
+                                                                <li class="mb-2 text-light">
+                                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                                    <strong>Automate Decisions:</strong> Set up automatic savings and investments
+                                                                </li>
+                                                                <li class="mb-2 text-light">
+                                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                                    <strong>Diversify:</strong> Spread risk across different asset classes
+                                                                </li>
+                                                                <li class="mb-2 text-light">
+                                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                                    <strong>Long-term Focus:</strong> Ignore short-term market noise
+                                                                </li>
+                                                                <li class="mb-2 text-light">
+                                                                    <i class="fa fa-check-circle text-success me-2"></i>
+                                                                    <strong>Regular Reviews:</strong> Periodic portfolio rebalancing
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Module 7: Market Education -->
+                                    <div class="card border-0 shadow-lg mt-4">
+                                        <div class="card-header bg-transparent border-bottom border-light">
+                                            <h5 class="card-title mb-0 text-light">Module 7: Market Fundamentals</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="text-light">Learn about market cycles, investment vehicles, and how to build a diversified portfolio.</p>
+                                            
+                                            <div class="row g-4">
+                                                <div class="col-lg-8">
+                                                    <div class="card bg-gradient-light border-0">
+                                                        <div class="card-body">
+                                                            <h6 class="text-light mb-3">Investment Vehicle Comparison</h6>
+                                                            <div class="table-responsive">
+                                                                <table class="table table-dark table-hover">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th class="text-light">Investment Type</th>
+                                                                            <th class="text-light">Risk Level</th>
+                                                                            <th class="text-light">Potential Return</th>
+                                                                            <th class="text-light">Liquidity</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <tr>
+                                                                            <td class="text-light">Savings Account</td>
+                                                                            <td><span class="badge bg-success">Low</span></td>
+                                                                            <td class="text-light">1-3%</td>
+                                                                            <td><span class="badge bg-success">High</span></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="text-light">Bonds</td>
+                                                                            <td><span class="badge bg-warning">Low-Med</span></td>
+                                                                            <td class="text-light">3-6%</td>
+                                                                            <td><span class="badge bg-warning">Medium</span></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="text-light">Stocks</td>
+                                                                            <td><span class="badge bg-danger">Medium-High</span></td>
+                                                                            <td class="text-light">7-10%</td>
+                                                                            <td><span class="badge bg-success">High</span></td>
+                                                                        </tr>
+                                                                        <tr>
+                                                                            <td class="text-light">Real Estate</td>
+                                                                            <td><span class="badge bg-danger">Medium-High</span></td>
+                                                                            <td class="text-light">8-12%</td>
+                                                                            <td><span class="badge bg-warning">Low</span></td>
+                                                                        </tr>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-lg-4">
+                                                    <div class="card bg-gradient-light border-0 h-100">
+                                                        <div class="card-body">
+                                                            <h6 class="text-light mb-3">Market Cycle Phases</h6>
+                                                            <div class="mb-3">
+                                                                <div class="d-flex justify-content-between mb-1">
+                                                                    <span class="text-light small">Expansion</span>
+                                                                    <span class="text-success small">↑</span>
+                                                                </div>
+                                                                <div class="progress" style="height: 6px;">
+                                                                    <div class="progress-bar bg-success" style="width: 25%"></div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <div class="d-flex justify-content-between mb-1">
+                                                                    <span class="text-light small">Peak</span>
+                                                                    <span class="text-warning small">→</span>
+                                                                </div>
+                                                                <div class="progress" style="height: 6px;">
+                                                                    <div class="progress-bar bg-warning" style="width: 25%"></div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <div class="d-flex justify-content-between mb-1">
+                                                                    <span class="text-light small">Contraction</span>
+                                                                    <span class="text-danger small">↓</span>
+                                                                </div>
+                                                                <div class="progress" style="height: 6px;">
+                                                                    <div class="progress-bar bg-danger" style="width: 25%"></div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <div class="d-flex justify-content-between mb-1">
+                                                                    <span class="text-light small">Trough</span>
+                                                                    <span class="text-info small">→</span>
+                                                                </div>
+                                                                <div class="progress" style="height: 6px;">
+                                                                    <div class="progress-bar bg-info" style="width: 25%"></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 

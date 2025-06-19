@@ -11,6 +11,60 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Mixpanel Library -->
     <script src="https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js"></script>
+    <style>
+        /* Professional Alert Styling */
+        .alert {
+            border-radius: 12px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+        
+        .alert:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .alert-success {
+            border-left-color: #28a745;
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.1), rgba(40, 167, 69, 0.05));
+        }
+        
+        .alert-info {
+            border-left-color: #17a2b8;
+            background: linear-gradient(135deg, rgba(23, 162, 184, 0.1), rgba(23, 162, 184, 0.05));
+        }
+        
+        .alert-warning {
+            border-left-color: #ffc107;
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.05));
+        }
+        
+        .alert-danger {
+            border-left-color: #dc3545;
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.1), rgba(220, 53, 69, 0.05));
+        }
+        
+        .alert-heading {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .alert .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .alert .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Custom icon styling */
+        .alert .fa-2x {
+            margin-top: 4px;
+        }
+    </style>
 </head>
 <body data-sidebar="dark" data-topbar="dark" data-bs-theme="dark">
     <div id="layout-wrapper">

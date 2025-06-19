@@ -1053,10 +1053,72 @@ async function renderNetWorthComparisonChart(goalMet, ageBracket) {
                 containerClass = 'text-center fs-5 fw-bold';
         }
 
+        // Helper functions for professional alert styling
+        function getAlertClass(category) {
+            switch (category) {
+                case 'EXCEEDS_PEERS':
+                case 'TOP_QUARTILE':
+                    return 'alert-success';
+                case 'BELOW_PEERS_BUT_ON_TRACK':
+                    return 'alert-info';
+                case 'EXCEEDS_PEERS_BUT_SHORTFALL':
+                case 'AVERAGE_PEERS_WITH_SHORTFALL':
+                    return 'alert-warning';
+                case 'BELOW_PEERS_AND_SHORTFALL':
+                    return 'alert-danger';
+                default:
+                    return 'alert-secondary';
+            }
+        }
+
+        function getAlertTitle(category) {
+            switch (category) {
+                case 'EXCEEDS_PEERS':
+                    return '🎉 Outstanding Performance!';
+                case 'TOP_QUARTILE':
+                    return '⭐ Excellent Progress!';
+                case 'BELOW_PEERS_BUT_ON_TRACK':
+                    return '✅ On Track for Success!';
+                case 'EXCEEDS_PEERS_BUT_SHORTFALL':
+                    return '⚠️ Strong Position, Needs Adjustment';
+                case 'AVERAGE_PEERS_WITH_SHORTFALL':
+                    return '📊 Average Performance, Action Needed';
+                case 'BELOW_PEERS_AND_SHORTFALL':
+                    return '🚨 Immediate Action Required';
+                default:
+                    return 'ℹ️ Analysis Complete';
+            }
+        }
+
+        function getActionButton(category) {
+            switch (category) {
+                case 'EXCEEDS_PEERS':
+                case 'TOP_QUARTILE':
+                    return '<button class="btn btn-success btn-sm mt-2" onclick="reviewGoals()"><i class="fa fa-eye me-1"></i>Review Goals</button>';
+                case 'BELOW_PEERS_BUT_ON_TRACK':
+                    return '<button class="btn btn-info btn-sm mt-2" onclick="optimizeStrategy()"><i class="fa fa-cog me-1"></i>Optimize Strategy</button>';
+                case 'EXCEEDS_PEERS_BUT_SHORTFALL':
+                case 'AVERAGE_PEERS_WITH_SHORTFALL':
+                    return '<button class="btn btn-warning btn-sm mt-2" onclick="adjustGoals()"><i class="fa fa-edit me-1"></i>Adjust Goals</button>';
+                case 'BELOW_PEERS_AND_SHORTFALL':
+                    return '<button class="btn btn-danger btn-sm mt-2" onclick="createActionPlan()"><i class="fa fa-rocket me-1"></i>Create Action Plan</button>';
+                default:
+                    return '';
+            }
+        }
+
         insightsContainer.innerHTML = `
-            <div class="${containerClass}">
-                <i class="fa ${iconClass} ${insightColorClass} me-2"></i>
-                <span class="${insightColorClass}">${insightMessage}</span>
+            <div class="alert ${getAlertClass(comparisonCategory)} border-0 shadow-sm" role="alert">
+                <div class="d-flex align-items-start">
+                    <div class="flex-shrink-0 me-3">
+                        <i class="fa ${iconClass} fa-2x ${insightColorClass}"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="alert-heading mb-2">${getAlertTitle(comparisonCategory)}</h5>
+                        <p class="mb-0 ${insightColorClass}">${insightMessage}</p>
+                        ${getActionButton(comparisonCategory)}
+                    </div>
+                </div>
             </div>
         `;
 
@@ -1585,5 +1647,45 @@ async function exportToCSV() {
     } catch (error) {
         console.error('Error exporting to CSV:', error);
         alert('Error generating CSV. Please try again.');
+    }
+}
+
+// Action functions for alert buttons
+function reviewGoals() {
+    // Open the retirement goals modal
+    const modal = new bootstrap.Modal(document.getElementById('retirementGoalsModal'));
+    modal.show();
+}
+
+function optimizeStrategy() {
+    // Show optimization suggestions
+    showToast('💡 Consider increasing your monthly savings rate by 5-10% to accelerate your progress toward retirement goals.', 'info');
+}
+
+function adjustGoals() {
+    // Open the retirement goals modal for adjustment
+    const modal = new bootstrap.Modal(document.getElementById('retirementGoalsModal'));
+    modal.show();
+    showToast('📝 Let\'s review and adjust your retirement goals to better align with your current financial situation.', 'warning');
+}
+
+function createActionPlan() {
+    // Show action plan suggestions
+    const actionPlan = `
+        <div class="alert alert-info border-0 shadow-sm" role="alert">
+            <h5 class="alert-heading mb-3">🚀 Your Action Plan</h5>
+            <ul class="mb-0">
+                <li><strong>Increase Savings:</strong> Aim to save 15-20% of your income</li>
+                <li><strong>Review Budget:</strong> Identify areas to reduce expenses</li>
+                <li><strong>Consider Side Income:</strong> Explore additional income sources</li>
+                <li><strong>Consult Advisor:</strong> Get professional financial advice</li>
+            </ul>
+        </div>
+    `;
+    
+    // Replace the current insight with the action plan
+    const insightsContainer = document.getElementById('comparisonInsights');
+    if (insightsContainer) {
+        insightsContainer.innerHTML = actionPlan;
     }
 }

@@ -11,7 +11,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (deleteProfileForm) {
-        deleteProfileForm.addEventListener('submit', deleteProfile);
+        // Only attach delete profile listener if we're not on the editProfile page
+        // (editProfile page uses toast notifications from auth.js instead)
+        if (!window.location.pathname.includes('editProfile')) {
+            deleteProfileForm.addEventListener('submit', deleteProfile);
+        }
     }
 
     const logoutLink = document.querySelector('a[href="/auth/logout"]');

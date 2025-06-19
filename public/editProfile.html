@@ -61,24 +61,56 @@
         }
 
         .checklist-checkbox .form-check-input {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             cursor: pointer;
+            transform: scale(1.2);
+            border: 2px solid #556ee6;
+            background-color: transparent;
+        }
+
+        .checklist-checkbox .form-check-input:checked {
+            background-color: #34c38f;
+            border-color: #34c38f;
+        }
+
+        .checklist-checkbox .form-check-input:focus {
+            box-shadow: 0 0 0 0.2rem rgba(85, 110, 230, 0.25);
         }
 
         .checklist-item.completed {
             background-color: #2E3951;
             border-color: #34c38f;
+            transition: all 0.3s ease;
         }
 
         .checklist-item.completed .checklist-icon {
             color: #34c38f;
+            transition: color 0.3s ease;
         }
 
         .checklist-item.completed h5,
         .checklist-item.completed p {
+            text-decoration: line-through;
+            opacity: 0.7;
+            transition: all 0.3s ease;
+        }
+
+        .checklist-item.completed .checklist-text h5 {
+            text-decoration: line-through;
+            text-decoration-color: #34c38f;
+            text-decoration-thickness: 2px;
+        }
+
+        .checklist-item.completed .checklist-text p {
+            text-decoration: line-through;
+            text-decoration-color: #34c38f;
+            text-decoration-thickness: 1px;
+        }
+
+        .checklist-item.completed .checklist-text a {
             text-decoration: none;
-            opacity: 0.6;
+            color: #34c38f;
         }
 
         .completion-message {
@@ -88,6 +120,71 @@
             background-color: #d4edda;
             color: #155724;
             border-radius: 8px;
+        }
+
+        /* Modal Toast Styles */
+        .modal-toast {
+            animation: modalToastSlideIn 0.3s ease-out;
+            z-index: 10000 !important;
+        }
+
+        .modal-toast .toast-body {
+            font-size: 1rem;
+            position: relative;
+            z-index: 10001;
+        }
+
+        .modal-toast .alert {
+            background-color: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            color: #f8d7da;
+        }
+
+        .modal-toast .list-unstyled li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-toast .list-unstyled li:last-child {
+            border-bottom: none;
+        }
+
+        .modal-toast .btn {
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 10002;
+            pointer-events: auto;
+        }
+
+        .modal-toast .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes modalToastSlideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        /* Backdrop for modal toast */
+        .toast-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9998;
+            pointer-events: auto;
         }
     </style>
 </head>
@@ -188,6 +285,22 @@
             <div class="page-content">
                 <div class="container-fluid">
                     <div class="row">
+                        <!-- Left Column: Onboarding Checklist -->
+                        <div class="col-12 col-lg-7">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title">Onboarding Checklist</h4>
+                                    <ul id="onboardingChecklist" class="list-group list-group-flush">
+                                        <!-- The checklist items will be populated here -->
+                                    </ul>
+                                    <div id="completionMessage" class="completion-message" style="display: none;">
+                                        <p>🎉 Great job! You've completed all onboarding steps.</p>
+                                        <p>Remember to log your monthly submissions to stay on top of your financial goals!</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="col-12 col-lg-5">
                             <!-- Profile Details Section -->
                             <div class="card">
@@ -254,27 +367,14 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Right Column: Onboarding Checklist -->
-                        <div class="col-12 col-lg-7">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h4 class="card-title">Onboarding Checklist</h4>
-                                    <ul id="onboardingChecklist" class="list-group list-group-flush">
-                                        <!-- The checklist items will be populated here -->
-                                    </ul>
-                                    <div id="completionMessage" class="completion-message" style="display: none;">
-                                        <p>🎉 Great job! You've completed all onboarding steps.</p>
-                                        <p>Remember to log your monthly submissions to stay on top of your financial goals!</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1100;"></div>
 
     <!-- JavaScript Libraries -->
     <script src="js/jquery.min.js"></script>
@@ -285,6 +385,8 @@
     <script src="js/simplebar.min.js"></script>
     <script src="js/waves.min.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/auth.js"></script>
     <script src="js/editProfile.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mixpanel-browser@latest/dist/mixpanel.min.js"></script>
     <script src="js/mixpanel-tracking.js"></script>

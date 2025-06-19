@@ -4,26 +4,38 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (deleteProfileForm) {
         deleteProfileForm.addEventListener('submit', async function (e) {
             e.preventDefault();
-            const token = localStorage.getItem('token');
-            try {
-                const response = await fetch('/auth/deleteAccount', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (response.ok) {
-                    alert('Profile deleted successfully. Redirecting to login page...');
-                    window.location.href = '/';
-                } else {
-                    const data = await response.json();
-                    alert(data.message || 'Error deleting profile');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('An error occurred while deleting the profile');
-            }
+            
+            // Show confirmation toast
+            const confirmMessage = `
+                <div class="text-center mb-3">
+                    <i class="fa fa-exclamation-triangle fa-3x mb-3" style="color: #ffc107;"></i>
+                    <h4 class="mb-3">⚠️ Delete Profile Confirmation</h4>
+                </div>
+                <div class="text-center mb-4">
+                    <p class="mb-2"><strong>This action will permanently delete ALL your data including:</strong></p>
+                    <ul class="list-unstyled mb-3">
+                        <li><i class="fa fa-university me-2"></i>Bank accounts & financial data</li>
+                        <li><i class="fa fa-money me-2"></i>Budgeting information</li>
+                        <li><i class="fa fa-umbrella me-2"></i>Retirement plans</li>
+                        <li><i class="fa fa-home me-2"></i>Real estate portfolios</li>
+                        <li><i class="fa fa-chart-line me-2"></i>All financial tracking data</li>
+                    </ul>
+                    <div class="alert alert-danger">
+                        <i class="fa fa-exclamation-circle me-2"></i>
+                        <strong>This action is NOT reversible!</strong>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="button" class="btn btn-danger px-4" onclick="confirmDeleteProfile()">
+                        <i class="fa fa-trash me-2"></i>Delete Profile
+                    </button>
+                    <button type="button" class="btn btn-secondary px-4" onclick="dismissDeleteConfirmation()">
+                        <i class="fa fa-times me-2"></i>Cancel
+                    </button>
+                </div>
+            `;
+            
+            showToast(confirmMessage, 'warning');
         });
     }
 
@@ -190,4 +202,43 @@ function getToken() {
 // Function to redirect to login page
 function redirectToLogin() {
     window.location.href = '/login.html';
+}
+
+// Function to confirm profile deletion
+async function confirmDeleteProfile() {
+    // Dismiss the confirmation modal first
+    if (window.currentModalToast) {
+        hideModalToast(window.currentModalToast.element, window.currentModalToast.backdrop);
+    }
+    
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch('/auth/deleteAccount', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (response.ok) {
+            showToast('Profile deleted successfully. Redirecting to login page...', 'success');
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+        } else {
+            const data = await response.json();
+            showToast(data.message || 'Error deleting profile', 'danger');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('An error occurred while deleting the profile', 'danger');
+    }
+}
+
+// Function to dismiss delete confirmation
+function dismissDeleteConfirmation() {
+    // Use the manual dismissal function for modal toasts
+    if (window.currentModalToast) {
+        hideModalToast(window.currentModalToast.element, window.currentModalToast.backdrop);
+    }
 }

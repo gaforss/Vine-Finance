@@ -803,15 +803,53 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function addGoalToTable(goal) {
         if (!goalsTable) return;
+        console.log('[Goals] Adding goal to table:', goal.name, 'with ID:', goal._id);
+        
+        const actionButtons = `
+            <div class="d-flex gap-2 align-items-center">
+                <button class="btn btn-sm btn-outline-primary edit-goal-btn" data-id="${goal._id}" data-bs-toggle="modal" data-bs-target="#editGoalModal" style="border-radius: 6px; font-weight: 500; transition: all 0.2s ease;">
+                    <i class="fa fa-edit me-1"></i>Edit
+                </button>
+                <button class="btn btn-sm btn-outline-danger delete-goal-btn" data-id="${goal._id}" style="border-radius: 6px; font-weight: 500; transition: all 0.2s ease;">
+                    <i class="fa fa-trash me-1"></i>Delete
+                </button>
+            </div>`;
+        console.log('[Goals] Action buttons HTML:', actionButtons);
+        
         const rowNode = goalsTable.row.add([
             goal.name,
             `$${parseFloat(goal.targetAmount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
             `$${parseFloat(goal.currentAmount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
             new Date(goal.endDate).toLocaleDateString(),
             `<div id="goal-progress-${goal._id}" class="goal-progress-chart"></div>`,
-            `<button class="btn btn-sm btn-primary edit-goal-btn" data-id="${goal._id}" data-bs-toggle="modal" data-bs-target="#editGoalModal">Edit</button> <button class="btn btn-sm btn-danger delete-goal-btn" data-id="${goal._id}">Delete</button>`
+            actionButtons
         ]).node();
+        
         $(rowNode).attr('id', `goal-${goal._id}`);
+        console.log('[Goals] Row added with ID:', `goal-${goal._id}`);
+        
+        // Verify the buttons are in the DOM
+        setTimeout(() => {
+            const editBtn = $(rowNode).find('.edit-goal-btn');
+            const deleteBtn = $(rowNode).find('.delete-goal-btn');
+            console.log('[Goals] Buttons found in row:', {
+                editBtn: editBtn.length,
+                deleteBtn: deleteBtn.length,
+                editBtnVisible: editBtn.is(':visible'),
+                deleteBtnVisible: deleteBtn.is(':visible'),
+                editBtnText: editBtn.text(),
+                deleteBtnText: deleteBtn.text()
+            });
+            
+            // Also check the raw HTML
+            const actionsCell = $(rowNode).find('td:last-child');
+            console.log('[Goals] Actions cell HTML:', actionsCell.html());
+            
+            // Check if the delete element exists at all
+            const allElements = actionsCell.find('*');
+            console.log('[Goals] All elements in actions cell:', allElements.map(function() { return this.tagName + '.' + this.className; }).get());
+        }, 100);
+        
         renderGoalProgress(goal);
     }
 
@@ -942,16 +980,91 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function initializeGoalEventHandlers() {
+        console.log('[Goals] Initializing goal event handlers...');
+        
         $('#add-goal-form').on('submit', handleAddGoal);
+        console.log('[Goals] Add goal form handler attached');
+        
         $('#edit-goal-form').on('submit', handleUpdateGoal);
+        console.log('[Goals] Edit goal form handler attached');
+        
         $('#goalsTable tbody').on('click', '.edit-goal-btn', function () {
+            console.log('[Goals] Edit button clicked for goal ID:', $(this).data('id'));
             const goalId = $(this).data('id');
             populateEditGoalModal(goalId);
         });
+        console.log('[Goals] Edit button event handler attached');
+        
         $('#goalsTable tbody').on('click', '.delete-goal-btn', function () {
+            console.log('[Goals] Delete button clicked for goal ID:', $(this).data('id'));
             const goalId = $(this).data('id');
             confirmDeleteGoal(goalId);
         });
+        console.log('[Goals] Delete button event handler attached');
+        
+        // Test if the table body exists
+        const tableBody = $('#goalsTable tbody');
+        console.log('[Goals] Table body found:', tableBody.length > 0);
+    }
+
+    // Test function to check button visibility
+    function testButtonVisibility() {
+        console.log('[Goals] Testing button visibility...');
+        const deleteButtons = $('.delete-goal-btn');
+        const editButtons = $('.edit-goal-btn');
+        
+        console.log('[Goals] Found buttons:', {
+            deleteButtons: deleteButtons.length,
+            editButtons: editButtons.length
+        });
+        
+        deleteButtons.each(function(index) {
+            const $btn = $(this);
+            console.log(`[Goals] Delete button ${index}:`, {
+                visible: $btn.is(':visible'),
+                display: $btn.css('display'),
+                opacity: $btn.css('opacity'),
+                text: $btn.text(),
+                dataId: $btn.data('id')
+            });
+        });
+        
+        editButtons.each(function(index) {
+            const $btn = $(this);
+            console.log(`[Goals] Edit button ${index}:`, {
+                visible: $btn.is(':visible'),
+                display: $btn.css('display'),
+                opacity: $btn.css('opacity'),
+                text: $btn.text(),
+                dataId: $btn.data('id')
+            });
+        });
+    }
+
+    // Function to refresh goals data and update UI
+    async function refreshGoalsData() {
+        try {
+            console.log('[Goals] Refreshing goals data...');
+            const goalsData = await fetchSavingsGoals();
+            
+            if (goalsData) {
+                console.log(`[Goals] Refreshed ${goalsData.length} goals`);
+                populateGoalsTable(goalsData);
+                updateGoalsProgressSummary(goalsData);
+                
+                // Test button visibility after populating table
+                setTimeout(testButtonVisibility, 200);
+                
+                // Refresh financial insights with updated goals data
+                const [cashFlowData, spendingData] = await Promise.all([
+                    fetchCashFlowData(),
+                    fetchCategorizedSpending('monthly')
+                ]);
+                generateFinancialInsights(cashFlowData, spendingData, goalsData);
+            }
+        } catch (error) {
+            console.error('[Goals] Error refreshing goals data:', error);
+        }
     }
 
     async function handleAddGoal(event) {
@@ -965,10 +1078,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
             const newGoal = await fetchApi('/api/goals', { method: 'POST', body: JSON.stringify(goalData) });
-            addGoalToTable(newGoal);
             // Reset form and collapse accordion instead of hiding modal
             $('#add-goal-form')[0].reset();
             $('#collapseOne-1').collapse('hide');
+            
+            // Refresh goals data to update UI
+            await refreshGoalsData();
+            
             Swal.fire('Success', 'Savings goal added!', 'success');
         } catch (error) {
             console.error('Error adding goal:', error);
@@ -1002,8 +1118,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
         try {
             const updatedGoal = await fetchApi(`/api/goals/${goalId}`, { method: 'PUT', body: JSON.stringify(goalData) });
-            updateGoalInTable(updatedGoal);
             bootstrap.Modal.getInstance(document.getElementById('editGoalModal')).hide();
+            
+            // Refresh goals data to update UI
+            await refreshGoalsData();
+            
             Swal.fire('Success', 'Savings goal updated!', 'success');
         } catch (error) {
             console.error('Error updating goal:', error);
@@ -1015,13 +1134,23 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!goalsTable) return;
         const row = $(`#goal-${goal._id}`);
         if (row.length) {
+            const actionButtons = `
+                <div class="d-flex gap-2 align-items-center">
+                    <button class="btn btn-sm btn-outline-primary edit-goal-btn" data-id="${goal._id}" data-bs-toggle="modal" data-bs-target="#editGoalModal" style="border-radius: 6px; font-weight: 500; transition: all 0.2s ease;">
+                        <i class="fa fa-edit me-1"></i>Edit
+                    </button>
+                    <button class="btn btn-sm btn-outline-danger delete-goal-btn" data-id="${goal._id}" style="border-radius: 6px; font-weight: 500; transition: all 0.2s ease;">
+                        <i class="fa fa-trash me-1"></i>Delete
+                    </button>
+                </div>`;
+            
             goalsTable.row(row).data([
                 goal.name,
                 `$${parseFloat(goal.targetAmount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
                 `$${parseFloat(goal.currentAmount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`,
                 new Date(goal.endDate).toLocaleDateString(),
                 `<div id="goal-progress-${goal._id}" class="goal-progress-chart"></div>`,
-                `<button class="btn btn-sm btn-primary edit-goal-btn" data-id="${goal._id}" data-bs-toggle="modal" data-bs-target="#editGoalModal">Edit</button> <button class="btn btn-sm btn-danger delete-goal-btn" data-id="${goal._id}">Delete</button>`
+                actionButtons
             ]).draw();
             renderGoalProgress(goal);
         }
@@ -1046,7 +1175,10 @@ document.addEventListener('DOMContentLoaded', function () {
     async function deleteGoal(goalId) {
         try {
             await fetchApi(`/api/goals/${goalId}`, { method: 'DELETE' });
-            goalsTable.row($(`#goal-${goalId}`)).remove().draw();
+            
+            // Refresh goals data to update UI
+            await refreshGoalsData();
+            
             Swal.fire('Deleted!', 'Your savings goal has been deleted.', 'success');
         } catch (error) {
             console.error('Error deleting goal:', error);
@@ -1094,14 +1226,16 @@ document.addEventListener('DOMContentLoaded', function () {
     $(document).ready(function () {
         if (!$.fn.DataTable.isDataTable('#goalsTable')) {
             goalsTable = $('#goalsTable').DataTable({
-                responsive: true,
+                responsive: false,
                 paging: false,
                 searching: false,
                 info: false,
                 lengthChange: false,
                 scrollX: true,
+                autoWidth: false,
                 columnDefs: [
-                    { targets: [4, 5], orderable: false } // Disable sorting for progress and actions
+                    { targets: [4, 5], orderable: false },
+                    { targets: 5, width: '220px' }
                 ]
             });
         }

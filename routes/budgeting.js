@@ -91,12 +91,12 @@ router.get('/goals/:id', protect, async (req, res) => {
     try {
         const goal = await SavingsGoal.findById(req.params.id);
         if (!goal) {
-            return res.status(404).send('Goal not found');
+            return res.status(404).json({ error: 'Goal not found' });
         }
         res.json(goal);
     } catch (error) {
         console.error('Error fetching goal:', error);
-        res.status(500).send('Something went wrong fetching the goal');
+        res.status(500).json({ error: 'Something went wrong fetching the goal' });
     }
 });
 
@@ -105,12 +105,12 @@ router.put('/goals/:id', protect, async (req, res) => {
     try {
         const goal = await SavingsGoal.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
         if (!goal) {
-            return res.status(404).send('Goal not found');
+            return res.status(404).json({ error: 'Goal not found' });
         }
         res.json(goal);
     } catch (error) {
         console.error('Error updating goal:', error);
-        res.status(500).send('Something went wrong updating the goal');
+        res.status(500).json({ error: 'Something went wrong updating the goal' });
     }
 });
 
@@ -119,12 +119,12 @@ router.delete('/goals/:id', protect, async (req, res) => {
     try {
         const goal = await SavingsGoal.findByIdAndDelete(req.params.id);
         if (!goal) {
-            return res.status(404).send('Goal not found');
+            return res.status(404).json({ error: 'Goal not found' });
         }
-        res.send('Goal deleted');
+        res.json({ message: 'Goal deleted successfully' });
     } catch (error) {
         console.error('Error deleting goal:', error);
-        res.status(500).send('Something went wrong deleting the goal');
+        res.status(500).json({ error: 'Something went wrong deleting the goal' });
     }
 });
 

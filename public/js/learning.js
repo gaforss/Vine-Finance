@@ -1349,7 +1349,9 @@ function updateLearningProgress() {
     
     // Update progress bar
     $('.progress-bar').css('width', progressPercentage + '%').attr('aria-valuenow', progressPercentage);
-    $('.progress-bar').next().text(progressPercentage + '% Complete');
+    
+    // Update the percentage text
+    $('.progress').siblings('span').text(progressPercentage + '% Complete');
     
     // Update level based on progress
     let level = 'Beginner';
@@ -1361,6 +1363,39 @@ function updateLearningProgress() {
     
     // Update article status indicators
     updateArticleStatusIndicators();
+    
+    // Update progress details
+    updateProgressDetails(readArticles.length, totalArticles);
+}
+
+function updateProgressDetails(readCount, totalCount) {
+    // Update the progress details text
+    $('.progress').parent().siblings('.mt-2').find('small').html(`
+        <i class="fa fa-info-circle me-1"></i>
+        Read ${readCount} of ${totalCount} articles to complete your learning journey
+    `);
+    
+    // Add motivational message based on progress
+    let motivationalMessage = '';
+    if (readCount === 0) {
+        motivationalMessage = 'Start your financial education journey by reading your first article!';
+    } else if (readCount < totalCount / 4) {
+        motivationalMessage = 'Great start! Keep reading to build your financial knowledge.';
+    } else if (readCount < totalCount / 2) {
+        motivationalMessage = 'You\'re making excellent progress! Continue learning to reach the next level.';
+    } else if (readCount < totalCount * 3 / 4) {
+        motivationalMessage = 'You\'re more than halfway there! Keep going to become an expert.';
+    } else if (readCount < totalCount) {
+        motivationalMessage = 'Almost there! Complete the remaining articles to achieve expert status.';
+    } else {
+        motivationalMessage = 'Congratulations! You\'ve completed all articles and achieved expert status!';
+    }
+    
+    // Update the motivational message
+    $('.progress').parent().siblings('.mt-2').siblings('.mt-1').find('small').html(`
+        <i class="fa fa-star me-1"></i>
+        ${motivationalMessage}
+    `);
 }
 
 function updateArticleStatusIndicators() {

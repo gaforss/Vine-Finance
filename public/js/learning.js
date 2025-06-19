@@ -1347,6 +1347,12 @@ function updateLearningProgress() {
     const totalArticles = 12; // Total number of articles
     const progressPercentage = Math.round((readArticles.length / totalArticles) * 100);
     
+    console.log('updateLearningProgress called:', {
+        readArticles: readArticles,
+        totalArticles: totalArticles,
+        progressPercentage: progressPercentage
+    });
+    
     // Update progress bar
     $('.progress-bar').css('width', progressPercentage + '%').attr('aria-valuenow', progressPercentage);
     
@@ -1355,11 +1361,59 @@ function updateLearningProgress() {
     
     // Update level based on progress
     let level = 'Beginner';
-    if (progressPercentage >= 75) level = 'Expert';
-    else if (progressPercentage >= 50) level = 'Advanced';
-    else if (progressPercentage >= 25) level = 'Intermediate';
+    let iconClass = 'fa-trophy';
+    if (progressPercentage >= 75) {
+        level = 'Expert';
+        iconClass = 'fa-certificate text-warning'; // Gold/yellow for visibility
+    } else if (progressPercentage >= 50) {
+        level = 'Advanced';
+        iconClass = 'fa-diamond';
+    } else if (progressPercentage >= 25) {
+        level = 'Intermediate';
+        iconClass = 'fa-rocket';
+    }
     
-    $('.bg-white.bg-opacity-20.rounded-circle').next().text(level + ' Achiever');
+    console.log('Level and icon update:', {
+        level: level,
+        iconClass: iconClass,
+        progressPercentage: progressPercentage
+    });
+    
+    // Update both the text and icon with more specific selectors
+    const levelTextElement = $('.bg-white.bg-opacity-20.rounded-circle').next();
+    const iconElement = $('.bg-white.bg-opacity-20.rounded-circle i');
+    const circle = $('.bg-white.bg-opacity-20.rounded-circle');
+    // Change background color for Expert
+    circle.removeClass('bg-white bg-opacity-20 bg-warning');
+    if (progressPercentage >= 75) {
+        circle.addClass('bg-warning');
+    } else {
+        circle.addClass('bg-white bg-opacity-20');
+    }
+    
+    if (levelTextElement.length > 0) {
+        levelTextElement.text(level + ' Achiever');
+        console.log('Updated level text to:', level + ' Achiever');
+    }
+    
+    if (iconElement.length > 0) {
+        // Remove all existing classes and add new ones
+        iconElement.removeClass().addClass(`fa ${iconClass} fa-2x text-white`);
+        console.log('Updated icon classes to:', `fa ${iconClass} fa-2x text-white`);
+        console.log('Icon element classes after update:', iconElement.attr('class'));
+        
+        // Force a re-render by temporarily hiding and showing the icon
+        iconElement.hide().show(0);
+        
+        // Alternative approach: replace the entire icon element if needed
+        if (progressPercentage >= 75) {
+            // For Expert level, ensure the icon is properly set
+            iconElement.replaceWith(`<i class="fa ${iconClass} fa-2x text-white"></i>`);
+            console.log('Replaced icon element for Expert level');
+        }
+    } else {
+        console.error('Icon element not found!');
+    }
     
     // Update article status indicators
     updateArticleStatusIndicators();
@@ -2181,4 +2235,17 @@ function loadUserDataForSimulation() {
             }
         }
     });
-} 
+}
+
+// Test function to manually set Expert level (for debugging)
+function testExpertLevel() {
+    // Set read articles to 9 (75% of 12 articles)
+    const testArticles = ['budgeting-basics', 'emergency-fund', 'debt-management', 'credit-score', 'investing-101', 'retirement-planning', 'tax-optimization', 'real-estate', 'portfolio-optimization'];
+    localStorage.setItem('readArticles', JSON.stringify(testArticles));
+    
+    // Force update
+    updateLearningProgress();
+    
+    console.log('Test: Set progress to Expert level (75%)');
+}
+window.testExpertLevel = testExpertLevel;

@@ -15,8 +15,8 @@ $(document).ready(function() {
     initializeMarketEducation();
 
     // Track page view
-    if (typeof mixpanel !== 'undefined') {
-        mixpanel.track('Learning Center Page View');
+    if (typeof trackUserAction === 'function') {
+        trackUserAction('Learning Center Page View');
     }
 });
 
@@ -176,8 +176,8 @@ function initializeEducationalArticles() {
         console.log('Article clicked:', articleId);
         
         // Track article view
-        if (typeof mixpanel !== 'undefined') {
-            mixpanel.track('Article View', {
+        if (typeof trackUserAction === 'function') {
+            trackUserAction('Article View', {
                 article_id: articleId,
                 difficulty_level: getArticleDifficulty(articleId)
             });
@@ -1315,8 +1315,8 @@ function markArticleAsRead(articleId) {
     console.log('Marking article as read:', articleId);
     
     // Track article completion
-    if (typeof mixpanel !== 'undefined') {
-        mixpanel.track('Article Completed', {
+    if (typeof trackUserAction === 'function') {
+        trackUserAction('Article Completed', {
             article_id: articleId,
             difficulty_level: getArticleDifficulty(articleId)
         });
@@ -1487,8 +1487,8 @@ function calculateDebtPayoff() {
     $('#debt-results').show();
     
     // Track calculation
-    if (typeof mixpanel !== 'undefined') {
-        mixpanel.track('Debt Payoff Calculation', {
+    if (typeof trackUserAction === 'function') {
+        trackUserAction('Debt Payoff Calculation', {
             debt_count: debts.length,
             total_debt: debts.reduce((sum, debt) => sum + debt.balance, 0),
             monthly_payment: monthlyPayment
@@ -1564,8 +1564,8 @@ function analyzePortfolio() {
     $('#portfolio-results').show();
     
     // Track analysis
-    if (typeof mixpanel !== 'undefined') {
-        mixpanel.track('Portfolio Analysis', {
+    if (typeof trackUserAction === 'function') {
+        trackUserAction('Portfolio Analysis', {
             age: age,
             risk_tolerance: riskTolerance,
             current_allocation: {stocks, bonds, cash, realEstate}

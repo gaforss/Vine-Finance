@@ -842,119 +842,158 @@ function addPropertyToCard(property) {
     realEstateOverview.appendChild(card);
 
     // Event Listeners for View Details Button
-    card.querySelector('.view-details-btn').addEventListener('click', function() {
-        fetchPropertyDetails(id);
-    });
+    const viewDetailsBtn = card.querySelector('.view-details-btn');
+    if (viewDetailsBtn) {
+        viewDetailsBtn.addEventListener('click', function() {
+            fetchPropertyDetails(id);
+        });
+    }
 
-    card.querySelector('.property-docs-btn').addEventListener('click', () => {
-        openPropertyDocsModal(id);
-    });
+    const propertyDocsBtn = card.querySelector('.property-docs-btn');
+    if (propertyDocsBtn) {
+        propertyDocsBtn.addEventListener('click', () => {
+            openPropertyDocsModal(id);
+        });
+    }
 
-    card.querySelector('.manage-expenses-btn').addEventListener('click', () => {
-        openExpensesModal(id);
-    });
+    const manageExpensesBtn = card.querySelector('.manage-expenses-btn');
+    if (manageExpensesBtn) {
+        manageExpensesBtn.addEventListener('click', () => {
+            openExpensesModal(id);
+        });
+    }
 
     // Event Listeners for Edit and Delete Buttons
-    card.querySelector('.edit-btn').addEventListener('click', function(event) {
-        event.preventDefault();
-        openEditModal(id);
-    });
-
-    card.querySelector('.delete-btn').addEventListener('click', async function() {
-        const propertyAddress = card.querySelector('.card-title').textContent.trim();
-        confirmAction(`Are you sure you want to delete ${propertyAddress}? This action cannot be undone.`, async () => {
-            try {
-                const token = localStorage.getItem('token');
-                const response = await fetch(`/realestate/delete/${id}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-                if (response.ok) {
-                    card.remove();
-                    updateTotalEquityValue();
-                    updateTotalRentPaid();
-                    showToast('Property deleted successfully.');
-                    trackEvent('Property Deleted', {
-                        propertyId: id,
-                        propertyAddress: propertyAddress,
-                        timestamp: new Date().toISOString()
-                    });
-                    refreshProperty(id);
-                    fetchPortfolioSummary();
-                } else {
-                    const errorData = await response.json();
-                    console.error('Failed to delete property:', errorData);
-                    showToast('Failed to delete property.', 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showToast('An error occurred while deleting the property.', 'error');
-            }
+    const editBtn = card.querySelector('.edit-btn');
+    if (editBtn) {
+        editBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            openEditModal(id);
         });
-    });
+    }
+
+    const deleteBtn = card.querySelector('.delete-btn');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', async function() {
+            const cardTitle = card.querySelector('.card-title');
+            const propertyAddress = cardTitle ? cardTitle.textContent.trim() : 'this property';
+            confirmAction(`Are you sure you want to delete ${propertyAddress}? This action cannot be undone.`, async () => {
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`/realestate/delete/${id}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    if (response.ok) {
+                        card.remove();
+                        updateTotalEquityValue();
+                        updateTotalRentPaid();
+                        showToast('Property deleted successfully.');
+                        trackEvent('Property Deleted', {
+                            propertyId: id,
+                            propertyAddress: propertyAddress,
+                            timestamp: new Date().toISOString()
+                        });
+                        refreshProperty(id);
+                        fetchPortfolioSummary();
+                    } else {
+                        const errorData = await response.json();
+                        console.error('Failed to delete property:', errorData);
+                        showToast('Failed to delete property.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    showToast('An error occurred while deleting the property.', 'error');
+                }
+            });
+        });
+    }
     updateTotalEquityValue();
 }
 
 function updatePropertyInCard(property) {
-    const card = document.querySelector(`.card[data-id='${property._id}']`);
-    if (card) {
-        // --- NEW METRICS ---
-        const appreciation = property.appreciation || 0;
-        const noi = property.noi || 0;
-        const capRate = property.capRate || 0;
-        const cocReturn = property.cocReturn || 0;
-        const purchasePrice = property.purchasePrice || 0;
+    const cardToUpdate = document.querySelector(`.card[data-id="${property._id}"]`);
+    if (!cardToUpdate) return;
 
-        // 1. Appreciation Badge
-        const appreciationPercent = (appreciation * 100).toFixed(1);
-        const appreciationClass = appreciation >= 0 ? 'text-success' : 'text-danger';
-        const appreciationIcon = appreciation >= 0 ? 'fa-arrow-up' : 'fa-arrow-down';
-        const appreciationBadge = purchasePrice > 0
-            ? `<span class="ms-2 small ${appreciationClass}" style="font-size: 0.8em; vertical-align: middle;"><i class="fa ${appreciationIcon}"></i> ${appreciationPercent}%</span>`
-            : '';
+    const value = typeof property.value === 'number' ? property.value : 0;
+    const ownershipValue = value;
+    const badgeClass = getPropertyTypeBadgeClass(property.propertyType);
 
+    // Add null check for card title
+    const cardTitle = cardToUpdate.querySelector('.card-title');
+    if (cardTitle) {
+        cardTitle.innerHTML = `<i class="fa fa-home text-primary"></i> ${property.propertyAddress}`;
+    }
+    
+    // Add null check for href element
+    const hrefElement = cardToUpdate.querySelector('a[href^="https://"]');
+    if (hrefElement) {
+        hrefElement.href = property.url;
+    }
+    
+    // Add null check for property type container
+    const propertyTypeContainer = cardToUpdate.querySelector('.property-type-container');
+    if (propertyTypeContainer) {
+        propertyTypeContainer.innerHTML = `<span class="badge ${badgeClass}">${property.propertyType}</span>`;
+    }
+    
+    const valueElement = cardToUpdate.querySelector('.card-text:nth-of-type(2)');
+    if(valueElement) valueElement.innerHTML = `<span class="badge bg-primary">Value:</span> ${value.toLocaleString('en-US', { style: 'currency', 'currency': 'USD' })}`;
+    
+    const principalElement = cardToUpdate.querySelector('.card-text:nth-of-type(3)');
+    if(principalElement) principalElement.innerHTML = `<span class="badge bg-info">Principal:</span> ${ownershipValue.toLocaleString('en-US', { style: 'currency', 'currency': 'USD' })}`;
 
-
-        const value = typeof property.value === 'number' ? property.value : 0;
-        const purchaseDate = property.purchaseDate ? new Date(property.purchaseDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
-        const totalExpenses = (property.expenses && Array.isArray(property.expenses)) ? property.expenses.reduce((acc, exp) => acc + (exp.amount || 0), 0) : 0;
-        const equity = value - (property.mortgageBalance || 0);
-
-        card.querySelector('.card-title').textContent = property.propertyAddress;
-        card.querySelector('.property-value').innerHTML = `${value.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}${appreciationBadge}`;
-        
-        const propertyTypeSpan = card.querySelector('.property-type-container');
-        if (propertyTypeSpan) {
-            propertyTypeSpan.textContent = property.propertyType || 'N/A';
-            const badgeClass = getPropertyTypeBadgeClass(property.propertyType);
-            propertyTypeSpan.className = `badge rounded-pill ${badgeClass} px-3 py-1 property-type-container shadow-sm me-2`;
-        }
-
-        const zillowLink = card.querySelector('a[href*="zillow.com"], a[href*="redfin.com"], a[href*="#"]');
-        if (zillowLink) {
-            zillowLink.href = property.url || '#';
-        }
-
-        const purchaseDateDiv = card.querySelector('.purchase-date');
-        if (purchaseDateDiv) {
-            purchaseDateDiv.textContent = purchaseDate;
-        }
-
-        // Update new financial metrics
-        card.querySelector('.property-equity').textContent = equity.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-        card.querySelector('.property-mortgage').textContent = (property.mortgageBalance || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-        card.querySelector('.property-expenses').textContent = totalExpenses.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-
-        // Highlight the card
-        card.classList.add('card-highlight');
-        setTimeout(() => {
-            card.classList.remove('card-highlight');
-        }, 2000); // Highlight for 2 seconds
-
-        
-        updateTotalEquityValue();
+    // Re-attach listeners as they might be lost in DOM manipulation
+    const editBtn = cardToUpdate.querySelector('.edit-btn');
+    const deleteBtn = cardToUpdate.querySelector('.delete-btn');
+    const viewDetailsBtn = cardToUpdate.querySelector('.view-details-btn');
+    const uploadDocBtn = cardToUpdate.querySelector('button[onclick^="openDocumentUploadModal"]');
+    const viewDocsBtn = cardToUpdate.querySelector('button[onclick^="viewDocuments"]');
+    
+    // Add null check for edit button before adding event listener
+    if (editBtn) {
+        editBtn.addEventListener('click', function(event) {
+             event.preventDefault();  // Prevents the default action of scrolling to the top
+             
+             const editAccordionItem = document.getElementById('editPropertyAccordionItem');
+             if (editAccordionItem) {
+                 editAccordionItem.style.display = 'block';
+             }
+ 
+             const collapseEdit = document.getElementById('collapseEdit');
+             if (collapseEdit) {
+                 const bsCollapse = new bootstrap.Collapse(collapseEdit, { toggle: false });
+                 bsCollapse.show();
+             }
+             
+             const editPropertyIdElement = document.getElementById('editPropertyId');
+             if (editPropertyIdElement) {
+                 editPropertyIdElement.value = property._id;
+             }
+             
+             // Fetch full property details to populate the form
+             fetch(`/realestate/property/${property._id}`, {
+                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+             })
+             .then(response => response.json())
+             .then(property => {
+                  const editPropertyAddress = document.getElementById('editPropertyAddress');
+                  const editPropertyURL = document.getElementById('editPropertyURL');
+                  const editPropertyValue = document.getElementById('editPropertyValue');
+                  const editPropertyType = document.getElementById('editPropertyType');
+                  const editPurchasePrice = document.getElementById('editPurchasePrice');
+                  const editPurchaseDate = document.getElementById('editPurchaseDate');
+                  
+                  if (editPropertyAddress) editPropertyAddress.value = property.propertyAddress;
+                  if (editPropertyURL) editPropertyURL.value = property.url;
+                  if (editPropertyValue) editPropertyValue.value = property.value;
+                  if (editPropertyType) editPropertyType.value = property.propertyType;
+                  if (editPurchasePrice) editPurchasePrice.value = property.purchasePrice;
+                  if (editPurchaseDate) editPurchaseDate.value = property.purchaseDate ? new Date(property.purchaseDate).toISOString().split('T')[0] : '';
+             });
+          });
     }
 }
 
@@ -981,6 +1020,13 @@ async function refreshProperty(propertyId) {
 
             const propertyId = propertyTypeContainer.dataset.propertyId;
             const badge = propertyTypeContainer.querySelector('.badge');
+            
+            // Add null check for badge
+            if (!badge) {
+                console.warn('Badge element not found in property type container');
+                return;
+            }
+            
             const currentType = badge.textContent;
             
             // Hide badge
@@ -1067,8 +1113,16 @@ async function refreshProperty(propertyId) {
         const totalExpenses = (expenses && Array.isArray(expenses)) ? expenses.reduce((acc, exp) => acc + (exp.amount || 0), 0) : 0;
         const purchaseDate = property.purchaseDate ? new Date(property.purchaseDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
         const propertyDetailsContent = document.getElementById('propertyDetailsContent');
-        const modalFooter = document.getElementById('propertyDetailsModal').querySelector('.modal-footer');
-        const propertyDetailsModal = new bootstrap.Modal(document.getElementById('propertyDetailsModal'));
+        
+        // Add null check for propertyDetailsModal
+        const propertyDetailsModalElement = document.getElementById('propertyDetailsModal');
+        if (!propertyDetailsModalElement) {
+            console.error('Property details modal not found');
+            return;
+        }
+        
+        const modalFooter = propertyDetailsModalElement.querySelector('.modal-footer');
+        const propertyDetailsModal = new bootstrap.Modal(propertyDetailsModalElement);
 
         const formatCurrency = (val) => (val || 0).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
         const formatPercent = (val) => `${((val || 0) * 100).toFixed(2)}%`;
@@ -1781,62 +1835,16 @@ async function refreshProperty(propertyId) {
         chart.render();
     }
 
-    function updatePropertyInCard(property) {
-        const cardToUpdate = document.querySelector(`.card[data-id="${property._id}"]`);
-        if (!cardToUpdate) return;
-
-        const value = typeof property.value === 'number' ? property.value : 0;
-        const ownershipValue = value;
-        const badgeClass = getPropertyTypeBadgeClass(property.propertyType);
-
-        cardToUpdate.querySelector('.card-title').innerHTML = `<i class="fa fa-home text-primary"></i> ${property.propertyAddress}`;
-        cardToUpdate.querySelector('a[href^="https://"]').href = property.url;
-        cardToUpdate.querySelector('.property-type-container').innerHTML = `<span class="badge ${badgeClass}">${property.propertyType}</span>`;
-        const valueElement = cardToUpdate.querySelector('.card-text:nth-of-type(2)');
-        if(valueElement) valueElement.innerHTML = `<span class="badge bg-primary">Value:</span> ${value.toLocaleString('en-US', { style: 'currency', 'currency': 'USD' })}`;
-        
-        const principalElement = cardToUpdate.querySelector('.card-text:nth-of-type(3)');
-        if(principalElement) principalElement.innerHTML = `<span class="badge bg-info">Principal:</span> ${ownershipValue.toLocaleString('en-US', { style: 'currency', 'currency': 'USD' })}`;
-
-        // Re-attach listeners as they might be lost in DOM manipulation
-        const editBtn = cardToUpdate.querySelector('.edit-btn');
-        const deleteBtn = cardToUpdate.querySelector('.delete-btn');
-        const viewDetailsBtn = cardToUpdate.querySelector('.view-details-btn');
-        const uploadDocBtn = cardToUpdate.querySelector('button[onclick^="openDocumentUploadModal"]');
-        const viewDocsBtn = cardToUpdate.querySelector('button[onclick^="viewDocuments"]');
-        
-        // You may need to re-clone and replace the buttons to ensure listeners are fresh, or re-attach them manually
-        editBtn.addEventListener('click', function(event) {
-             event.preventDefault();  // Prevents the default action of scrolling to the top
-             
-             const editAccordionItem = document.getElementById('editPropertyAccordionItem');
-             editAccordionItem.style.display = 'block';
- 
-             const collapseEdit = document.getElementById('collapseEdit');
-             const bsCollapse = new bootstrap.Collapse(collapseEdit, { toggle: false });
-             bsCollapse.show();
-             
-             editPropertyId.value = property._id;
-             
-             // Fetch full property details to populate the form
-             fetch(`/realestate/property/${property._id}`, {
-                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-             })
-             .then(response => response.json())
-             .then(property => {
-                  document.getElementById('editPropertyAddress').value = property.propertyAddress;
-                  document.getElementById('editPropertyURL').value = property.url;
-                  document.getElementById('editPropertyValue').value = property.value;
-                  document.getElementById('editPropertyType').value = property.propertyType;
-                  document.getElementById('editPurchasePrice').value = property.purchasePrice;
-                  document.getElementById('editPurchaseDate').value = property.purchaseDate ? new Date(property.purchaseDate).toISOString().split('T')[0] : '';
-             });
-          });
-    }
-
     function updateTotalEquityValue() {
         const propertyCards = document.querySelectorAll('#realEstateOverview .card');
         const totalEquityValueElement = document.getElementById('totalEquityValue');
+        
+        // Add null check for totalEquityValueElement
+        if (!totalEquityValueElement) {
+            console.warn('Total equity value element not found');
+            return;
+        }
+        
         let totalEquity = 0;
 
         propertyCards.forEach(card => {
@@ -1859,11 +1867,23 @@ async function refreshProperty(propertyId) {
     // =================================================================================
 
     async function openPropertyDocsModal(propertyId) {
-        document.getElementById('propertyIdForDocUpload').value = propertyId;
+        const propertyIdForDocUpload = document.getElementById('propertyIdForDocUpload');
+        if (propertyIdForDocUpload) {
+            propertyIdForDocUpload.value = propertyId;
+        }
+        
         const documentList = document.getElementById('documentList');
-        documentList.innerHTML = '<li class="list-group-item">Loading documents...</li>';
+        if (documentList) {
+            documentList.innerHTML = '<li class="list-group-item">Loading documents...</li>';
+        }
 
-        const propertyDocsModal = new bootstrap.Modal(document.getElementById('propertyDocsModal'));
+        const propertyDocsModalElement = document.getElementById('propertyDocsModal');
+        if (!propertyDocsModalElement) {
+            console.error('Property docs modal not found');
+            return;
+        }
+        
+        const propertyDocsModal = new bootstrap.Modal(propertyDocsModalElement);
         propertyDocsModal.show();
 
         try {
@@ -1873,7 +1893,9 @@ async function refreshProperty(propertyId) {
             });
 
             if (response.status === 404) {
-                documentList.innerHTML = '<li class="list-group-item">No documents found for this property.</li>';
+                if (documentList) {
+                    documentList.innerHTML = '<li class="list-group-item">No documents found for this property.</li>';
+                }
                 return;
             }
 
@@ -1885,12 +1907,19 @@ async function refreshProperty(propertyId) {
             populateDocumentList(documents, propertyId);
         } catch (error) {
             console.error('Error fetching documents:', error);
-            documentList.innerHTML = `<li class="list-group-item text-danger">${error.message}</li>`;
+            if (documentList) {
+                documentList.innerHTML = `<li class="list-group-item text-danger">${error.message}</li>`;
+            }
         }
     }
 
     function populateDocumentList(documents, propertyId) {
         const documentList = document.getElementById('documentList');
+        if (!documentList) {
+            console.warn('Document list element not found');
+            return;
+        }
+        
         documentList.innerHTML = '';
 
         if (!documents || documents.length === 0) {
@@ -2025,41 +2054,44 @@ async function refreshProperty(propertyId) {
     window.deleteDocument = deleteDocument;
 
     // Add event listener for the document upload form
-    document.getElementById('propertyDocUploadForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const propertyId = document.getElementById('propertyIdForDocUpload').value;
-        const documentName = document.getElementById('newDocumentName').value;
-        const fileInput = document.getElementById('newDocumentFile');
-        const file = fileInput.files[0];
+    const propertyDocUploadForm = document.getElementById('propertyDocUploadForm');
+    if (propertyDocUploadForm) {
+        propertyDocUploadForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const propertyId = document.getElementById('propertyIdForDocUpload').value;
+            const documentName = document.getElementById('newDocumentName').value;
+            const fileInput = document.getElementById('newDocumentFile');
+            const file = fileInput.files[0];
 
-        if (!file) {
-            alert('Please select a file to upload.');
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('document', file);
-        formData.append('name', documentName);
-
-        try {
-            const token = localStorage.getItem('token');
-            const response = await fetch(`/realestate/${propertyId}/documents`, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${token}` },
-                body: formData
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to upload document.');
+            if (!file) {
+                alert('Please select a file to upload.');
+                return;
             }
 
-            const updatedData = await response.json();
-            populateDocumentList(updatedData.documents, propertyId);
-            document.getElementById('propertyDocUploadForm').reset();
-        } catch (error) {
-            console.error('Upload error:', error);
-            alert(`Error: ${error.message}`);
-        }
-    });
+            const formData = new FormData();
+            formData.append('document', file);
+            formData.append('name', documentName);
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/realestate/${propertyId}/documents`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to upload document.');
+                }
+
+                const updatedData = await response.json();
+                populateDocumentList(updatedData.documents, propertyId);
+                document.getElementById('propertyDocUploadForm').reset();
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert(`Error: ${error.message}`);
+            }
+        });
+    }
 });

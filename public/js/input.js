@@ -1,6 +1,9 @@
 // Make exportTableData function globally available
 window.exportTableData = function() {
-    mixpanel.track('Export All Data Clicked');
+    // Use the proper tracking function from mixpanel-tracking.js
+    if (typeof trackUserAction === 'function') {
+        trackUserAction('Export All Data Clicked');
+    }
     console.log('Export function called');
     try {
         const table = $('#transactionsTable').DataTable();
@@ -54,34 +57,9 @@ window.exportTableData = function() {
 };
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Mixpanel User Identification & Page View Tracking
-    try {
-        const token = localStorage.getItem('token');
-        if (token) {
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            
-            const user = JSON.parse(jsonPayload);
-            if (user.id) {
-                mixpanel.identify(user.id);
-                mixpanel.people.set({
-                    '$name': user.name, // Assuming name is in the payload
-                    '$email': user.email // Assuming email is in the payload
-                });
-                console.log('Mixpanel user identified:', user.id);
-            }
-        }
-    } catch (e) {
-        console.error('Error identifying user for Mixpanel:', e);
-    }
-
-    mixpanel.track('Page Viewed', {
-        'Page Name': 'Input Information'
-    });
-    console.log('Mixpanel event tracked: Page Viewed');
+    // Mixpanel tracking is now handled by mixpanel-tracking.js
+    // No need for duplicate tracking code here
+    
     const fillFromLastBtn = document.getElementById('fillFromLastBtn');
     if (fillFromLastBtn) {
         fillFromLastBtn.addEventListener('click', async () => {
@@ -95,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         document.getElementById('investments').value = lastEntry.investments;
                         document.getElementById('loans').value = lastEntry.loans;
                         document.getElementById('otherAssets').value = lastEntry.otherAssets;
-                                                document.getElementById('otherLiabilities').value = lastEntry.otherLiabilities;
+                        document.getElementById('otherLiabilities').value = lastEntry.otherLiabilities;
                     }
                 } else {
                     console.error('Failed to fetch last entry');
@@ -282,28 +260,36 @@ document.addEventListener('DOMContentLoaded', function() {
     const entryForm = document.getElementById('entryForm');
     if (entryForm) {
         entryForm.addEventListener('submit', function() {
-            mixpanel.track('Manual Entry Submitted');
+            if (typeof trackUserAction === 'function') {
+                trackUserAction('Manual Entry Submitted');
+            }
         });
     }
 
     const uploadForm = document.getElementById('uploadForm');
     if (uploadForm) {
         uploadForm.addEventListener('submit', function() {
-            mixpanel.track('File Uploaded');
+            if (typeof trackUserAction === 'function') {
+                trackUserAction('File Uploaded');
+            }
         });
     }
 
     const manualEntryTab = document.getElementById('manual-entry-tab');
     if (manualEntryTab) {
         manualEntryTab.addEventListener('click', function() {
-            mixpanel.track('Tab Clicked', { 'Tab Name': 'Manual Entry' });
+            if (typeof trackUserAction === 'function') {
+                trackUserAction('Tab Clicked', { 'Tab Name': 'Manual Entry' });
+            }
         });
     }
 
     const importFileTab = document.getElementById('import-file-tab');
     if (importFileTab) {
         importFileTab.addEventListener('click', function() {
-            mixpanel.track('Tab Clicked', { 'Tab Name': 'Import from File' });
+            if (typeof trackUserAction === 'function') {
+                trackUserAction('Tab Clicked', { 'Tab Name': 'Import from File' });
+            }
         });
     }
 }); 

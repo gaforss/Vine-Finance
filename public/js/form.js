@@ -259,50 +259,52 @@ editEntryForm.addEventListener('submit', async function(event) {
     }
 });
 
+// Add null check for uploadForm
+const uploadForm = document.getElementById('uploadForm');
+if (uploadForm) {
+    uploadForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
 
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+        const uploadStatusDiv = document.getElementById('uploadStatus');
 
-document.getElementById('uploadForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-
-    const fileInput = document.getElementById('fileInput');
-    const file = fileInput.files[0];
-    const uploadStatusDiv = document.getElementById('uploadStatus');
-
-    if (!file) {
-        showUploadStatus('Please select a file to upload.', true);
-        return;
-    }
-
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const token = localStorage.getItem('token');
-    const headers = { 'Authorization': `Bearer ${token}` };
-
-    // Show a loading spinner and clear previous status
-    uploadStatusDiv.innerHTML = '<div class="d-flex align-items-center"><strong>Uploading...</strong><div class="spinner-border ms-auto" role="status" aria-hidden="true"></div></div>';
-    uploadStatusDiv.className = 'mt-3 alert alert-info';
-
-    try {
-        const response = await fetch('/import', {
-            method: 'POST',
-            headers: headers,
-            body: formData
-        });
-
-        const result = await response.json();
-        if (response.ok) {
-            showUploadStatus('Data imported successfully!', false);
-            await fetchEntries(); // Refresh the data table
-            document.getElementById('uploadForm').reset();
-        } else {
-            showUploadStatus(result.message || 'An unknown error occurred during import.', true);
+        if (!file) {
+            showUploadStatus('Please select a file to upload.', true);
+            return;
         }
-    } catch (error) {
-        console.error('Error during upload:', error);
-        showUploadStatus('An unexpected network error occurred. Please try again.', true);
-    }
-});
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const token = localStorage.getItem('token');
+        const headers = { 'Authorization': `Bearer ${token}` };
+
+        // Show a loading spinner and clear previous status
+        uploadStatusDiv.innerHTML = '<div class="d-flex align-items-center"><strong>Uploading...</strong><div class="spinner-border ms-auto" role="status" aria-hidden="true"></div></div>';
+        uploadStatusDiv.className = 'mt-3 alert alert-info';
+
+        try {
+            const response = await fetch('/import', {
+                method: 'POST',
+                headers: headers,
+                body: formData
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                showUploadStatus('Data imported successfully!', false);
+                await fetchEntries(); // Refresh the data table
+                document.getElementById('uploadForm').reset();
+            } else {
+                showUploadStatus(result.message || 'An unknown error occurred during import.', true);
+            }
+        } catch (error) {
+            console.error('Error during upload:', error);
+            showUploadStatus('An unexpected network error occurred. Please try again.', true);
+        }
+    });
+}
 
 function showUploadStatus(message, isError = false) {
     const statusDiv = document.getElementById('uploadStatus');
@@ -391,27 +393,31 @@ function redirectToLogin() {
     window.location.href = '/login.html';
 }
 
-document.getElementById('prefillFromAccountsBtn').addEventListener('click', async () => {
-    try {
-        const response = await fetch('/plaid/api/all-balances', {
-            headers: {
-                'Authorization': `Bearer ${getToken()}`
+// Add null check for prefillFromAccountsBtn
+const prefillFromAccountsBtn = document.getElementById('prefillFromAccountsBtn');
+if (prefillFromAccountsBtn) {
+    prefillFromAccountsBtn.addEventListener('click', async () => {
+        try {
+            const response = await fetch('/plaid/api/all-balances', {
+                headers: {
+                    'Authorization': `Bearer ${getToken()}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch balances');
             }
-        });
 
-        if (!response.ok) {
-            throw new Error('Failed to fetch balances');
+            const balances = await response.json();
+
+            document.getElementById('cash').value = balances.cash.toFixed(2);
+            document.getElementById('investments').value = balances.investments.toFixed(2);
+            document.getElementById('retirementAccounts').value = balances.retirement.toFixed(2);
+            document.getElementById('liabilities').value = balances.liabilities.toFixed(2);
+
+        } catch (error) {
+            console.error('Error prefilling from accounts:', error);
+            alert('Failed to prefill from accounts.');
         }
-
-        const balances = await response.json();
-
-        document.getElementById('cash').value = balances.cash.toFixed(2);
-        document.getElementById('investments').value = balances.investments.toFixed(2);
-        document.getElementById('retirementAccounts').value = balances.retirement.toFixed(2);
-        document.getElementById('liabilities').value = balances.liabilities.toFixed(2);
-
-    } catch (error) {
-        console.error('Error prefilling from accounts:', error);
-        alert('Failed to prefill from accounts.');
-    }
-});
+    });
+}

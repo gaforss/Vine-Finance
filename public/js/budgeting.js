@@ -5,21 +5,83 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Page Initialization ---
     async function initializeBudgetingPage() {
-        console.log('[Init] Checking for linked accounts...');
-        if (await checkForLinkedAccounts()) {
-            console.log('[Init] Linked accounts found. Displaying main content.');
-            document.getElementById('cta-container').style.display = 'none';
-            document.getElementById('main-budgeting-content').style.display = 'block';
+        console.log('[Init] Starting page initialization...');
+        
+        // Check if user just came from accounts page
+        const justLinkedAccount = sessionStorage.getItem('justLinkedAccount');
+        if (justLinkedAccount) {
+            sessionStorage.removeItem('justLinkedAccount');
+            console.log('[Init] User just linked an account, showing success message');
+        }
+        
+        // Show loading state initially
+        const loadingContainer = document.getElementById('loading-container');
+        const ctaContainer = document.getElementById('cta-container');
+        const mainContent = document.getElementById('main-budgeting-content');
+        
+        loadingContainer.style.display = 'block';
+        ctaContainer.style.display = 'none';
+        mainContent.style.display = 'none';
+        
+        // Add fade-in effect to loading
+        setTimeout(() => loadingContainer.classList.add('fade-in'), 10);
+        
+        try {
+            console.log('[Init] Checking for linked accounts...');
+            const hasLinkedAccounts = await checkForLinkedAccounts();
             
-            initializeSortByDropdown();
-            fetchDataAndInitializePage();
-            initializeGoalEventHandlers();
-            initializeInsightsRefresh();
-
-        } else {
-            console.log('[Init] No linked accounts found. Displaying CTA.');
-            document.getElementById('cta-container').style.display = 'block';
-            document.getElementById('main-budgeting-content').style.display = 'none';
+            // Fade out loading state
+            loadingContainer.classList.remove('fade-in');
+            loadingContainer.classList.add('fade-out');
+            
+            // Wait for fade out to complete, then show appropriate content
+            setTimeout(() => {
+                loadingContainer.style.display = 'none';
+                loadingContainer.classList.remove('fade-out');
+                
+                if (hasLinkedAccounts) {
+                    console.log('[Init] Linked accounts found. Displaying main content.');
+                    mainContent.style.display = 'block';
+                    setTimeout(() => mainContent.classList.add('fade-in'), 10);
+                    
+                    // Show success message if user just linked account
+                    if (justLinkedAccount) {
+                        setTimeout(() => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Account Connected!',
+                                text: 'Your financial account has been successfully linked. Your budgeting data is now loading.',
+                                timer: 3000,
+                                showConfirmButton: false
+                            });
+                        }, 500);
+                    }
+                    
+                    // Initialize components after fade-in
+                    setTimeout(() => {
+                        initializeSortByDropdown();
+                        fetchDataAndInitializePage();
+                        initializeGoalEventHandlers();
+                        initializeInsightsRefresh();
+                    }, 350);
+                } else {
+                    console.log('[Init] No linked accounts found. Displaying CTA.');
+                    ctaContainer.style.display = 'block';
+                    setTimeout(() => ctaContainer.classList.add('fade-in'), 10);
+                }
+            }, 300);
+        } catch (error) {
+            console.error('[Init] Error during initialization:', error);
+            // Hide loading state and show CTA as fallback
+            loadingContainer.classList.remove('fade-in');
+            loadingContainer.classList.add('fade-out');
+            
+            setTimeout(() => {
+                loadingContainer.style.display = 'none';
+                loadingContainer.classList.remove('fade-out');
+                ctaContainer.style.display = 'block';
+                setTimeout(() => ctaContainer.classList.add('fade-in'), 10);
+            }, 300);
         }
     }
 

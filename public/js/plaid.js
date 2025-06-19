@@ -71,6 +71,9 @@ document.addEventListener('DOMContentLoaded', async function() {
                         sessionStorage.removeItem('userBalances');
                         await fetchAndPopulateBalances();
 
+                        // Set flag for budgeting page to show success message
+                        sessionStorage.setItem('justLinkedAccount', 'true');
+
                         if (exchangeData.isFirstAccount) {
                             const firstAccountModal = new bootstrap.Modal(document.getElementById('firstAccountModal'));
                             firstAccountModal.show();
@@ -131,6 +134,10 @@ document.addEventListener('DOMContentLoaded', async function() {
                 if (response.ok) {
                     $('#addManualAccountModal').modal('hide');
                     document.getElementById('manual-account-form').reset();
+                    
+                    // Set flag for budgeting page to show success message
+                    sessionStorage.setItem('justLinkedAccount', 'true');
+                    
                     await fetchAndPopulateBalances();
                 } else {
                     const error = await response.json();

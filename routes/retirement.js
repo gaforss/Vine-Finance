@@ -165,11 +165,11 @@ router.get('/projections', async (req, res) => {
             timestamp: new Date().toISOString()
         });
 
-        const fivePercentProjection = projections.find(projection => projection.rate === 5);
-        const totalAtRetirement = fivePercentProjection.data.length > 0 ? fivePercentProjection.data[fivePercentProjection.data.length - 1].value : currentNetWorth;
+        const sevenPercentProjection = projections.find(projection => Math.abs(projection.rate - 7) < 0.01);
+        const totalAtRetirement = sevenPercentProjection && sevenPercentProjection.data && sevenPercentProjection.data.length > 0 ? sevenPercentProjection.data[sevenPercentProjection.data.length - 1].value : currentNetWorth;
 
         const requiredSavings = monthlySpend * 12 * Math.max(30, 85 - retirementAge);
-        const intersectionData = fivePercentProjection.data.find(d => d.value >= requiredSavings);
+        const intersectionData = sevenPercentProjection && sevenPercentProjection.data ? sevenPercentProjection.data.find(d => d.value >= requiredSavings) : null;
         const intersectionAge = intersectionData ? intersectionData.year : 'N/A';
         const goalMet = !!intersectionData;
         const shortfall = goalMet ? 0 : requiredSavings - totalAtRetirement;

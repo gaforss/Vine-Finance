@@ -26,12 +26,50 @@ const retirementTemplates = {
     }
 };
 
+// Comprehensive logging system for retirement feedback
+const RetirementLogger = {
+    log: (message, data = null) => {
+        const timestamp = new Date().toISOString();
+        console.log(`[Retirement ${timestamp}] ${message}`, data || '');
+    },
+    
+    logComparison: (userNetWorth, ageGroupAverage, percentage, goalMet, shortfall) => {
+        RetirementLogger.log('=== COMPARISON ANALYSIS ===');
+        RetirementLogger.log(`User Net Worth: $${userNetWorth.toLocaleString()}`);
+        RetirementLogger.log(`Age Group Average: $${ageGroupAverage.toLocaleString()}`);
+        RetirementLogger.log(`Percentage vs Peers: ${percentage}%`);
+        RetirementLogger.log(`Goal Met: ${goalMet}`);
+        RetirementLogger.log(`Shortfall: $${shortfall.toLocaleString()}`);
+        RetirementLogger.log('=== END COMPARISON ===');
+    },
+    
+    logFeedbackDecision: (comparisonCategory, goalStatus, finalMessage) => {
+        RetirementLogger.log('=== FEEDBACK DECISION ===');
+        RetirementLogger.log(`Comparison Category: ${comparisonCategory}`);
+        RetirementLogger.log(`Goal Status: ${goalStatus}`);
+        RetirementLogger.log(`Final Message: ${finalMessage}`);
+        RetirementLogger.log('=== END FEEDBACK ===');
+    },
+    
+    logDataValidation: (data, source) => {
+        RetirementLogger.log(`=== DATA VALIDATION: ${source} ===`);
+        RetirementLogger.log('Data received:', data);
+        if (data) {
+            Object.keys(data).forEach(key => {
+                RetirementLogger.log(`${key}:`, data[key]);
+            });
+        }
+        RetirementLogger.log('=== END VALIDATION ===');
+    }
+};
+
 document.addEventListener('DOMContentLoaded', async () => {
 
     await fetchRetirementGoals();
     setupPercentageListeners();
     calculateValues();
-    const { goalMet } = await renderRetirementChart();
+    const chartResult = await renderRetirementChart();
+    const goalMet = chartResult ? chartResult.goalMet : false;
     await fetchAssumedMonthlyBudget();
     await renderNetWorthComparisonChart(goalMet);
 
@@ -374,18 +412,41 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function fetchRetirementProjections() {
     try {
+        RetirementLogger.log('Starting retirement projections fetch');
+        
         const userId = await getUserId();
-        console.log(`Fetching projections for User ID: ${userId}`);
-        const response = await fetch(`/retirement/projections?userId=${userId}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch retirement projections');
-        }
-        const data = await response.json();
-        console.log('Fetched Projections:', data);
+        console.log('Fetching projections for User ID:', userId);
 
-        // Update the DOM with intersection age or shortfall message
+        const response = await fetch(`/retirement/projections?userId=${userId}`);
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Error response text:', errorText);
+            throw new Error(`Failed to fetch retirement projections: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        RetirementLogger.logDataValidation(data, 'Retirement Projections');
+        
+        // Log key metrics for consistency checking
+        RetirementLogger.log('=== RETIREMENT PROJECTIONS ANALYSIS ===');
+        RetirementLogger.log(`Goal Met: ${data.goalMet}`);
+        RetirementLogger.log(`Shortfall: $${data.shortfall?.toLocaleString() || 'N/A'}`);
+        RetirementLogger.log(`Required Savings: $${data.requiredSavings?.toLocaleString() || 'N/A'}`);
+        RetirementLogger.log(`Current Net Worth: $${data.currentNetWorth?.toLocaleString() || 'N/A'}`);
+        RetirementLogger.log(`Intersection Age: ${data.intersectionAge || 'N/A'}`);
+        RetirementLogger.log('=== END PROJECTIONS ANALYSIS ===');
+
         const outcomeElement = document.getElementById('retirement-outcome');
+        if (!outcomeElement) {
+            RetirementLogger.log('WARNING: retirement-outcome element not found');
+            return data;
+        }
+
         if (data.goalMet) {
+            RetirementLogger.log('Rendering SUCCESS outcome - Goal is met');
             outcomeElement.innerHTML = `
                 <div class="card text-center border-success">
                     <div class="card-body">
@@ -400,10 +461,12 @@ async function fetchRetirementProjections() {
                 </div>
             `;
         } else {
+            RetirementLogger.log('Rendering WARNING outcome - Goal is not met');
+            const shortfallFormatted = data.shortfall ? `$${Math.round(data.shortfall).toLocaleString()}` : 'an amount';
             outcomeElement.innerHTML = `
                 <div class="alert alert-warning">
                     <h5 class="alert-heading">You're Not Quite on Track</h5>
-                    <p>Based on your current plan, you're projected to have a shortfall of <strong class="text-danger">$${Math.round(data.shortfall).toLocaleString()}</strong> by your target retirement age.</p>
+                    <p>Based on your current plan, you're projected to have a shortfall of <strong class="text-danger">${shortfallFormatted}</strong> by your target retirement age.</p>
                     <hr>
                     <p class="mb-0">Here are some ways you can close the gap:</p>
                     <ul>
@@ -416,8 +479,38 @@ async function fetchRetirementProjections() {
 
         return data;
     } catch (error) {
+        RetirementLogger.log('ERROR fetching retirement projections:', error.message);
         console.error('Error fetching retirement projections:', error);
-        return { projections: [], currentNetWorth: 0, intersectionAge: 'N/A' };
+        
+        // Show a user-friendly error message
+        const outcomeElement = document.getElementById('retirement-outcome');
+        if (outcomeElement) {
+            outcomeElement.innerHTML = `
+                <div class="alert alert-danger">
+                    <h5 class="alert-heading">Unable to Load Retirement Projections</h5>
+                    <p>We encountered an error while loading your retirement projections. This might be because:</p>
+                    <ul>
+                        <li>You haven't set up your retirement goals yet</li>
+                        <li>There's a temporary connection issue</li>
+                        <li>Your account data needs to be refreshed</li>
+                    </ul>
+                    <hr>
+                    <p class="mb-0">
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#retirementGoalsModal" class="btn btn-primary">
+                            <i class="fa fa-edit me-2"></i>Set Up Retirement Goals
+                        </a>
+                    </p>
+                </div>`;
+        }
+        
+        return { 
+            projections: [], 
+            currentNetWorth: 0, 
+            intersectionAge: 'N/A',
+            goalMet: false,
+            shortfall: 0,
+            requiredSavings: 0
+        };
     }
 }
 
@@ -453,7 +546,8 @@ async function renderRetirementChart() {
         console.log(`Required Savings: ${requiredSavings}`);
         console.log(`Intersection Age: ${intersectionAge}`);
 
-        const seriesData = projections.map(p => {
+        // Create series data with mixed line and area types
+        const seriesData = projections.map((p, index) => {
             if (!p.data || p.data.length === 0) {
                 console.error(`No data available for rate: ${p.rate}%`);
                 return null;
@@ -464,86 +558,158 @@ async function renderRetirementChart() {
                 y: Math.round(d.value)
             }));
 
+            // Use area for the first projection (5% growth) and lines for others
+            const isMainProjection = index === 0; // First projection (5%) is the main one
+            
+            // High-contrast colors for dark background
+            const colors = ['#00D4FF', '#FF6B35', '#4ECDC4', '#FFE66D'];
+            const currentColor = colors[index];
+            
             return {
                 name: `${Math.round(p.rate)}% Growth`,
                 data: dataPoints,
-                type: p.rate === 5 ? 'area' : 'line',
-                dashArray: p.rate === 5 ? 0 : 5 // Use dash array for dotted lines for 7%, 9%, and 11%
+                type: isMainProjection ? 'area' : 'line',
+                color: currentColor,
+                fillColor: isMainProjection ? currentColor : undefined,
+                fillOpacity: isMainProjection ? 0.2 : undefined,
+                strokeWidth: isMainProjection ? 3 : 2.5,
+                strokeDashArray: isMainProjection ? 0 : 4
             };
         }).filter(series => series !== null);
 
         const options = {
             chart: {
-                type: 'area',
-                height: 400,
+                height: 450,
+                type: 'line',
                 toolbar: {
                     show: false
                 },
+                background: 'transparent',
                 dropShadow: {
                     enabled: true,
-                    top: 3,
-                    left: 3,
-                    blur: 4,
-                    opacity: 0.2
-                }
+                    top: 2,
+                    left: 2,
+                    blur: 8,
+                    opacity: 0.1,
+                    color: '#000'
+                },
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 1000,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 200
+                    },
+                    dynamicAnimation: {
+                        enabled: true,
+                        speed: 400
+                    }
+                },
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
             },
+            series: seriesData,
             stroke: {
                 curve: 'smooth',
-                width: 2
+                width: [0, 2, 2, 2], // Area chart has width 0, lines have width 2
+                dashArray: [0, 4, 4, 4], // Area chart has no dash, lines have dash
+                lineCap: 'round'
             },
             fill: {
                 type: 'gradient',
                 gradient: {
-                    shadeIntensity: 1,
-                    opacityFrom: 0.7,
-                    opacityTo: 0.9,
-                    stops: [0, 90, 100]
+                    shade: 'light',
+                    type: 'vertical',
+                    shadeIntensity: 0.2,
+                    opacityFrom: 0.8,
+                    opacityTo: 0.1,
+                    stops: [0, 100],
+                    colorStops: [
+                        {
+                            offset: 0,
+                            color: '#0070BA',
+                            opacity: 0.8
+                        },
+                        {
+                            offset: 100,
+                            color: '#0070BA',
+                            opacity: 0.1
+                        }
+                    ]
                 }
             },
-            series: seriesData,
             xaxis: {
                 type: 'category',
                 title: {
-                    text: 'My Age',
+                    text: '',
                     style: {
-                        fontSize: '14px',
-                        fontFamily: 'Helvetica, Arial, sans-serif',
-                        color: '#9aa0ac'
+                        fontSize: '13px',
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                        color: '#6B7280',
+                        fontWeight: 500
                     }
                 },
                 labels: {
                     style: {
-                        fontSize: '12px',
-                        fontFamily: 'Helvetica, Arial, sans-serif',
-                        colors: ['#9aa0ac']
-                    }
+                        fontSize: '11px',
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                        colors: '#9CA3AF',
+                        fontWeight: 400
+                    },
+                    trim: true,
+                    maxHeight: 40
+                },
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
                 }
             },
             yaxis: {
                 title: {
-                    text: 'Net Worth ($)',
+                    text: '',
                     style: {
-                        fontSize: '14px',
-                        fontFamily: 'Helvetica, Arial, sans-serif',
-                        color: '#9aa0ac'
+                        fontSize: '13px',
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                        color: '#6B7280',
+                        fontWeight: 500
                     }
                 },
                 labels: {
                     style: {
-                        fontSize: '12px',
-                        fontFamily: 'Helvetica, Arial, sans-serif',
-                        colors: ['#9aa0ac']
+                        fontSize: '11px',
+                        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                        colors: '#9CA3AF',
+                        fontWeight: 400
                     },
                     formatter: function (val) {
+                        if (val >= 1000000) {
+                            return `$${(val / 1000000).toFixed(1)}M`;
+                        } else if (val >= 1000) {
+                            return `$${(val / 1000).toFixed(0)}K`;
+                        }
                         return `$${Math.round(val).toLocaleString('en-US')}`;
                     }
+                },
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
                 }
             },
             tooltip: {
-                theme: 'dark',
+                theme: 'light',
+                shared: true,
+                intersect: false,
+                style: {
+                    fontSize: '12px',
+                    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+                },
                 x: {
                     formatter: function (val) {
-                        return `Year ${val}`;
+                        return `Age ${val}`;
                     }
                 },
                 y: {
@@ -551,74 +717,133 @@ async function renderRetirementChart() {
                         return `$${Math.round(val).toLocaleString('en-US')}`;
                     }
                 },
-                style: {
-                    fontSize: '12px',
-                    fontFamily: 'Helvetica, Arial, sans-serif'
+                marker: {
+                    show: false
                 }
             },
             annotations: {
                 yaxis: [
                     {
                         y: requiredSavings,
-                        borderColor: '#FFC72C',
-                        opacity: 0.5,
+                        borderColor: '#F59E0B',
+                        borderWidth: 2,
+                        opacity: 0.9,
+                        strokeDashArray: 4,
                         label: {
-                            borderColor: '#003087',
+                            borderColor: '#F59E0B',
                             style: {
                                 color: '#fff',
-                                background: '#003087',
-                                fontSize: '12px',
-                                fontFamily: 'Helvetica, Arial, sans-serif'
+                                background: '#F59E0B',
+                                fontSize: '11px',
+                                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                                fontWeight: 600,
+                                borderRadius: '6px',
+                                padding: '4px 8px'
                             },
-                            text: `Required Savings: $${requiredSavings.toLocaleString('en-US')}`
+                            text: `Required: $${(requiredSavings / 1000000).toFixed(1)}M`
                         }
                     }
                 ]
             },
             grid: {
-                borderColor: '#e7e7e7',
-                show: false
-            },
-            stroke: {
-                curve: 'smooth',
-                width: 3
+                borderColor: '#F3F4F6',
+                strokeDashArray: 3,
+                xaxis: {
+                    lines: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    lines: {
+                        show: false
+                    }
+                },
+                padding: {
+                    top: 20,
+                    right: 20,
+                    bottom: 20,
+                    left: 20
+                }
             },
             markers: {
-                size: 0 // Remove the white dots
-            },
-            fill: {
-                type: 'gradient',
-                gradient: {
-                    shade: 'light',
-                    type: 'vertical',
-                    shadeIntensity: 0.5,
-                    gradientToColors: ['#003087', '#009cde', '#FFC72C'],
-                    inverseColors: false,
-                    opacityFrom: 1,
-                    opacityTo: 0.6,
-                    stops: [0, 90, 100]
+                size: 0,
+                hover: {
+                    size: 8,
+                    sizeOffset: 2
                 }
             },
             legend: {
-                show: false
+                show: true,
+                position: 'top',
+                horizontalAlign: 'left',
+                fontSize: '12px',
+                fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                fontWeight: 500,
+                markers: {
+                    width: 10,
+                    height: 10,
+                    strokeWidth: 0,
+                    strokeColor: '#fff',
+                    radius: 5,
+                    offsetX: -5
+                },
+                itemMargin: {
+                    horizontal: 15,
+                    vertical: 5
+                },
+                onItemClick: {
+                    toggleDataSeries: true
+                }
             },
-            theme: {
-                mode: 'light',
-                palette: 'palette1'
-            },
-            colors: ['#003087', '#009cde', '#FFC72C'],
+            colors: ['#00D4FF', '#FF6B35', '#4ECDC4', '#FFE66D'], // High-contrast colors for dark background
             dataLabels: {
                 enabled: false
-            }
+            },
+            states: {
+                hover: {
+                    filter: {
+                        type: 'lighten',
+                        value: 0.1
+                    }
+                },
+                active: {
+                    filter: {
+                        type: 'darken',
+                        value: 0.1
+                    }
+                }
+            },
+            responsive: [
+                {
+                    breakpoint: 768,
+                    options: {
+                        chart: {
+                            height: 350
+                        },
+                        legend: {
+                            position: 'bottom',
+                            horizontalAlign: 'center',
+                            fontSize: '11px'
+                        },
+                        xaxis: {
+                            labels: {
+                                fontSize: '10px'
+                            }
+                        },
+                        yaxis: {
+                            labels: {
+                                fontSize: '10px'
+                            }
+                        }
+                    }
+                }
+            ]
         };
 
         const chart = new ApexCharts(document.querySelector("#retirementChart"), options);
         await chart.render();
 
         return { goalMet };
-
-        // Display the intersection age
-        document.getElementById('intersectionAge').textContent = intersectionAge.toLocaleString('en-US');
 
     } catch (error) {
         console.error('Error rendering retirement chart:', error);
@@ -692,9 +917,14 @@ async function fetchAssumedMonthlyBudget() {
 async function fetchNetWorthComparison() {
     try {
         const userId = await getUserId();
+        const token = localStorage.getItem('token');
         console.log('Fetching net worth comparison for user ID:', userId);
 
-        const response = await fetch(`/retirement/networth/comparison?userId=${userId}`);
+        const response = await fetch(`/retirement/networth/comparison?userId=${userId}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
         console.log('Fetch response:', response);
 
         if (!response.ok) {
@@ -714,11 +944,14 @@ async function fetchNetWorthComparison() {
 
 async function renderNetWorthComparisonChart(goalMet, ageBracket) {
     try {
+        RetirementLogger.log('Starting net worth comparison chart rendering');
+        
         const data = await fetchNetWorthComparison(ageBracket);
-        console.log('Rendering net worth comparison chart with data:', data);
-
+        RetirementLogger.logDataValidation(data, 'Net Worth Comparison');
+        
         const { userNetWorth, ageGroupAverage } = data;
         if (userNetWorth === undefined || ageGroupAverage === undefined) {
+            RetirementLogger.log('ERROR: Missing required data fields');
             throw new Error('Data is not in the expected format');
         }
 
@@ -726,35 +959,117 @@ async function renderNetWorthComparisonChart(goalMet, ageBracket) {
         percentage = Math.min(percentage, 100); // Cap the percentage at 100
         percentage = parseFloat(percentage.toFixed(2));
 
+        // Get shortfall from retirement projections for comprehensive analysis
+        let shortfall = 0;
+        try {
+            const projectionsData = await fetchRetirementProjections();
+            shortfall = projectionsData.shortfall || 0;
+            RetirementLogger.log(`Retrieved shortfall: $${shortfall.toLocaleString()}`);
+        } catch (error) {
+            RetirementLogger.log('Could not retrieve shortfall data:', error.message);
+        }
+
         const insightsContainer = document.getElementById('comparisonInsights');
         let insightMessage = '';
         let insightColorClass = '';
+        let comparisonCategory = '';
+        let goalStatus = '';
 
+        // Comprehensive decision matrix
         if (goalMet) {
-            if (percentage > 100) {
+            goalStatus = 'GOAL_MET';
+            if (percentage >= 100) {
+                comparisonCategory = 'EXCEEDS_PEERS';
                 insightMessage = `Excellent! You're exceeding the top 10% of your peers and are on track to meet your retirement goals. Your financial planning is outstanding.`;
-                insightColorClass = 'text-success';
+                insightColorClass = 'text-primary'; // PayPal blue
             } else if (percentage >= 75) {
+                comparisonCategory = 'TOP_QUARTILE';
                 insightMessage = `You're doing great, ranking in the top 25% of your peers and on track for your retirement goals. Keep up the great work!`;
-                insightColorClass = 'text-info';
+                insightColorClass = 'text-info'; // PayPal light blue
             } else {
+                comparisonCategory = 'BELOW_PEERS_BUT_ON_TRACK';
                 insightMessage = `You're on track to meet your retirement goals! While you're currently tracking behind some peers, your personal plan is solid.`;
-                insightColorClass = 'text-primary';
+                insightColorClass = 'text-success'; // PayPal green
             }
         } else {
-            if (percentage > 100) {
+            goalStatus = 'GOAL_NOT_MET';
+            if (percentage >= 100) {
+                comparisonCategory = 'EXCEEDS_PEERS_BUT_SHORTFALL';
                 insightMessage = `You are ahead of your peers, which is great, but you are not on track to meet your ambitious retirement goals. Let's adjust your plan to close the gap.`;
-                insightColorClass = 'text-warning';
+                insightColorClass = 'text-warning'; // PayPal amber
             } else if (percentage >= 50) {
+                comparisonCategory = 'AVERAGE_PEERS_WITH_SHORTFALL';
                 insightMessage = `You're tracking with your peers, but your current plan shows a shortfall for your retirement goals. Let's focus on increasing your savings rate.`;
-                insightColorClass = 'text-warning';
+                insightColorClass = 'text-warning'; // PayPal amber
             } else {
+                comparisonCategory = 'BELOW_PEERS_AND_SHORTFALL';
                 insightMessage = `There is a significant gap compared to your peers, and you are not on track to meet your retirement goals. It's time to take action and revise your financial strategy.`;
-                insightColorClass = 'text-danger';
+                insightColorClass = 'text-danger'; // PayPal red
             }
         }
 
-        insightsContainer.innerHTML = `<p class="${insightColorClass}">${insightMessage}</p>`;
+        // Log the comprehensive analysis
+        RetirementLogger.logComparison(userNetWorth, ageGroupAverage, percentage, goalMet, shortfall);
+        RetirementLogger.logFeedbackDecision(comparisonCategory, goalStatus, insightMessage);
+
+        // Validate that we have a message before rendering
+        if (!insightMessage) {
+            RetirementLogger.log('ERROR: No insight message generated');
+            insightMessage = 'Unable to generate comparison insights at this time.';
+            insightColorClass = 'text-muted';
+        }
+
+        // Add icons and styling based on the category
+        let iconClass = '';
+        let containerClass = '';
+        
+        switch (comparisonCategory) {
+            case 'EXCEEDS_PEERS':
+                iconClass = 'fa-trophy';
+                containerClass = 'text-center fs-5 fw-bold';
+                break;
+            case 'TOP_QUARTILE':
+                iconClass = 'fa-star';
+                containerClass = 'text-center fs-5 fw-bold';
+                break;
+            case 'BELOW_PEERS_BUT_ON_TRACK':
+                iconClass = 'fa-check-circle';
+                containerClass = 'text-center fs-5 fw-bold';
+                break;
+            case 'EXCEEDS_PEERS_BUT_SHORTFALL':
+                iconClass = 'fa-exclamation-triangle';
+                containerClass = 'text-center fs-5 fw-bold';
+                break;
+            case 'AVERAGE_PEERS_WITH_SHORTFALL':
+                iconClass = 'fa-chart-line';
+                containerClass = 'text-center fs-5 fw-bold';
+                break;
+            case 'BELOW_PEERS_AND_SHORTFALL':
+                iconClass = 'fa-exclamation-circle';
+                containerClass = 'text-center fs-5 fw-bold';
+                break;
+            default:
+                iconClass = 'fa-info-circle';
+                containerClass = 'text-center fs-5 fw-bold';
+        }
+
+        insightsContainer.innerHTML = `
+            <div class="${containerClass}">
+                <i class="fa ${iconClass} ${insightColorClass} me-2"></i>
+                <span class="${insightColorClass}">${insightMessage}</span>
+            </div>
+        `;
+
+        // Add PayPal color palette styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .text-primary { color: #0070BA !important; } /* PayPal Blue */
+            .text-info { color: #009CDE !important; } /* PayPal Light Blue */
+            .text-success { color: #00C851 !important; } /* PayPal Green */
+            .text-warning { color: #FFC72C !important; } /* PayPal Amber */
+            .text-danger { color: #D70015 !important; } /* PayPal Red */
+        `;
+        document.head.appendChild(style);
 
         const options = {
             chart: {
@@ -818,15 +1133,25 @@ async function renderNetWorthComparisonChart(goalMet, ageBracket) {
             },
             stroke: {
                 lineCap: 'round',
-                width: 15  // Increase the width of the stroke to make the bar thicker
+                width: 15
             },
             labels: ['Top 10% Benchmark']
         };
 
         const chart = new ApexCharts(document.querySelector("#netWorthComparisonChart"), options);
         chart.render();
+        
+        RetirementLogger.log('Net worth comparison chart rendered successfully');
+        
     } catch (error) {
+        RetirementLogger.log('ERROR rendering net worth comparison chart:', error.message);
         console.error('Error rendering net worth comparison chart:', error);
+        
+        // Show user-friendly error message
+        const insightsContainer = document.getElementById('comparisonInsights');
+        if (insightsContainer) {
+            insightsContainer.innerHTML = `<p class="text-muted">Unable to load comparison data at this time. Please try refreshing the page.</p>`;
+        }
     }
 }
 
